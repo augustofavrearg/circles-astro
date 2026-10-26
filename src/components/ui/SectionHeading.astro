@@ -1,0 +1,8 @@
+---
+import Eyebrow from "./Eyebrow.astro";
+const { eyebrow, title } = Astro.props;
+---
+<header class="grid gap-3 px-4 lg:grid-cols-[1fr_2fr] lg:px-6">
+  {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}
+  <h2 class="max-w-[900px] font-display text-h2 text-balance">{title}</h2>
+</header>

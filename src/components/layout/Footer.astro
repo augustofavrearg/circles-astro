@@ -1,0 +1,51 @@
+---
+import type { SiteSettings } from "@/domain/content";
+import Media from "@/components/ui/Media.astro";
+
+type Props = Pick<SiteSettings, "footer" | "contact" | "socials">;
+const { footer, contact, socials } = Astro.props;
+---
+
+<footer id="footer" class="bg-background px-4 pt-28 pb-6 lg:px-6">
+  <div class="grid gap-12 border-t border-black/12 pt-6 lg:grid-cols-[1.1fr_1fr_0.7fr_1fr] lg:gap-4">
+    <div>
+      <div class="relative h-[420px] overflow-hidden">
+        <Media src={footer.image} alt="Circles House" />
+      </div>
+      <p class="mt-5 max-w-sm text-detail">{contact.address}</p>
+    </div>
+
+    <div class="lg:pl-16">
+      <p class="mb-5 text-detail text-black/45">Main</p>
+      <nav aria-label="Footer main" class="flex flex-col items-start gap-3">
+        {footer.main.map((link) => <a href={link.href} class="font-display text-h3 hover:opacity-50">{link.label}</a>)}
+      </nav>
+    </div>
+
+    <div>
+      <p class="mb-5 text-detail text-black/45">Extras</p>
+      <nav aria-label="Footer extras" class="flex flex-col items-start gap-3">
+        {footer.extras.map((link) => <a href={link.href} class="text-cta hover:opacity-50">{link.label}</a>)}
+      </nav>
+    </div>
+
+    <div class="flex flex-col">
+      <p class="mb-5 text-detail text-black/45">Info</p>
+      <p class="max-w-sm text-body">{contact.about}</p>
+      <a href={`tel:${contact.phone.replace(/\s/g, "")}`} class="mt-6 text-cta">{contact.phone}</a>
+      <ul class="mt-auto flex flex-wrap gap-4 pt-12">
+        {socials.map((social) => (
+          <li><a href={social.href} target="_blank" rel="noreferrer" class="text-detail underline underline-offset-4">{social.label}</a></li>
+        ))}
+      </ul>
+    </div>
+  </div>
+
+  <div class="mt-12 flex flex-col gap-4 border-t border-black/12 pt-4 text-detail lg:flex-row lg:items-center">
+    <p class="flex-1">{contact.copyright}</p>
+    <nav aria-label="Legal" class="flex flex-wrap gap-4">
+      {footer.legal.map((link) => <a href={link.href}>{link.label}</a>)}
+    </nav>
+    <a href="#top" class="ml-auto inline-flex size-9 items-center justify-center rounded-full bg-black/8" aria-label="Back to top">↑</a>
+  </div>
+</footer>

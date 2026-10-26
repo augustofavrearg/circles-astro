@@ -1,0 +1,45 @@
+---
+import SiteLayout from "@/layouts/SiteLayout.astro";
+import Hero from "@/components/sections/Hero.astro";
+import Memberships from "@/components/sections/Memberships.astro";
+import Introduction from "@/components/sections/Introduction.astro";
+import Testimonials from "@/components/sections/Testimonials.astro";
+import NewsGrid from "@/components/sections/NewsGrid.astro";
+import Newsletter from "@/components/sections/Newsletter.astro";
+import SectionHeading from "@/components/ui/SectionHeading.astro";
+import { EventsFilter } from "@/islands/EventsFilter";
+import { HeroSlider } from "@/islands/HeroSlider";
+import { SpacesCarousel } from "@/islands/SpacesCarousel";
+import { getContentRepository } from "@/services/content/repository";
+
+const repository = await getContentRepository();
+const [settings, home] = await Promise.all([repository.getSiteSettings(), repository.getHomePage()]);
+---
+
+<SiteLayout settings={settings}>
+  <Hero {...home.hero} searchLocations={home.searchLocations} />
+
+  {home.slider.length > 0 && <HeroSlider client:visible slides={home.slider} />}
+
+  <section id="network" class="py-28">
+    <SectionHeading eyebrow={home.network.eyebrow} title={home.network.title} />
+    <div class="mt-12">
+      <SpacesCarousel client:visible spaces={home.network.spaces} defaultCta={settings.book} />
+    </div>
+  </section>
+
+  {home.happeningNow.events.length > 0 && (
+    <section id="events" class="py-28">
+      <SectionHeading eyebrow={home.happeningNow.eyebrow} title={home.happeningNow.title} />
+      <div class="mt-12">
+        <EventsFilter client:visible events={home.happeningNow.events} cities={home.happeningNow.cities} />
+      </div>
+    </section>
+  )}
+
+  <Memberships {...home.memberships} />
+  <Introduction {...home.introduction} />
+  <Testimonials testimonials={home.testimonials} />
+  <NewsGrid {...home.news} />
+  <Newsletter description={home.newsletter.description} />
+</SiteLayout>

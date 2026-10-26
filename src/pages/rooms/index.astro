@@ -1,0 +1,62 @@
+---
+import SiteLayout from "@/layouts/SiteLayout.astro";
+import Media from "@/components/ui/Media.astro";
+import { createCloudbedsProvider } from "@/services/booking/cloudbeds";
+import { getContentRepository } from "@/services/content/repository";
+
+const repository = await getContentRepository();
+const settings = await repository.getSiteSettings();
+const location = Astro.url.searchParams.get("location") ?? undefined;
+const rooms = await repository.getRooms(location);
+const booking = createCloudbedsProvider(import.meta.env.CLOUDBEDS_ALLOWED_ORIGIN);
+---
+
+<SiteLayout
+  settings={settings}
+  title="Choose a room · Circles House"
+  description="Choose your room at Circles House, then continue securely to Cloudbeds to select dates and complete your reservation."
+>
+  <section class="px-4 py-14 lg:px-6 lg:py-24">
+    <div class="grid gap-8 border-b border-black/12 pb-12 lg:grid-cols-[1fr_1.2fr]">
+      <p class="text-detail uppercase tracking-[0.08em]">Stay with us</p>
+      <div>
+        <h1 class="max-w-4xl font-display text-h1">Choose the room that feels like yours.</h1>
+        <p class="mt-6 max-w-xl text-body">Once you choose a room, Cloudbeds will open so you can select dates, check live availability and complete the reservation.</p>
+      </div>
+    </div>
+
+    {rooms.length ? (
+      <div class="grid gap-x-4 gap-y-16 py-14 md:grid-cols-2">
+        {rooms.map((room, index) => {
+          const redirect = booking.getRedirect(room).toString();
+          return (
+            <article class:list={["group", index % 2 === 1 && "md:mt-24"]}>
+              <div class="relative h-[58vh] min-h-[420px] max-h-[680px] overflow-hidden">
+                <Media src={room.image} alt={room.name} eager={index === 0} imageClass="transition-transform duration-700 group-hover:scale-105" />
+              </div>
+              <div class="grid gap-5 border-t border-black/12 pt-4 lg:grid-cols-[1fr_auto]">
+                <div>
+                  <p class="text-detail uppercase tracking-[0.08em]">{room.locationName}</p>
+                  <h2 class="mt-2 font-display text-h2">{room.name}</h2>
+                  {room.description && <p class="mt-4 max-w-lg text-body text-black/60">{room.description}</p>}
+                </div>
+                <a
+                  href={redirect}
+                  rel="external"
+                  class="mt-auto inline-flex h-11 items-center justify-center rounded-full bg-black px-6 text-cta text-white"
+                >
+                  Check dates in Cloudbeds ↗
+                </a>
+              </div>
+            </article>
+          );
+        })}
+      </div>
+    ) : (
+      <div class="py-24 text-center">
+        <h2 class="font-display text-h2">No rooms are published for this location yet.</h2>
+        <a href="/rooms" class="mt-6 inline-flex h-11 items-center rounded-full border border-black px-6">View every room</a>
+      </div>
+    )}
+  </section>
+</SiteLayout>

@@ -1,0 +1,33 @@
+---
+import type { HomePage } from "@/domain/content";
+import Button from "@/components/ui/Button.astro";
+import Media from "@/components/ui/Media.astro";
+
+type Props = HomePage["introduction"];
+const { title, highlight, intro, body, cta, images = {} } = Astro.props;
+---
+
+<section id="about" class="grid gap-4 px-4 py-32 lg:grid-cols-3 lg:px-6">
+  <div class="flex min-h-[520px] flex-col lg:pr-12">
+    <h2 class="font-display text-h2">
+      <span class="block">{title}</span>
+      <span class="block text-red">{highlight}</span>
+    </h2>
+    <p class="mt-auto max-w-sm text-body">{intro}</p>
+    <div class="relative mt-6 h-[160px] w-[78%] overflow-hidden">
+      <Media src={images.left} alt="Life at Circles House" />
+    </div>
+  </div>
+  <div class="relative min-h-[620px] overflow-hidden lg:min-h-[560px]">
+    <Media src={images.main} alt="Circles House community" />
+  </div>
+  <div class="flex min-h-[520px] flex-col items-end lg:pl-12">
+    <div class="relative h-[250px] w-[52%] overflow-hidden">
+      <Media src={images.right} alt="Circles House rooftop" />
+    </div>
+    <div class="mt-auto max-w-sm self-start">
+      <p class="text-body">{body}</p>
+      <Button href={cta.href} variant="secondary" class="mt-6">{cta.label}</Button>
+    </div>
+  </div>
+</section>

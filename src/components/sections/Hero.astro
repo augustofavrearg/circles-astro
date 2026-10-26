@@ -1,0 +1,25 @@
+---
+import type { HomePage } from "@/domain/content";
+import { BookingSearch } from "@/islands/BookingSearch";
+import { VideoTeaser } from "@/islands/VideoTeaser";
+
+type Props = HomePage["hero"] & { searchLocations: HomePage["searchLocations"] };
+const { title, description, video, searchLocations } = Astro.props;
+---
+
+<section class="overflow-hidden px-4 py-9 lg:px-6 lg:py-20">
+  <div class="mx-auto grid w-full min-w-0 max-w-[1500px] gap-10 overflow-hidden lg:grid-cols-[minmax(0,1fr)_317px] lg:gap-16">
+    <div class="flex w-[calc(100vw-2rem)] min-w-0 max-w-full flex-col overflow-hidden lg:w-auto">
+      <h1 class="reveal-copy max-w-[1120px] font-display text-h1 tracking-[-0.035em] text-balance">{title}</h1>
+      <p class="reveal-copy mt-7 max-w-[calc(100vw-2rem)] text-body lg:max-w-[560px]" style="animation-delay:100ms">{description}</p>
+      <div class="reveal-copy mt-9 w-[calc(100vw-2rem)] min-w-0 max-w-full overflow-hidden lg:w-auto" style="animation-delay:180ms">
+        <BookingSearch client:load locations={searchLocations} />
+      </div>
+    </div>
+    {video && (
+      <div class="reveal-image w-[calc(100vw-2rem)] min-w-0 max-w-full self-end overflow-hidden lg:w-auto">
+        <VideoTeaser client:idle {...video} />
+      </div>
+    )}
+  </div>
+</section>

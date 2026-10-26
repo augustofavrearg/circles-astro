@@ -1,0 +1,27 @@
+---
+import { cn } from "@/lib/cn";
+
+type Props = {
+  src?: string;
+  alt?: string;
+  overlay?: boolean;
+  eager?: boolean;
+  class?: string;
+  imageClass?: string;
+};
+
+const { src, alt = "", overlay = false, eager = false, class: className, imageClass } = Astro.props;
+---
+
+<div class={cn("absolute inset-0 overflow-hidden bg-black/8", className)}>
+  {src && (
+    <img
+      src={src}
+      alt={alt}
+      loading={eager ? "eager" : "lazy"}
+      decoding="async"
+      class={cn("size-full object-cover", imageClass)}
+    />
+  )}
+  {overlay && <div aria-hidden="true" class="absolute inset-0 bg-linear-to-b from-black/0 to-black/55"></div>}
+</div>

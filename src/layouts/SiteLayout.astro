@@ -1,0 +1,42 @@
+---
+import type { SiteSettings } from "@/domain/content";
+import { HeaderMenu } from "@/islands/HeaderMenu";
+import Footer from "@/components/layout/Footer.astro";
+import "@/styles/global.css";
+
+type Props = {
+  settings: SiteSettings;
+  title?: string;
+  description?: string;
+  noindex?: boolean;
+};
+
+const {
+  settings,
+  title = "Circles House",
+  description = "The coliving and coworking community designed for entrepreneurs and innovators.",
+  noindex = false,
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex,nofollow" />}
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <title>{title}</title>
+  </head>
+  <body id="top">
+    {settings.promotion && (
+      <div class="bg-red px-4 py-2 text-center text-detail text-black">
+        {settings.promotion}
+      </div>
+    )}
+    <HeaderMenu client:load nav={settings.mainNav} login={settings.login} book={settings.book} />
+    <main><slot /></main>
+    <Footer footer={settings.footer} contact={settings.contact} socials={settings.socials} />
+  </body>
+</html>

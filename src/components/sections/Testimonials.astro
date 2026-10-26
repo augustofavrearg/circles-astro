@@ -1,0 +1,16 @@
+---
+import type { Testimonial } from "@/domain/content";
+const { testimonials } = Astro.props as { testimonials: Testimonial[] };
+---
+
+<section aria-label="Guest reviews" class="scrollbar-none flex gap-0 overflow-x-auto border-y border-black/12 px-4 py-24 lg:px-6">
+  {testimonials.map((testimonial) => (
+    <figure class="w-[86vw] max-w-[430px] shrink-0 border-r border-black/12 px-6 first:pl-0">
+      <blockquote class="font-display text-h3 leading-relaxed">“{testimonial.quote}”</blockquote>
+      <figcaption class="mt-24">
+        <p class="text-cta">{testimonial.author}</p>
+        <p class="mt-1 text-detail text-black/50">{testimonial.source}</p>
+      </figcaption>
+    </figure>
+  ))}
+</section>
