@@ -1,0 +1,36 @@
+---
+import { IconArrowNarrowRight } from "@tabler/icons-react";
+import type { EventSummary } from "@/domain/content";
+
+type Props = { event: EventSummary };
+const { event } = Astro.props;
+---
+
+<!--
+  Figma desktop: one row — optional thumbnail, title + subtitle, date, arrow.
+  Figma mobile: a stacked card — thumbnail, title, subtitle, date. The whole card links when `href` exists.
+-->
+<article class="relative bg-surface p-6 lg:flex lg:min-h-[188px] lg:items-center lg:gap-6">
+  {event.image && <img src={event.image} alt="" loading="lazy" class="size-[135px] shrink-0 object-cover" />}
+  <div class:list={["min-w-0 lg:flex-1", event.image ? "mt-10 lg:mt-0" : ""]}>
+    <h2 class="font-display text-[2.125rem] leading-[1.2]">
+      {event.href ? <a href={event.href} class="after:absolute after:inset-0 hover:underline">{event.title}</a> : event.title}
+    </h2>
+    {event.subtitle && <p class="mt-1 text-[0.9375rem] lg:text-[0.875rem]">{event.subtitle}</p>}
+  </div>
+  <div class="mt-6 flex items-center gap-3 lg:mt-0 lg:w-[260px] lg:shrink-0">
+    <div class="flex h-11 w-14 shrink-0 flex-col items-center justify-center rounded-xs bg-red text-[0.9375rem] leading-none text-white">
+      <span>{event.month}</span>
+      <span>{event.day}</span>
+    </div>
+    <div class="min-w-0">
+      <p class="text-[0.9375rem]">{event.dateLabel}</p>
+      <p class="text-detail text-black/50">{event.timeLabel}</p>
+    </div>
+  </div>
+  {event.href && (
+    <span aria-hidden="true" class="hidden h-7 w-12 shrink-0 items-center justify-center rounded-full bg-black text-white lg:flex">
+      <IconArrowNarrowRight size={16} stroke={1.5} />
+    </span>
+  )}
+</article>

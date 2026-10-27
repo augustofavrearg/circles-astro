@@ -180,10 +180,34 @@ export type Deal = {
   image?: string;
 };
 
+/** An event on the /events listing (Figma "Events" rows). `city` is the city slug. */
+export type EventSummary = {
+  slug: string;
+  city: string;
+  title: string;
+  subtitle?: string;
+  month: string;
+  day: string | number;
+  dateLabel: string;
+  timeLabel: string;
+  image?: string;
+  href?: string;
+};
+
+export type EventsPage = {
+  title: string;
+  subtitle: string;
+  /** Eyebrow per city slug, plus `all` for the unfiltered listing. */
+  eyebrows: Record<string, string>;
+  cities: { slug: string; name: string }[];
+};
+
 export interface ContentRepository {
   getSiteSettings(): Promise<SiteSettings>;
   getHomePage(): Promise<HomePage>;
   getAmbassadorsPage(): Promise<AmbassadorsPage>;
   getDeals(): Promise<Deal[]>;
+  getEventsPage(): Promise<EventsPage>;
+  getEvents(city?: string): Promise<EventSummary[]>;
   getRooms(location?: string): Promise<import("./booking").Room[]>;
 }

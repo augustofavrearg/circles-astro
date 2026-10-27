@@ -1,0 +1,20 @@
+---
+import SiteLayout from "@/layouts/SiteLayout.astro";
+import EventsListing from "@/components/sections/EventsListing.astro";
+import Newsletter from "@/components/sections/Newsletter.astro";
+import { getContentRepository } from "@/services/content/repository";
+
+const repository = await getContentRepository();
+// The newsletter copy lives on the home page content for now.
+const [settings, page, events, home] = await Promise.all([
+  repository.getSiteSettings(),
+  repository.getEventsPage(),
+  repository.getEvents(),
+  repository.getHomePage(),
+]);
+---
+
+<SiteLayout settings={settings} title="Events · Circles House" description={page.subtitle}>
+  <EventsListing {page} {events} />
+  <Newsletter description={home.newsletter.description} class="mt-12 lg:mt-10" />
+</SiteLayout>

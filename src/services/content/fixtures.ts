@@ -1,4 +1,4 @@
-import type { AmbassadorsPage, Deal, HomePage, PlaceDetails, SiteSettings } from "@/domain/content";
+import type { AmbassadorsPage, Deal, EventSummary, EventsPage, HomePage, PlaceDetails, SiteSettings } from "@/domain/content";
 import type { Room } from "@/domain/booking";
 
 export const siteSettingsFixture: SiteSettings = {
@@ -27,6 +27,8 @@ export const siteSettingsFixture: SiteSettings = {
       { label: "Memberships", href: "/#membership" },
       { label: "About us", href: "/#about" },
       { label: "News", href: "/#news" },
+      { label: "Events Barcelona", href: "/events/barcelona" },
+      { label: "Events Andorra", href: "/events/andorra" },
       { label: "Become an Ambassador", href: "/ambassadors" },
     ],
     legal: [
@@ -323,6 +325,34 @@ export const dealsFixture: Deal[] = [
     terms: "*This promotion cannot be combined with other promotions and only applies for the first month.",
     cta: { label: "Book Now", href: "/rooms" },
   },
+];
+
+export const eventsPageFixture: EventsPage = {
+  title: "Live Surrounded by Nature",
+  subtitle: "See What Makes our Inspiring Coworking Spaces Perfect for Entrepreneurs and Innovators",
+  eyebrows: {
+    barcelona: "Coliving @ Circles Barcelona",
+    // Figma only shows Barcelona; these follow the same pattern and need confirming.
+    andorra: "Coliving @ Circles Andorra",
+    all: "Happening now",
+  },
+  cities: [
+    { slug: "barcelona", name: "Barcelona" },
+    { slug: "andorra", name: "Andorra" },
+  ],
+};
+
+const augustEvening = { month: "Aug", day: 18, dateLabel: "Monday, August 18", timeLabel: "9:00 PM - 11:30 PM GMT+2" };
+
+// Figma "Events - Barcelona". Thumbnails and detail links are pending; rows render without them.
+export const eventsFixture: EventSummary[] = [
+  { slug: "evening-innovation-jam", city: "barcelona", title: "Evening Innovation Jam", subtitle: "A 4-Hour Focused Collaboration Session", ...augustEvening },
+  { slug: "nighttime-coding-challenge", city: "barcelona", title: "Nighttime Coding Challenge", subtitle: "A 4-Hour Teamwork Workshop", ...augustEvening },
+  { slug: "late-night-brainstorming-session", city: "barcelona", title: "Late Night Brainstorming Session", subtitle: "A 4-Hour Creative Collaboration", ...augustEvening },
+  { slug: "midnight-hackathon", city: "barcelona", title: "Midnight Hackathon", subtitle: "A 4-Hour Innovation Sprint", ...augustEvening },
+  { slug: "twilight-tech-challenge", city: "barcelona", title: "Twilight Tech Challenge", subtitle: "A 4-Hour Synergy Session", ...augustEvening },
+  { slug: "evening-code-fest", city: "barcelona", title: "Evening Code Fest", subtitle: "A 4-Hour Team Building Event", ...augustEvening },
+  { slug: "nocturnal-development-workshop", city: "barcelona", title: "Nocturnal Development Workshop", subtitle: "A 4-Hour Collaborative Hack Session", ...augustEvening },
 ];
 
 export const roomsFixture: Room[] = [

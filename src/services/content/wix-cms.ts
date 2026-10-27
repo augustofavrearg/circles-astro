@@ -1,5 +1,5 @@
 import { items } from "@wix/data";
-import type { AmbassadorsPage, ContentRepository, Deal, HomePage, SiteSettings } from "@/domain/content";
+import type { AmbassadorsPage, ContentRepository, Deal, EventSummary, EventsPage, HomePage, SiteSettings } from "@/domain/content";
 import type { Room } from "@/domain/booking";
 
 const COLLECTIONS = {
@@ -8,6 +8,8 @@ const COLLECTIONS = {
   ambassadorsPage: "AmbassadorsPage",
   rooms: "Rooms",
   deals: "Deals",
+  eventsPage: "EventsPage",
+  events: "Events",
 } as const;
 
 async function getSingleton<T>(collectionId: string, key = "global"): Promise<T> {
@@ -53,10 +55,36 @@ function mapDeal(item: Record<string, unknown>): Deal {
   };
 }
 
+function mapEvent(item: Record<string, unknown>): EventSummary {
+  const slug = text(item.slug) || text(item._id);
+  const title = text(item.title);
+  const city = text(item.city);
+  if (!slug || !title || !city) throw new Error("Wix CMS event is missing slug, title or city.");
+  return {
+    slug,
+    city,
+    title,
+    subtitle: text(item.subtitle) || undefined,
+    month: text(item.month),
+    day: text(item.day),
+    dateLabel: text(item.dateLabel),
+    timeLabel: text(item.timeLabel),
+    image: text(item.image) || undefined,
+    href: text(item.href) || undefined,
+  };
+}
+
 export const wixCmsRepository: ContentRepository = {
   getSiteSettings: () => getSingleton<SiteSettings>(COLLECTIONS.siteSettings),
   getHomePage: () => getSingleton<HomePage>(COLLECTIONS.homePage),
   getAmbassadorsPage: () => getSingleton<AmbassadorsPage>(COLLECTIONS.ambassadorsPage),
+  getEventsPage: () => getSingleton<EventsPage>(COLLECTIONS.eventsPage),
+  async getEvents(city?: string) {
+    let query = items.query(COLLECTIONS.events).eq("published", true).ascending("sortOrder").limit(100);
+    if (city) query = query.eq("city", city);
+    const result = await query.find({ consistentRead: true });
+    return result.items.map((item) => mapEvent(item as Record<string, unknown>));
+  },
   async getDeals() {
     const result = await items.query(COLLECTIONS.deals).eq("published", true).ascending("sortOrder").limit(50).find({ consistentRead: true });
     return result.items.map((item) => mapDeal(item as Record<string, unknown>));
