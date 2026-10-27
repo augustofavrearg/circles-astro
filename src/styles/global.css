@@ -25,9 +25,9 @@
   --color-cream: #c37254;
   --font-display: "Clash Display", "Helvetica Neue", Arial, sans-serif;
   --font-sans: "PP Fragment Sans", "Avenir Next", "Segoe UI", sans-serif;
-  --text-h1: clamp(2.5rem, 4.7vw, 4rem);
+  --text-h1: clamp(2.125rem, 4.7vw, 4rem);
   --text-h1--line-height: 1.05;
-  --text-h2: clamp(2.25rem, 4.7vw, 4rem);
+  --text-h2: clamp(2.125rem, 4.7vw, 4rem);
   --text-h2--line-height: 1.03;
   --text-h4: 2rem;
   --text-h4--line-height: 1.3;

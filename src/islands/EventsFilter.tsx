@@ -7,7 +7,7 @@ export function EventsFilter({ events, cities }: { events: CircleEvent[]; cities
 
   return (
     <div>
-      <div className="px-4 lg:px-6">
+      <div className="flex justify-center px-4 lg:justify-start lg:px-6">
         <div className="inline-flex rounded-lg bg-black/8 p-0.5" role="group" aria-label="Filter events by city">
           {["all", ...cities].map((option) => (
             <button
@@ -22,11 +22,11 @@ export function EventsFilter({ events, cities }: { events: CircleEvent[]; cities
           ))}
         </div>
       </div>
-      <div className="scrollbar-none mt-12 flex snap-x scroll-px-4 gap-6 overflow-x-auto px-4 pb-3 lg:mt-18 lg:scroll-px-6 lg:gap-12 lg:px-6">
+      <div className="scrollbar-none mt-20 flex snap-x scroll-px-4 gap-4 overflow-x-auto px-4 pb-3 lg:mt-18 lg:scroll-px-6 lg:gap-12 lg:px-6">
         {visible.map((event) => (
           <article
             key={`${event.city}-${event.title}`}
-            className="group relative h-[600px] w-[86vw] max-w-[540px] shrink-0 snap-start overflow-hidden lg:h-[720px] lg:w-[540px]"
+            className="group relative h-[680px] w-[389px] max-w-[calc(100vw-3rem)] shrink-0 snap-start overflow-hidden lg:h-[720px] lg:w-[540px] lg:max-w-none"
           >
             {event.image && <img src={event.image} alt="" loading="lazy" className="absolute inset-0 size-full object-cover" />}
             <span className="absolute top-4 left-4 rounded bg-black/60 px-4 py-1 text-detail text-white transition-all duration-300 lg:top-8 lg:left-8 lg:group-hover:top-4 lg:group-hover:left-4">
@@ -43,10 +43,15 @@ export function EventsFilter({ events, cities }: { events: CircleEvent[]; cities
                   <p className="text-detail text-black/50">{event.timeLabel}</p>
                 </div>
               </div>
-              <h3 className="mt-7 font-display text-[2.5rem] leading-[1.15]">{event.title}</h3>
+              <h3 className="mt-7 font-display text-[2rem] leading-[1.15] lg:text-[2.5rem]">{event.title}</h3>
               <div className="grid grid-rows-[1fr] transition-[grid-template-rows] duration-300 lg:grid-rows-[0fr] lg:group-hover:grid-rows-[1fr]">
                 <p className="overflow-hidden text-body text-black/60">
                   <span className="block pt-3">{event.description}</span>
+                  {event.cta && (
+                    <a href={event.cta.href} className="mt-6 inline-flex h-10 min-w-37 items-center justify-center rounded-full bg-black px-6 text-cta text-white">
+                      {event.cta.label}
+                    </a>
+                  )}
                 </p>
               </div>
             </div>

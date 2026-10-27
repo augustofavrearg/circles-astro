@@ -14,7 +14,7 @@ export function HeroSlider({ slides, id }: { slides: Location[]; id?: string }) 
   if (!slide) return null;
 
   return (
-    <section id={id} aria-roledescription="carousel" aria-label="Our locations" className="relative isolate h-[82svh] min-h-[620px] overflow-hidden lg:h-[768px] lg:min-h-0">
+    <section id={id} aria-roledescription="carousel" aria-label="Our locations" className="relative isolate h-svh max-h-[956px] min-h-[620px] overflow-hidden lg:h-[768px] lg:max-h-none lg:min-h-0">
       {slides.map((item, index) => (
         <img
           key={item.href}
@@ -28,7 +28,7 @@ export function HeroSlider({ slides, id }: { slides: Location[]; id?: string }) 
 
       <a
         href={slide.href}
-        className="group absolute inset-x-4 bottom-20 flex min-h-[237px] flex-col justify-between bg-white p-6 lg:inset-x-auto lg:top-1/2 lg:right-6 lg:bottom-auto lg:w-[429px] lg:-translate-y-1/2"
+        className="group absolute inset-x-4 bottom-23 flex min-h-[237px] flex-col justify-between bg-white p-6 lg:inset-x-auto lg:top-1/2 lg:right-6 lg:bottom-auto lg:w-[429px] lg:-translate-y-1/2"
       >
         <p className="text-detail uppercase">Our locations</p>
         <div className="flex items-end gap-4">
@@ -42,7 +42,7 @@ export function HeroSlider({ slides, id }: { slides: Location[]; id?: string }) 
         </div>
       </a>
 
-      <div className="absolute inset-x-4 bottom-4 flex h-10 items-center lg:inset-x-auto lg:right-6 lg:bottom-6 lg:w-[429px]">
+      <div className="absolute inset-x-4 bottom-3 flex h-10 items-center lg:inset-x-auto lg:right-6 lg:bottom-6 lg:w-[429px]">
         <div className="-ml-2 flex" role="group" aria-label={`Slide ${current + 1} of ${count}`}>
           {slides.map((item, index) => (
             <button

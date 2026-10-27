@@ -1,51 +1,85 @@
 ---
-import type { SiteSettings } from "@/domain/content";
+import {
+  IconBrandFacebook,
+  IconBrandInstagram,
+  IconBrandLinkedin,
+  IconBrandPinterest,
+  IconBrandTiktok,
+  IconBrandWhatsapp,
+  IconBrandYoutube,
+  IconChevronUp,
+} from "@tabler/icons-react";
+import type { SiteSettings, SocialNetwork } from "@/domain/content";
 import Media from "@/components/ui/Media.astro";
 
 type Props = Pick<SiteSettings, "footer" | "contact" | "socials">;
 const { footer, contact, socials } = Astro.props;
+
+const socialIcons: Record<SocialNetwork, typeof IconBrandInstagram> = {
+  whatsapp: IconBrandWhatsapp,
+  instagram: IconBrandInstagram,
+  tiktok: IconBrandTiktok,
+  linkedin: IconBrandLinkedin,
+  facebook: IconBrandFacebook,
+  youtube: IconBrandYoutube,
+  pinterest: IconBrandPinterest,
+};
 ---
 
-<footer id="footer" class="bg-background px-4 pt-28 pb-6 lg:px-6">
-  <div class="grid gap-12 border-t border-black/12 pt-6 lg:grid-cols-[1.1fr_1fr_0.7fr_1fr] lg:gap-4">
-    <div>
-      <div class="relative h-[420px] overflow-hidden">
-        <Media src={footer.image} alt="Circles House" />
-      </div>
-      <p class="mt-5 max-w-sm text-detail">{contact.address}</p>
-    </div>
-
-    <div class="lg:pl-16">
-      <p class="mb-5 text-detail text-black/45">Main</p>
-      <nav aria-label="Footer main" class="flex flex-col items-start gap-3">
-        {footer.main.map((link) => <a href={link.href} class="font-display text-h3 hover:opacity-50">{link.label}</a>)}
-      </nav>
-    </div>
-
-    <div>
-      <p class="mb-5 text-detail text-black/45">Extras</p>
-      <nav aria-label="Footer extras" class="flex flex-col items-start gap-3">
-        {footer.extras.map((link) => <a href={link.href} class="text-cta hover:opacity-50">{link.label}</a>)}
-      </nav>
-    </div>
-
-    <div class="flex flex-col">
-      <p class="mb-5 text-detail text-black/45">Info</p>
-      <p class="max-w-sm text-body">{contact.about}</p>
-      <a href={`tel:${contact.phone.replace(/\s/g, "")}`} class="mt-6 text-cta">{contact.phone}</a>
-      <ul class="mt-auto flex flex-wrap gap-4 pt-12">
-        {socials.map((social) => (
-          <li><a href={social.href} target="_blank" rel="noreferrer" class="text-detail underline underline-offset-4">{social.label}</a></li>
-        ))}
-      </ul>
-    </div>
+<!--
+  Figma desktop: image | Main | Extras | Info, with address and legal links on a bottom row.
+  Figma mobile: image, address, Main, Extras, Info, socials, legal — the DOM follows this order.
+-->
+<footer id="footer" class="grid bg-background px-4 pt-4 pb-6 lg:grid-cols-[34fr_23fr_22fr_21fr] lg:px-6 lg:pt-32">
+  <div class="relative h-[412px] overflow-hidden lg:col-start-1 lg:row-start-1 lg:w-[318px]">
+    <Media src={footer.image} alt="Coworking space at Circles House" />
   </div>
 
-  <div class="mt-12 flex flex-col gap-4 border-t border-black/12 pt-4 text-detail lg:flex-row lg:items-center">
-    <p class="flex-1">{contact.copyright}</p>
-    <nav aria-label="Legal" class="flex flex-wrap gap-4">
-      {footer.legal.map((link) => <a href={link.href}>{link.label}</a>)}
+  <div class="mt-4 text-detail leading-[1.7] lg:col-span-2 lg:col-start-1 lg:row-start-2 lg:mt-12 lg:self-end">
+    <p>{contact.address}</p>
+    <p>{contact.copyright}</p>
+  </div>
+
+  <div class="mt-12 lg:col-start-2 lg:row-start-1 lg:mt-0">
+    <p class="text-detail text-black/45">Main</p>
+    <nav aria-label="Footer main" class="mt-4 flex flex-col items-start lg:mt-8">
+      {footer.main.map((link) => (
+        <a href={link.href} class="font-display text-[2.25rem] leading-[1.4] hover:opacity-50 lg:text-[1.25rem] lg:leading-8">{link.label}</a>
+      ))}
     </nav>
-    <a href="#top" class="ml-auto inline-flex size-9 items-center justify-center rounded-full bg-black/8" aria-label="Back to top">↑</a>
   </div>
+
+  <div class="mt-12 lg:col-start-3 lg:row-start-1 lg:mt-0">
+    <p class="text-detail text-black/45">Extras</p>
+    <nav aria-label="Footer extras" class="mt-6 flex flex-col items-start lg:mt-8">
+      {footer.extras.map((link) => <a href={link.href} class="text-[0.9375rem] leading-6 hover:opacity-50">{link.label}</a>)}
+    </nav>
+  </div>
+
+  <div class="relative mt-12 flex flex-col lg:col-start-4 lg:row-start-1 lg:mt-0">
+    <p class="text-detail text-black/45">Info</p>
+    <p class="mt-6 text-[0.9375rem] leading-[1.33] lg:mt-8">{contact.about}</p>
+    <a href={`tel:${contact.phone.replace(/\s/g, "")}`} class="mt-4 w-fit text-[0.9375rem]">{contact.phone}</a>
+    <div class="mt-12 flex items-center gap-4 lg:mt-14">
+      <ul class="flex flex-wrap gap-4">
+        {socials.map((social) => {
+          const Icon = socialIcons[social.network];
+          return (
+            <li>
+              <a href={social.href} target="_blank" rel="noreferrer" aria-label={social.label} class="flex size-6 items-center justify-center hover:opacity-50">
+                <Icon size={24} stroke={1.5} />
+              </a>
+            </li>
+          );
+        })}
+      </ul>
+      <a href="#top" aria-label="Back to top" class="ml-auto flex size-8 shrink-0 items-center justify-center rounded-full bg-black/8 lg:absolute lg:right-0 lg:bottom-8">
+        <IconChevronUp size={16} stroke={1.5} />
+      </a>
+    </div>
+  </div>
+
+  <nav aria-label="Legal" class="mt-16 grid gap-x-0 text-[0.9375rem] leading-[1.6] lg:col-span-2 lg:col-start-3 lg:row-start-2 lg:mt-12 lg:grid-flow-col lg:grid-rows-2 lg:grid-cols-[205px_auto] lg:justify-end lg:self-end">
+    {footer.legal.map((link) => <a href={link.href} class="w-fit hover:opacity-50">{link.label}</a>)}
+  </nav>
 </footer>

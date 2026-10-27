@@ -7,27 +7,33 @@ type Props = HomePage["introduction"];
 const { title, highlight, intro, body, cta, images = {} } = Astro.props;
 ---
 
-<section id="about" class="grid gap-4 px-4 py-32 lg:grid-cols-3 lg:px-6">
-  <div class="flex min-h-[520px] flex-col lg:pr-12">
-    <h2 class="font-display text-h2">
-      <span class="block">{title}</span>
-      <span class="block text-red">{highlight}</span>
-    </h2>
-    <p class="mt-auto max-w-sm text-body">{intro}</p>
-    <div class="relative mt-6 h-[160px] w-[78%] overflow-hidden">
-      <Media src={images.left} alt="Life at Circles House" />
+<!--
+  Figma desktop: three columns (copy | large image | small image + copy), bottoms aligned.
+  Figma mobile: large image, title, intro, wide image, body, button, small image — the DOM follows this order.
+-->
+<section id="about" class="grid px-4 py-20 lg:grid-cols-[minmax(0,1fr)_429px_minmax(0,1fr)] lg:grid-rows-[auto_1fr_auto] lg:px-6">
+  <div class="relative h-[750px] overflow-hidden lg:col-start-2 lg:row-span-3 lg:row-start-1 lg:h-[565px]">
+    <Media src={images.main} alt="Circles House Barcelona above the city" />
+  </div>
+
+  <h2 class="mt-5 font-display text-[2.5rem] leading-[1.05] uppercase lg:col-start-1 lg:row-start-1 lg:mt-0 lg:max-w-[400px]">
+    <span class="block">{title}</span>
+    <span class="mt-2.5 block text-red lg:mt-4">{highlight}</span>
+  </h2>
+
+  <div class="mt-20 lg:col-start-1 lg:row-start-3 lg:mt-0 lg:max-w-[385px]">
+    <p class="text-[0.9375rem] leading-[1.33]">{intro}</p>
+    <div class="relative mt-14 h-[152px] overflow-hidden lg:mt-4 lg:w-[318px]">
+      <Media src={images.left} alt="Members on the Circles House rooftop" />
     </div>
   </div>
-  <div class="relative min-h-[620px] overflow-hidden lg:min-h-[560px]">
-    <Media src={images.main} alt="Circles House community" />
+
+  <div class="mt-12 lg:col-start-3 lg:row-start-3 lg:mt-0 lg:pl-14">
+    <p class="text-[0.9375rem] leading-[1.33]">{body}</p>
+    <Button href={cta.href} variant="secondary" class="mt-10 lg:mt-5">{cta.label}</Button>
   </div>
-  <div class="flex min-h-[520px] flex-col items-end lg:pl-12">
-    <div class="relative h-[250px] w-[52%] overflow-hidden">
-      <Media src={images.right} alt="Circles House rooftop" />
-    </div>
-    <div class="mt-auto max-w-sm self-start">
-      <p class="text-body">{body}</p>
-      <Button href={cta.href} variant="secondary" class="mt-6">{cta.label}</Button>
-    </div>
+
+  <div class="relative mt-10 h-[257px] w-[206px] overflow-hidden lg:col-start-3 lg:row-start-1 lg:mt-0 lg:justify-self-end">
+    <Media src={images.right} alt="Terrace overlooking Barcelona" />
   </div>
 </section>

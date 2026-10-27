@@ -1,4 +1,4 @@
-import { IconChevronDown } from "@tabler/icons-react";
+import { IconChevronDown, IconMenu2, IconX } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import type { Link } from "@/domain/content";
 
@@ -28,7 +28,9 @@ export function HeaderMenu({ nav, login, book }: { nav: Link[]; login: Link; boo
           onClick={() => setOpen((value) => !value)}
           className="inline-flex size-10 shrink-0 items-center justify-center rounded-full bg-black/8 lg:size-8"
         >
-          <IconChevronDown size={16} stroke={1.5} className={`transition-transform duration-200 ${open ? "rotate-180" : ""}`} />
+          {/* Figma: hamburger / close on mobile, chevron on desktop. */}
+          <span className="lg:hidden">{open ? <IconX size={18} stroke={1.5} /> : <IconMenu2 size={18} stroke={1.5} />}</span>
+          <IconChevronDown size={16} stroke={1.5} className={`hidden transition-transform duration-200 lg:block ${open ? "rotate-180" : ""}`} />
         </button>
 
         <a href="/" aria-label="Circles House — home" className="font-[Georgia,'Times_New_Roman',serif] text-[2.125rem] leading-none tracking-[0.02em]">
@@ -56,19 +58,19 @@ export function HeaderMenu({ nav, login, book }: { nav: Link[]; login: Link; boo
         hidden={!open}
         className="absolute inset-x-0 top-full h-[calc(100dvh-72px)] overflow-y-auto bg-background"
       >
-        <nav aria-label="Mobile" className="flex min-h-full flex-col gap-5 px-4 py-10">
+        <nav aria-label="Mobile" className="flex min-h-full flex-col gap-8 px-4 pt-12 pb-4 lg:px-6">
           {nav.map((link, index) => (
             <a
               key={link.label}
               href={link.href}
               onClick={() => setOpen(false)}
-              className="border-b border-black/12 py-3 font-display text-[2.5rem] leading-none"
+              className="font-display text-[2.25rem] leading-[1.2]"
               style={{ animationDelay: `${index * 45}ms` }}
             >
               {link.label}
             </a>
           ))}
-          <a href={login.href} className="mt-auto inline-flex h-11 w-fit items-center rounded-full border border-black px-6 xl:hidden">
+          <a href={login.href} className="mt-auto inline-flex h-10 w-fit min-w-41 items-center justify-center rounded-full border border-black px-6 text-[0.9375rem] xl:hidden">
             {login.label}
           </a>
         </nav>

@@ -4,11 +4,11 @@ import type { HomePage, Space } from "@/domain/content";
 
 type SizedSpace = HomePage["network"]["spaces"][number];
 
-/** Figma card sizes on desktop; mobile keeps the proportions within the viewport. */
+/** Figma card sizes; mobile uses the same ones and lets the track scroll. */
 const SIZES: Record<SizedSpace["size"], { card: string; image: string }> = {
-  large: { card: "w-[84vw] lg:w-[540px]", image: "h-[420px] lg:h-[488px]" },
-  medium: { card: "w-[62vw] lg:w-[316px]", image: "h-[340px] lg:h-[388px]" },
-  small: { card: "w-[62vw] lg:w-[316px]", image: "h-[220px] lg:h-[232px]" },
+  large: { card: "w-[540px]", image: "h-[488px]" },
+  medium: { card: "w-[316px]", image: "h-[388px]" },
+  small: { card: "w-[316px]", image: "h-[232px]" },
 };
 
 export function SpacesCarousel({ spaces, defaultCta, children }: { spaces: SizedSpace[]; defaultCta: { label: string; href: string }; children?: ReactNode }) {
@@ -40,9 +40,9 @@ export function SpacesCarousel({ spaces, defaultCta, children }: { spaces: Sized
 
   return (
     <>
-      <div className="flex items-end gap-4 lg:pr-6">
-        <div className="min-w-0 flex-1">{children}</div>
-        <div className="flex shrink-0 gap-4 pb-2">
+      <div className="flex flex-col items-center gap-10 lg:flex-row lg:items-end lg:gap-4 lg:pr-6">
+        <div className="w-full min-w-0 lg:flex-1">{children}</div>
+        <div className="flex shrink-0 gap-4 lg:pb-2">
           <button type="button" onClick={() => move(-1)} aria-label="Previous spaces" className="flex h-8.5 w-12 items-center justify-center rounded-full bg-black text-white">
             <IconArrowNarrowLeft size={17} />
           </button>
@@ -51,7 +51,7 @@ export function SpacesCarousel({ spaces, defaultCta, children }: { spaces: Sized
           </button>
         </div>
       </div>
-      <div ref={trackRef} className="scrollbar-none mt-12 flex snap-x scroll-px-4 items-center gap-6 overflow-x-auto px-4 pb-4 lg:mt-20 lg:snap-none lg:gap-12 lg:px-6">
+      <div ref={trackRef} className="scrollbar-none mt-28 flex snap-x scroll-px-4 items-center gap-12 overflow-x-auto px-4 pb-4 lg:mt-20 lg:snap-none lg:px-6">
         {spaces.map((space) => {
           const size = SIZES[space.size];
           return (

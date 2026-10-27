@@ -1,5 +1,5 @@
 import { IconChevronDown, IconSearch } from "@tabler/icons-react";
-import { useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import type { SearchLocation } from "@/domain/content";
 
 const GUEST_OPTIONS = [1, 2, 3, 4];
@@ -32,6 +32,9 @@ export function BookingSearch({ locations }: { locations: SearchLocation[] }) {
   const [checkIn, setCheckIn] = useState("");
   const [checkOut, setCheckOut] = useState("");
   const [guests, setGuests] = useState("1");
+  // Figma mobile only shows a "Start your search" field; tapping it reveals the full search below lg.
+  const [expanded, setExpanded] = useState(false);
+  const locationRef = useRef<HTMLSelectElement>(null);
   const locationName = available.find((item) => item.slug === location)?.city ?? "";
 
   function submit(event: React.FormEvent<HTMLFormElement>) {
@@ -45,6 +48,10 @@ export function BookingSearch({ locations }: { locations: SearchLocation[] }) {
     window.location.assign(`/rooms${params.size ? `?${params}` : ""}`);
   }
 
+  useEffect(() => {
+    if (expanded) locationRef.current?.focus();
+  }, [expanded]);
+
   function showPicker(event: React.MouseEvent<HTMLInputElement>) {
     try {
       event.currentTarget.showPicker();
@@ -54,9 +61,26 @@ export function BookingSearch({ locations }: { locations: SearchLocation[] }) {
   }
 
   return (
-    <form onSubmit={submit} aria-label="Search stays" className="grid w-full max-w-[873px] grid-cols-2 gap-0.75 xl:flex xl:items-center">
+    <>
+      {!expanded && (
+        <div className="flex items-center gap-0.5 lg:hidden">
+          <button
+            type="button"
+            onClick={() => setExpanded(true)}
+            aria-expanded={false}
+            aria-controls="booking-search"
+            className="flex h-14.5 min-w-0 flex-1 items-center rounded-lg bg-black/12 px-4 text-left text-[0.9375rem] text-black/45"
+          >
+            Start your search
+          </button>
+          <a href="/rooms" aria-label="See all rooms" className="inline-flex size-14.5 shrink-0 items-center justify-center rounded-full bg-black text-white">
+            <IconSearch size={16} stroke={2} />
+          </a>
+        </div>
+      )}
+    <form id="booking-search" onSubmit={submit} aria-label="Search stays" className={`${expanded ? "grid" : "hidden lg:grid"} w-full max-w-[873px] grid-cols-2 gap-0.75 xl:flex xl:items-center`}>
       <Segment label="Location" value={locationName} placeholder="Anywhere" className="col-span-2 rounded-lg xl:w-[269px] xl:shrink-0">
-        <select value={location} onChange={(event) => setLocation(event.target.value)} className={nativeControl}>
+        <select ref={locationRef} value={location} onChange={(event) => setLocation(event.target.value)} className={nativeControl}>
           <option value="">Anywhere</option>
           {available.map((item) => (
             <option key={item.slug} value={item.slug}>
@@ -95,5 +119,6 @@ export function BookingSearch({ locations }: { locations: SearchLocation[] }) {
         <IconSearch size={16} stroke={2} />
       </button>
     </form>
+    </>
   );
 }

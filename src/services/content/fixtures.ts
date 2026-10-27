@@ -19,7 +19,8 @@ export const siteSettingsFixture: SiteSettings = {
       { label: "Coworking", href: "/#network" },
       { label: "Community", href: "/#community" },
       { label: "Happening Now", href: "/#events" },
-      { label: "Rooms", href: "/rooms" },
+      { label: "About", href: "/#about" },
+      { label: "Book a Stay", href: "/rooms" },
     ],
     extras: [
       { label: "Memberships", href: "/#membership" },
@@ -28,17 +29,17 @@ export const siteSettingsFixture: SiteSettings = {
     ],
     legal: [
       { label: "Terms & Conditions", href: "/legal/terms" },
-      { label: "Privacy Policy", href: "/legal/privacy" },
-      { label: "Cookie Policy", href: "/legal/cookies" },
+      { label: "Cookies Policy", href: "/legal/cookies" },
       { label: "Legal Notice", href: "/legal/notice" },
+      { label: "Privacy Policy", href: "/legal/privacy" },
     ],
     image: "/home/footer.png",
   },
   contact: {
-    about: "Circles House is a community for entrepreneurs and innovators seeking a more meaningful way to live, work and connect.",
+    about: "Circles House is a community designed for entrepreneurs and innovators seeking a more meaningful way to live, work, and connect.",
     phone: "+34 619 43 24 69",
-    address: "Camí de Vallvidrera al Tibidabo, 05 · 08017 Barcelona, Spain",
-    copyright: `© ${new Date().getFullYear()} circles.house · All rights reserved`,
+    address: "Camí de Vallvidrera al Tibidabo, 05 - 08017 - Barcelona, Barcelona, Spain",
+    copyright: `© ${new Date().getFullYear()} circles.house - All rights reserved`,
   },
   socials: [
     { network: "instagram", label: "Instagram", href: "https://instagram.com" },
@@ -146,7 +147,8 @@ export const homePageFixture: HomePage = {
         city: "Barcelona",
         access: "Members only",
         title: "Movie Night",
-        description: "A rooftop film, something good to eat, and the kind of conversation that runs long after the credits.",
+        description:
+          "Join us for a cozy Rooftop Movie Night exclusively for Circles House members! Relax and unwind with a film, great company, and snacks. This is a great chance to connect with fellow members while enjoying a laid-back evening.",
         image: "/home/whats-comming-1.jpg",
       },
       {
@@ -179,30 +181,35 @@ export const homePageFixture: HomePage = {
   introduction: {
     title: "ONE COMMUNITY, ONE HOME WORLDWIDE",
     highlight: "MANY LIFE EXPERIENCES",
-    intro: "Circles House brings together entrepreneurs, digital nomads and innovators who want more from the places where they live and work.",
-    body: "We put humans at the center of every decision. Kindness, respect, curiosity and the desire to see your peers grow are how lasting relationships begin.",
+    intro:
+      "Circles House is a thriving community of entrepreneurs, digital nomads, and innovators. To ensure everyone is a good fit and adds value to our unique ecosystem, we’ve designed a simple and quick application process.",
+    body: "We bring humans to the center of every decision. Kindness, love, respect, genuinity and the desire to see your peers grow is key to creating personal and professional relationships that will last a lifetime.",
     cta: { label: "About us", href: "/#about" },
     images: {
       main: "/home/more-meaningfull-1.png",
-      left: "/home/kitchen.png",
-      right: "/home/rooftop.png",
+      left: "/home/rooftop.png",
+      right: "/home/kitchen.png",
     },
   },
   testimonials: [
     {
-      quote: "The views are breathtaking and the house feels peaceful, yet still close enough to enjoy everything Barcelona has to offer.",
+      // Figma only shows the first four lines of each review; the endings come from the previous fixtures and need checking.
+      quote:
+        "I’ve been staying at Circles and I absolutely love it! The location up in Tibidabo is incredible, the views are breathtaking, and it’s so peaceful, yet still close enough to enjoy everything the city has to offer.",
       author: "Maria Isabel Arbelaez",
-      source: "5 out of 5 · Google",
+      source: "5 out of 5 Review on Google",
     },
     {
-      quote: "It is easy to focus, meet interesting people and stay healthy. A genuinely solid place to work and connect.",
+      quote:
+        "Circles House is a great place to work. The coworking space is productive. I have met lots of interesting people just by being there. It’s easy to focus, network with professionals, and stay healthy.",
       author: "Forne Ce",
-      source: "5 out of 5 · Google",
+      source: "5 out of 5 Review on Google",
     },
     {
-      quote: "More than a temporary home: beautifully prepared, heartfelt and immediately comfortable.",
+      quote:
+        "From the very first moment, it became clear that this place is more than just a temporary home. I was warmly welcomed into an atmosphere where everything felt not only well prepared, but heartfelt.",
       author: "Enrico Schmidt",
-      source: "5 out of 5 · Google",
+      source: "5 out of 5 Review on Google",
     },
   ],
   news: {
@@ -215,28 +222,29 @@ export const homePageFixture: HomePage = {
         category: "Announcement",
         date: "Aug 21, 2025",
         href: "/#news",
-        image: "/home/last-announcements-1.png",
+        image: "/home/last-announcements-3.png",
       },
       {
         title: "Why Gen Z Doesn't Want a 9-to-5 — and What That Means for Housing",
         excerpt: "A new generation is redrawing the lines between home, work and community.",
-        category: "Perspective",
+        category: "Announcement",
         date: "Aug 21, 2025",
         href: "/#news",
-        image: "/home/last-announcements-2.png",
+        image: "/home/last-announcements-1.png",
       },
       {
         title: "Win a One-Week Stay at Circles House Barcelona",
         excerpt: "A private room, inspiring workspace and one week inside the Circles community.",
-        category: "Community",
+        category: "Announcement",
         date: "Aug 21, 2025",
         href: "/#news",
-        image: "/home/last-announcements-3.png",
+        image: "/home/last-announcements-2.png",
       },
     ],
   },
   newsletter: {
-    description: "Stay close to the people, places and ideas shaping life at Circles House.",
+    description:
+      "Join our newsletter to connect with a vibrant community of entrepreneurs and innovators at Circles House. Stay updated and be part of our unique ecosystem!",
   },
 };
 
