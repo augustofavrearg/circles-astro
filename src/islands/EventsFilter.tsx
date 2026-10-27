@@ -7,37 +7,48 @@ export function EventsFilter({ events, cities }: { events: CircleEvent[]; cities
 
   return (
     <div>
-      <div className="mb-8 flex gap-1 overflow-x-auto px-4 lg:px-6" role="group" aria-label="Filter events by city">
-        {["all", ...cities].map((option) => (
-          <button
-            key={option}
-            type="button"
-            onClick={() => setCity(option)}
-            className={`h-9 rounded-full px-5 text-cta ${city === option ? "bg-black text-white" : "bg-black/8"}`}
-          >
-            {option === "all" ? "All" : option}
-          </button>
-        ))}
+      <div className="px-4 lg:px-6">
+        <div className="inline-flex rounded-lg bg-black/8 p-0.5" role="group" aria-label="Filter events by city">
+          {["all", ...cities].map((option) => (
+            <button
+              key={option}
+              type="button"
+              onClick={() => setCity(option)}
+              aria-pressed={city === option}
+              className={`h-6.5 min-w-22 rounded-md px-4 text-detail transition-colors ${city === option ? "bg-black text-white" : "text-black/45 hover:text-black"}`}
+            >
+              {option === "all" ? "All" : option}
+            </button>
+          ))}
+        </div>
       </div>
-      <div className="scrollbar-none flex snap-x gap-4 overflow-x-auto px-4 pb-3 lg:px-6">
+      <div className="scrollbar-none mt-12 flex snap-x scroll-px-4 gap-6 overflow-x-auto px-4 pb-3 lg:mt-18 lg:scroll-px-6 lg:gap-12 lg:px-6">
         {visible.map((event) => (
-          <article key={`${event.city}-${event.title}`} className="relative flex h-[610px] w-[86vw] max-w-[540px] shrink-0 snap-start flex-col justify-end overflow-hidden p-4 lg:p-8">
-            {event.image && <img src={event.image} alt={event.title} className="absolute inset-0 size-full object-cover" />}
-            <div className="absolute inset-0 bg-linear-to-b from-black/5 to-black/55" />
-            <span className="absolute top-4 left-4 rounded-full bg-white px-3 py-2 text-detail lg:top-8 lg:left-8">{event.access}</span>
-            <div className="relative bg-white p-6">
-              <div className="mb-5 flex items-center gap-4">
-                <div className="flex size-14 shrink-0 flex-col items-center justify-center border border-black/12">
-                  <span className="text-detail uppercase">{event.month}</span>
-                  <strong className="font-display text-h3">{event.day}</strong>
+          <article
+            key={`${event.city}-${event.title}`}
+            className="group relative h-[600px] w-[86vw] max-w-[540px] shrink-0 snap-start overflow-hidden lg:h-[720px] lg:w-[540px]"
+          >
+            {event.image && <img src={event.image} alt="" loading="lazy" className="absolute inset-0 size-full object-cover" />}
+            <span className="absolute top-4 left-4 rounded bg-black/60 px-4 py-1 text-detail text-white transition-all duration-300 lg:top-8 lg:left-8 lg:group-hover:top-4 lg:group-hover:left-4">
+              {event.access}
+            </span>
+            <div className="absolute inset-x-4 bottom-4 bg-white p-6 transition-all duration-300 lg:inset-x-8 lg:bottom-8 lg:group-hover:inset-x-4 lg:group-hover:bottom-4">
+              <div className="flex items-center gap-3">
+                <div className="flex h-11 w-14 shrink-0 flex-col items-center justify-center rounded-xs bg-red text-[0.9375rem] leading-none text-white">
+                  <span>{event.month}</span>
+                  <span>{event.day}</span>
                 </div>
-                <div>
-                  <p className="text-cta">{event.dateLabel}</p>
-                  <p className="mt-1 text-detail text-black/50">{event.timeLabel}</p>
+                <div className="min-w-0">
+                  <p className="text-[0.9375rem]">{event.dateLabel}</p>
+                  <p className="text-detail text-black/50">{event.timeLabel}</p>
                 </div>
               </div>
-              <h3 className="font-display text-[2rem] leading-none">{event.title}</h3>
-              <p className="mt-3 line-clamp-3 text-body text-black/60">{event.description}</p>
+              <h3 className="mt-7 font-display text-[2.5rem] leading-[1.15]">{event.title}</h3>
+              <div className="grid grid-rows-[1fr] transition-[grid-template-rows] duration-300 lg:grid-rows-[0fr] lg:group-hover:grid-rows-[1fr]">
+                <p className="overflow-hidden text-body text-black/60">
+                  <span className="block pt-3">{event.description}</span>
+                </p>
+              </div>
             </div>
           </article>
         ))}

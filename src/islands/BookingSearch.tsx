@@ -1,38 +1,98 @@
-import { IconArrowNarrowRight, IconMapPin } from "@tabler/icons-react";
-import { useState } from "react";
+import { IconChevronDown, IconSearch } from "@tabler/icons-react";
+import { useState, type ReactNode } from "react";
 import type { SearchLocation } from "@/domain/content";
+
+const GUEST_OPTIONS = [1, 2, 3, 4];
+
+function formatDate(value: string) {
+  if (!value) return "";
+  const [year, month, day] = value.split("-").map(Number);
+  return new Date(year, month - 1, day).toLocaleDateString("en-GB", { day: "numeric", month: "short" });
+}
+
+/** Figma: segment with a label, its current value (placeholder in grey) and a chevron. */
+function Segment({ label, value, placeholder, className = "", children }: { label: string; value: string; placeholder: string; className?: string; children: ReactNode }) {
+  return (
+    <label className={`relative flex h-14.5 min-w-0 cursor-pointer items-center gap-2 bg-black/8 px-4 focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-black ${className}`}>
+      <span className="flex min-w-0 flex-1 flex-col text-[0.9375rem] leading-[1.45]">
+        <span>{label}</span>
+        <span className={`truncate ${value ? "text-black" : "text-black/45"}`}>{value || placeholder}</span>
+      </span>
+      <IconChevronDown aria-hidden size={16} stroke={1.5} className="shrink-0" />
+      {children}
+    </label>
+  );
+}
+
+const nativeControl = "absolute inset-0 size-full cursor-pointer appearance-none opacity-0";
 
 export function BookingSearch({ locations }: { locations: SearchLocation[] }) {
   const available = locations.filter((location) => !location.comingSoon);
-  const [location, setLocation] = useState(available[0]?.slug ?? "");
+  const [location, setLocation] = useState("");
+  const [checkIn, setCheckIn] = useState("");
+  const [checkOut, setCheckOut] = useState("");
+  const [guests, setGuests] = useState("1");
+  const locationName = available.find((item) => item.slug === location)?.city ?? "";
 
   function submit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    // Circles only hands the search over to /rooms; availability and booking stay in Cloudbeds.
     const params = new URLSearchParams();
     if (location) params.set("location", location);
+    if (checkIn) params.set("checkin", checkIn);
+    if (checkOut) params.set("checkout", checkOut);
+    if (guests) params.set("guests", guests);
     window.location.assign(`/rooms${params.size ? `?${params}` : ""}`);
   }
 
+  function showPicker(event: React.MouseEvent<HTMLInputElement>) {
+    try {
+      event.currentTarget.showPicker();
+    } catch {
+      // Browsers without showPicker open the native picker on their own.
+    }
+  }
+
   return (
-    <form onSubmit={submit} className="flex w-full max-w-full items-center gap-2 overflow-hidden rounded-full bg-black/8 p-1.5 lg:max-w-[610px]">
-      <label htmlFor="booking-location" className="sr-only">
-        Choose a location
-      </label>
-      <IconMapPin aria-hidden className="ml-3 shrink-0" size={18} stroke={1.5} />
-      <select
-        id="booking-location"
-        value={location}
-        onChange={(event) => setLocation(event.target.value)}
-        className="w-0 min-w-0 flex-1 appearance-none bg-transparent px-2 py-3 text-body outline-none"
-      >
-        {available.map((item) => (
-          <option key={item.slug} value={item.slug}>
-            {item.city}
-          </option>
-        ))}
-      </select>
-      <button type="submit" className="inline-flex size-12 shrink-0 items-center justify-center rounded-full bg-black text-white" aria-label="Choose a room">
-        <IconArrowNarrowRight size={18} stroke={1.5} />
+    <form onSubmit={submit} aria-label="Search stays" className="grid w-full max-w-[873px] grid-cols-2 gap-0.75 xl:flex xl:items-center">
+      <Segment label="Location" value={locationName} placeholder="Anywhere" className="col-span-2 rounded-lg xl:w-[269px] xl:shrink-0">
+        <select value={location} onChange={(event) => setLocation(event.target.value)} className={nativeControl}>
+          <option value="">Anywhere</option>
+          {available.map((item) => (
+            <option key={item.slug} value={item.slug}>
+              {item.city}
+            </option>
+          ))}
+        </select>
+      </Segment>
+      <div className="col-span-2 flex min-w-0 gap-px xl:w-[369px] xl:shrink-0">
+        <Segment label="Check in" value={formatDate(checkIn)} placeholder="Add dates" className="flex-1 rounded-l-lg">
+          <input
+            type="date"
+            value={checkIn}
+            onChange={(event) => {
+              setCheckIn(event.target.value);
+              if (checkOut && event.target.value >= checkOut) setCheckOut("");
+            }}
+            onClick={showPicker}
+            className={nativeControl}
+          />
+        </Segment>
+        <Segment label="Check out" value={formatDate(checkOut)} placeholder="Add dates" className="flex-1 rounded-r-lg">
+          <input type="date" value={checkOut} min={checkIn || undefined} onChange={(event) => setCheckOut(event.target.value)} onClick={showPicker} className={nativeControl} />
+        </Segment>
+      </div>
+      <Segment label="Guests" value={guests} placeholder="1" className="rounded-lg xl:w-[168px] xl:shrink-0 [&>span>span:first-child]:text-black/45">
+        <select value={guests} onChange={(event) => setGuests(event.target.value)} className={nativeControl}>
+          {GUEST_OPTIONS.map((count) => (
+            <option key={count} value={count}>
+              {count}
+            </option>
+          ))}
+        </select>
+      </Segment>
+      <button type="submit" aria-label="Search rooms" className="inline-flex size-14.5 shrink-0 items-center justify-center justify-self-end rounded-full bg-black text-white xl:ml-px">
+        <IconSearch size={16} stroke={2} />
       </button>
     </form>
   );

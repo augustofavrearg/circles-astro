@@ -2,7 +2,7 @@ import type { HomePage, SiteSettings } from "@/domain/content";
 import type { Room } from "@/domain/booking";
 
 export const siteSettingsFixture: SiteSettings = {
-  promotion: "Members save 15% on trips of 7+ nights, 30% on 30+ nights and 35% on 60+ nights.",
+  promotion: "Members save 15 % on trips of 7+ nights, 30% on 30+ nights trips and 35% on 60+ night trips.",
   mainNav: [
     { label: "Coliving", href: "/#network" },
     { label: "Coworking", href: "/#network" },
@@ -51,14 +51,14 @@ const eventDate = {
   month: "Aug",
   day: 18,
   dateLabel: "Monday, August 18",
-  timeLabel: "9:00 PM – 11:30 PM GMT+2",
+  timeLabel: "9:00 PM - 11:30 PM GMT+2",
 };
 
 export const homePageFixture: HomePage = {
   hero: {
     title: "The coliving and coworking community, designed for entrepreneurs and innovators.",
     description:
-      "Circles House is a thriving community of entrepreneurs, digital nomads, and innovators. A home designed to focus deeply, live fully, and meet the people who move your ideas forward.",
+      "Circles House is a thriving community of entrepreneurs, digital nomads, and innovators. To ensure everyone is a good fit and adds value to our unique ecosystem, we’ve designed a simple and quick application process.",
     video: {
       label: "Discover Circles House",
       poster: "/home/circles-front.png",
@@ -68,7 +68,7 @@ export const homePageFixture: HomePage = {
   slider: [
     {
       name: "Circles House Barcelona",
-      address: "Camí de Vallvidrera al Tibidabo 5, Barcelona, Spain",
+      address: "Cami de Vallvidrera al Tibidabo 5, Barcelona, Spain",
       href: "/rooms?location=barcelona",
       image: "/home/circles-front.png",
     },
@@ -99,7 +99,7 @@ export const homePageFixture: HomePage = {
       },
       {
         size: "large",
-        category: "Coliving & coworking",
+        category: "Coworking space",
         title: "Circles House Barcelona",
         description: "A home in the hills where focused work and honest community coexist.",
         access: "Members only",
@@ -122,11 +122,12 @@ export const homePageFixture: HomePage = {
         access: "Public",
         address: "Andorra la Vella, Andorra",
         image: "/home/kitchen.png",
+        comingSoon: true,
       },
       {
         size: "small",
         category: "Events",
-        title: "The Rooftop",
+        title: "Rooftop",
         description: "Cinema, dinners and ideas above the city.",
         access: "Members only",
         address: "Vallvidrera, Barcelona",
@@ -169,7 +170,7 @@ export const homePageFixture: HomePage = {
   memberships: {
     eyebrow: "Join us",
     title: "Become a Member",
-    description: "A digital and physical community where ambitious people share ideas, create opportunities and help one another move forward.",
+    description: "Our digital community is where ambitious entrepreneurs come together with seamless opportunities to engage, share ideas, spark connections, and turn visions into reality.",
     cta: { label: "Apply", href: "/api/auth/login" },
     highlights: ["Instant Community", "Focused Channels", "Collaboration"],
     image: "/home/become-a-member.png",

@@ -1,8 +1,11 @@
 ---
+import { cn } from "@/lib/cn";
 import Eyebrow from "./Eyebrow.astro";
-const { eyebrow, title } = Astro.props;
+
+type Props = { eyebrow?: string; title: string; class?: string };
+const { eyebrow, title, class: className } = Astro.props;
 ---
-<header class="grid gap-3 px-4 lg:grid-cols-[1fr_2fr] lg:px-6">
+<header class={cn("flex min-w-0 flex-col gap-3 px-4 lg:px-6", className)}>
   {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}
-  <h2 class="max-w-[900px] font-display text-h2 text-balance">{title}</h2>
+  <h2 class="max-w-[820px] font-display text-h2 text-balance">{title}</h2>
 </header>

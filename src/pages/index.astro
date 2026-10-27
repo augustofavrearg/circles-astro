@@ -17,21 +17,20 @@ const [settings, home] = await Promise.all([repository.getSiteSettings(), reposi
 ---
 
 <SiteLayout settings={settings}>
-  <Hero {...home.hero} searchLocations={home.searchLocations} />
+  <Hero {...home.hero} searchLocations={home.searchLocations} nextSectionId={home.slider.length > 0 ? "locations" : undefined} />
 
-  {home.slider.length > 0 && <HeroSlider client:visible slides={home.slider} />}
+  {home.slider.length > 0 && <HeroSlider client:visible id="locations" slides={home.slider} />}
 
   <section id="network" class="py-28">
-    <SectionHeading eyebrow={home.network.eyebrow} title={home.network.title} />
-    <div class="mt-12">
-      <SpacesCarousel client:visible spaces={home.network.spaces} defaultCta={settings.book} />
-    </div>
+    <SpacesCarousel client:visible spaces={home.network.spaces} defaultCta={settings.book}>
+      <SectionHeading eyebrow={home.network.eyebrow} title={home.network.title} />
+    </SpacesCarousel>
   </section>
 
   {home.happeningNow.events.length > 0 && (
     <section id="events" class="py-28">
       <SectionHeading eyebrow={home.happeningNow.eyebrow} title={home.happeningNow.title} />
-      <div class="mt-12">
+      <div class="mt-7">
         <EventsFilter client:visible events={home.happeningNow.events} cities={home.happeningNow.cities} />
       </div>
     </section>

@@ -15,13 +15,8 @@ export function VideoTeaser({ label, poster, src }: { label: string; poster?: st
       <button type="button" onClick={() => dialogRef.current?.showModal()} className="group flex w-full flex-col gap-2 text-left">
         <span className="relative block aspect-[317/188] w-full overflow-hidden bg-black/8">
           {poster && <img src={poster} alt="" className="size-full object-cover transition-transform duration-500 group-hover:scale-105" />}
-          <span className="absolute inset-0 flex items-center justify-center">
-            <span className="flex size-12 items-center justify-center rounded-full bg-white/90 text-black backdrop-blur">
-              <IconPlayerPlayFilled size={16} />
-            </span>
-          </span>
         </span>
-        <span className="flex items-center justify-between text-detail uppercase tracking-[0.08em]">
+        <span className="flex items-center justify-between text-detail">
           {label}
           <IconPlayerPlayFilled aria-hidden size={14} />
         </span>

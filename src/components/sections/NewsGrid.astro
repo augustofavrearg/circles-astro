@@ -9,7 +9,7 @@ const { eyebrow, title, items } = Astro.props;
 
 <section id="news" class="py-28">
   <SectionHeading {eyebrow} {title} />
-  <div class="scrollbar-none mt-12 flex snap-x gap-4 overflow-x-auto px-4 lg:px-6">
+  <div class="scrollbar-none mt-12 flex snap-x scroll-px-4 gap-4 overflow-x-auto px-4 lg:scroll-px-6 lg:px-6">
     {items.map((item) => (
       <a href={item.href} class="group w-[86vw] max-w-[540px] shrink-0 snap-start">
         <div class="relative h-[420px] overflow-hidden">

@@ -1,8 +1,8 @@
-import { IconArrowNarrowLeft, IconArrowNarrowRight } from "@tabler/icons-react";
+import { IconArrowNarrowLeft, IconArrowNarrowRight, IconArrowUpRight } from "@tabler/icons-react";
 import { useState } from "react";
 import type { Location } from "@/domain/content";
 
-export function HeroSlider({ slides }: { slides: Location[] }) {
+export function HeroSlider({ slides, id }: { slides: Location[]; id?: string }) {
   const [current, setCurrent] = useState(0);
   const count = slides.length;
   const slide = slides[current];
@@ -14,45 +14,54 @@ export function HeroSlider({ slides }: { slides: Location[] }) {
   if (!slide) return null;
 
   return (
-    <section aria-roledescription="carousel" aria-label="Our locations" className="relative isolate flex h-[82svh] min-h-[620px] flex-col justify-end overflow-hidden p-4 lg:h-[768px] lg:p-6">
+    <section id={id} aria-roledescription="carousel" aria-label="Our locations" className="relative isolate h-[82svh] min-h-[620px] overflow-hidden lg:h-[768px] lg:min-h-0">
       {slides.map((item, index) => (
         <img
           key={item.href}
           src={item.image}
           alt={item.name}
           aria-hidden={index !== current}
+          loading={index === 0 ? "eager" : "lazy"}
           className={`absolute inset-0 -z-10 size-full object-cover transition-opacity duration-700 ${index === current ? "opacity-100" : "opacity-0"}`}
         />
       ))}
-      <div className="ml-auto flex w-full max-w-[430px] flex-col gap-3">
-        <a href={slide.href} className="group flex min-h-[238px] flex-col justify-between bg-background p-6">
-          <p className="text-detail uppercase tracking-[0.08em]">Our locations</p>
-          <div className="flex items-end gap-4">
-            <div className="flex-1">
-              <h2 className="font-display text-h2">{slide.name}</h2>
-              <p className="mt-2 text-detail">{slide.address}</p>
-            </div>
-            <span className="flex size-10 items-center justify-center rounded-full bg-black text-white transition-transform group-hover:rotate-45">
-              <IconArrowNarrowRight size={17} />
-            </span>
+
+      <a
+        href={slide.href}
+        className="group absolute inset-x-4 bottom-20 flex min-h-[237px] flex-col justify-between bg-white p-6 lg:inset-x-auto lg:top-1/2 lg:right-6 lg:bottom-auto lg:w-[429px] lg:-translate-y-1/2"
+      >
+        <p className="text-detail uppercase">Our locations</p>
+        <div className="flex items-end gap-4">
+          <div className="min-w-0 flex-1">
+            <h2 className="font-display text-h4">{slide.name}</h2>
+            <p className="mt-1 text-detail">{slide.address}</p>
           </div>
-        </a>
-        <div className="flex items-center gap-2">
-          <div className="flex flex-1 gap-1.5" aria-label={`Slide ${current + 1} of ${count}`}>
-            {slides.map((item, index) => (
-              <button
-                key={item.href}
-                type="button"
-                onClick={() => setCurrent(index)}
-                aria-label={`Show ${item.name}`}
-                className={`h-1 flex-1 transition-colors ${index === current ? "bg-white" : "bg-white/30"}`}
-              />
-            ))}
-          </div>
-          <button type="button" onClick={() => go(-1)} aria-label="Previous location" className="flex size-10 items-center justify-center rounded-full bg-black/20 text-white backdrop-blur">
+          <span aria-hidden="true" className="flex h-7.5 w-12 shrink-0 items-center justify-center rounded-full bg-black text-white transition-transform group-hover:-translate-y-0.5">
+            <IconArrowUpRight size={14} stroke={1.75} />
+          </span>
+        </div>
+      </a>
+
+      <div className="absolute inset-x-4 bottom-4 flex h-10 items-center lg:inset-x-auto lg:right-6 lg:bottom-6 lg:w-[429px]">
+        <div className="-ml-2 flex" role="group" aria-label={`Slide ${current + 1} of ${count}`}>
+          {slides.map((item, index) => (
+            <button
+              key={item.href}
+              type="button"
+              onClick={() => setCurrent(index)}
+              aria-label={`Show ${item.name}`}
+              aria-current={index === current}
+              className="flex size-6 items-center justify-center"
+            >
+              <span className={`size-2 rounded-full border border-white transition-colors ${index === current ? "bg-white" : "bg-transparent"}`} />
+            </button>
+          ))}
+        </div>
+        <div className="ml-auto flex gap-4">
+          <button type="button" onClick={() => go(-1)} aria-label="Previous location" className="flex size-10 items-center justify-center rounded-full bg-black/25 text-white backdrop-blur">
             <IconArrowNarrowLeft size={18} />
           </button>
-          <button type="button" onClick={() => go(1)} aria-label="Next location" className="flex size-10 items-center justify-center rounded-full bg-black/20 text-white backdrop-blur">
+          <button type="button" onClick={() => go(1)} aria-label="Next location" className="flex size-10 items-center justify-center rounded-full bg-black/25 text-white backdrop-blur">
             <IconArrowNarrowRight size={18} />
           </button>
         </div>

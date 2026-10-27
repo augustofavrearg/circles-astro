@@ -18,7 +18,7 @@ const booking = createCloudbedsProvider(import.meta.env.CLOUDBEDS_ALLOWED_ORIGIN
 >
   <section class="px-4 py-14 lg:px-6 lg:py-24">
     <div class="grid gap-8 border-b border-black/12 pb-12 lg:grid-cols-[1fr_1.2fr]">
-      <p class="text-detail uppercase tracking-[0.08em]">Stay with us</p>
+      <p class="text-detail uppercase">Stay with us</p>
       <div>
         <h1 class="max-w-4xl font-display text-h1">Choose the room that feels like yours.</h1>
         <p class="mt-6 max-w-xl text-body">Once you choose a room, Cloudbeds will open so you can select dates, check live availability and complete the reservation.</p>
@@ -36,7 +36,7 @@ const booking = createCloudbedsProvider(import.meta.env.CLOUDBEDS_ALLOWED_ORIGIN
               </div>
               <div class="grid gap-5 border-t border-black/12 pt-4 lg:grid-cols-[1fr_auto]">
                 <div>
-                  <p class="text-detail uppercase tracking-[0.08em]">{room.locationName}</p>
+                  <p class="text-detail uppercase">{room.locationName}</p>
                   <h2 class="mt-2 font-display text-h2">{room.name}</h2>
                   {room.description && <p class="mt-4 max-w-lg text-body text-black/60">{room.description}</p>}
                 </div>
