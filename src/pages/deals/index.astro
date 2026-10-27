@@ -1,0 +1,24 @@
+---
+import SiteLayout from "@/layouts/SiteLayout.astro";
+import DealRow from "@/components/sections/DealRow.astro";
+import Newsletter from "@/components/sections/Newsletter.astro";
+import { getContentRepository } from "@/services/content/repository";
+
+const repository = await getContentRepository();
+// The newsletter copy lives on the home page content for now.
+const [settings, deals, home] = await Promise.all([repository.getSiteSettings(), repository.getDeals(), repository.getHomePage()]);
+---
+
+<SiteLayout
+  settings={settings}
+  title="Deals · Circles House"
+  description="Current Circles House offers for coliving and coworking stays in Barcelona and Andorra."
+>
+  <h1 class="sr-only">Deals</h1>
+  {deals.length > 0 ? (
+    deals.map((deal, index) => <DealRow deal={deal} first={index === 0} />)
+  ) : (
+    <p class="px-4 py-24 text-center text-body lg:px-6">There are no deals available right now.</p>
+  )}
+  <Newsletter description={home.newsletter.description} class="mt-12" />
+</SiteLayout>

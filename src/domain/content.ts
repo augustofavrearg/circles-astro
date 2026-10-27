@@ -169,9 +169,21 @@ export type AmbassadorsPage = {
   faq: { eyebrow: string; title: string; items: FaqItem[] };
 };
 
+/** A promotion on /deals. `description` keeps paragraphs separated by a blank line. */
+export type Deal = {
+  slug: string;
+  eyebrow: string;
+  title: string;
+  description: string;
+  terms: string;
+  cta?: Link;
+  image?: string;
+};
+
 export interface ContentRepository {
   getSiteSettings(): Promise<SiteSettings>;
   getHomePage(): Promise<HomePage>;
   getAmbassadorsPage(): Promise<AmbassadorsPage>;
+  getDeals(): Promise<Deal[]>;
   getRooms(location?: string): Promise<import("./booking").Room[]>;
 }

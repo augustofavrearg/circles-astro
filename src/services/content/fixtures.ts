@@ -1,4 +1,4 @@
-import type { AmbassadorsPage, HomePage, PlaceDetails, SiteSettings } from "@/domain/content";
+import type { AmbassadorsPage, Deal, HomePage, PlaceDetails, SiteSettings } from "@/domain/content";
 import type { Room } from "@/domain/booking";
 
 export const siteSettingsFixture: SiteSettings = {
@@ -9,7 +9,7 @@ export const siteSettingsFixture: SiteSettings = {
     { label: "Community", href: "/#community" },
     { label: "Happening Now", href: "/#events" },
     { label: "About", href: "/#about" },
-    { label: "Rooms", href: "/rooms" },
+    { label: "Deals", href: "/deals" },
   ],
   login: { label: "Members Login", href: "/api/auth/login" },
   book: { label: "Book a Stay", href: "/rooms" },
@@ -20,6 +20,7 @@ export const siteSettingsFixture: SiteSettings = {
       { label: "Community", href: "/#community" },
       { label: "Happening Now", href: "/#events" },
       { label: "About", href: "/#about" },
+      { label: "Deals", href: "/deals" },
       { label: "Book a Stay", href: "/rooms" },
     ],
     extras: [
@@ -303,6 +304,26 @@ export const ambassadorsPageFixture: AmbassadorsPage = {
     ],
   },
 };
+
+export const dealsFixture: Deal[] = [
+  {
+    slug: "book-3-get-1",
+    eyebrow: "New deal",
+    title: "Book 3 weeks, get 1 extra week for free",
+    description: "Spend your winter mornings in the sun, work with focus, and share evenings that feel like home.",
+    terms: "Valid for continuous stays between December 1, 2025, and January 31, 2026. Cannot be combined with other promotions. Terms and conditions here.",
+    cta: { label: "Book Now", href: "/rooms" },
+  },
+  {
+    slug: "give-10-get-10",
+    eyebrow: "New deal",
+    title: "Give 10%, Get 10% – Invite Your Friends!",
+    description:
+      "Love your experience at Circles? Share it with your friends! When you refer someone to Circles House, both you and your friend receive 10% discount on your monthly stay.\n\nIt’s simple: spread the word, help grow our community, and enjoy great savings together.",
+    terms: "*This promotion cannot be combined with other promotions and only applies for the first month.",
+    cta: { label: "Book Now", href: "/rooms" },
+  },
+];
 
 export const roomsFixture: Room[] = [
   {
