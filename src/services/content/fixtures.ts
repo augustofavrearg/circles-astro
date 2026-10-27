@@ -267,10 +267,12 @@ export const ambassadorsPageFixture: AmbassadorsPage = {
     description: "Bring people together at Circles and earn a reward every time someone joins an event through your referral code.",
   },
   intro: {
-    eyebrow: "Partnerships",
+    // Desktop Figma (v1.14) reads "Ambasadors"; mobile (v1.13) reads "Partnerships".
+    eyebrow: "Ambassadors",
     title: "Become a Circles Ambassador",
     lead: "At Circles, we love collaborating with people who naturally bring others together.",
     body: "If you enjoy our events and want to earn a referral fee when friends or followers join through you, we’d love to have you as an ambassador. The process is simple: apply below, and if approved, we’ll give you a unique referral code you can share. Every time someone joins a Circles event through your code, you earn a reward.",
+    note: "No complicated dashboard — just a straightforward partnership.",
     // The application destination is not defined yet; the button appears once `cta` has a link.
   },
   faq: {
@@ -278,7 +280,7 @@ export const ambassadorsPageFixture: AmbassadorsPage = {
     title: "What you need to know",
     items: [
       {
-        question: "How do I get to Circle’s house?",
+        question: "How do I get to Circles house?",
         answer: [
           {
             type: "paragraph",
@@ -295,8 +297,8 @@ export const ambassadorsPageFixture: AmbassadorsPage = {
         ],
       },
       { question: "What’s the minimum stay?", answer: PENDING_ANSWER },
-      { question: "How do I get groceries or essentials?", answer: PENDING_ANSWER },
-      { question: "What’s included during my stay?", answer: PENDING_ANSWER },
+      { question: "How do I do groceries or get essentials?", answer: PENDING_ANSWER },
+      { question: "What’s covered during my stay?", answer: PENDING_ANSWER },
       { question: "What’s the community like? How is it managed?", answer: PENDING_ANSWER },
     ],
   },

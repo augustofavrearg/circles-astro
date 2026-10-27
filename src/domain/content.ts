@@ -161,6 +161,8 @@ export type AmbassadorsPage = {
     title: string;
     lead: string;
     body: string;
+    /** Short aside shown next to the image on desktop only (Figma). */
+    note?: string;
     cta?: Link;
     image?: string;
   };
