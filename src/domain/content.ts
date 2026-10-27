@@ -22,9 +22,26 @@ export type Location = {
   address: string;
   href: string;
   image?: string;
+  access?: string;
+  /** When present, the slider card opens the detail panel instead of following `href`. */
+  details?: PlaceDetails;
 };
 
 export type SpaceAmenity = "coliving" | "coworking";
+
+/** Detail panel content shared by the locations slider and the network carousel. */
+export type PlaceDetails = {
+  /** Panel eyebrow, e.g. "Coworking location"; falls back to the card category. */
+  category?: string;
+  about?: string;
+  rating?: number;
+  price?: { label: string; value: string };
+  amenities?: SpaceAmenity[];
+  directions?: string;
+  mapImage?: string;
+  page?: Link;
+  cta?: Link;
+};
 
 export type Space = {
   category: string;
@@ -35,16 +52,7 @@ export type Space = {
   comingSoon?: boolean;
   image?: string;
   href?: string;
-  details?: {
-    about?: string;
-    rating?: number;
-    price?: { label: string; value: string };
-    amenities?: SpaceAmenity[];
-    directions?: string;
-    mapImage?: string;
-    page?: Link;
-    cta?: Link;
-  };
+  details?: PlaceDetails;
 };
 
 export type CircleEvent = {

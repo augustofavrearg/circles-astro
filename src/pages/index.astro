@@ -19,7 +19,7 @@ const [settings, home] = await Promise.all([repository.getSiteSettings(), reposi
 <SiteLayout settings={settings}>
   <Hero {...home.hero} searchLocations={home.searchLocations} nextSectionId={home.slider.length > 0 ? "locations" : undefined} />
 
-  {home.slider.length > 0 && <HeroSlider client:visible id="locations" slides={home.slider} />}
+  {home.slider.length > 0 && <HeroSlider client:visible id="locations" slides={home.slider} defaultCta={settings.book} />}
 
   <section id="network" class="py-28">
     <SpacesCarousel client:visible spaces={home.network.spaces} defaultCta={settings.book}>

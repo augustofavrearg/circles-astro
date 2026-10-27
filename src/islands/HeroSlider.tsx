@@ -1,9 +1,32 @@
 import { IconArrowNarrowLeft, IconArrowNarrowRight, IconArrowUpRight } from "@tabler/icons-react";
 import { useState } from "react";
-import type { Location } from "@/domain/content";
+import type { Link, Location } from "@/domain/content";
+import { PlaceDialog, type Place } from "./PlaceDialog";
 
-export function HeroSlider({ slides, id }: { slides: Location[]; id?: string }) {
+const CARD_CLASS =
+  "group absolute inset-x-4 bottom-23 flex min-h-[237px] flex-col justify-between bg-white p-6 lg:inset-x-auto lg:top-1/2 lg:right-6 lg:bottom-auto lg:w-[429px] lg:-translate-y-1/2";
+
+/** Slider card content; spans only, so it is valid inside both a link and a button. */
+function CardBody({ slide }: { slide: Location }) {
+  return (
+    <>
+      <span className="text-detail uppercase">Our locations</span>
+      <span className="flex items-end gap-4">
+        <span className="min-w-0 flex-1">
+          <span className="block font-display text-h4">{slide.name}</span>
+          <span className="mt-1 block text-detail">{slide.address}</span>
+        </span>
+        <span aria-hidden="true" className="flex h-7.5 w-12 shrink-0 items-center justify-center rounded-full bg-black text-white transition-transform group-hover:-translate-y-0.5">
+          <IconArrowUpRight size={14} stroke={1.75} />
+        </span>
+      </span>
+    </>
+  );
+}
+
+export function HeroSlider({ slides, id, defaultCta }: { slides: Location[]; id?: string; defaultCta: Link }) {
   const [current, setCurrent] = useState(0);
+  const [selected, setSelected] = useState<Place | null>(null);
   const count = slides.length;
   const slide = slides[current];
 
@@ -26,21 +49,15 @@ export function HeroSlider({ slides, id }: { slides: Location[]; id?: string }) 
         />
       ))}
 
-      <a
-        href={slide.href}
-        className="group absolute inset-x-4 bottom-23 flex min-h-[237px] flex-col justify-between bg-white p-6 lg:inset-x-auto lg:top-1/2 lg:right-6 lg:bottom-auto lg:w-[429px] lg:-translate-y-1/2"
-      >
-        <p className="text-detail uppercase">Our locations</p>
-        <div className="flex items-end gap-4">
-          <div className="min-w-0 flex-1">
-            <h2 className="font-display text-h4">{slide.name}</h2>
-            <p className="mt-1 text-detail">{slide.address}</p>
-          </div>
-          <span aria-hidden="true" className="flex h-7.5 w-12 shrink-0 items-center justify-center rounded-full bg-black text-white transition-transform group-hover:-translate-y-0.5">
-            <IconArrowUpRight size={14} stroke={1.75} />
-          </span>
-        </div>
-      </a>
+      {slide.details ? (
+        <button type="button" aria-haspopup="dialog" onClick={() => setSelected({ title: slide.name, image: slide.image, access: slide.access, address: slide.address, details: slide.details })} className={`${CARD_CLASS} text-left`}>
+          <CardBody slide={slide} />
+        </button>
+      ) : (
+        <a href={slide.href} className={CARD_CLASS}>
+          <CardBody slide={slide} />
+        </a>
+      )}
 
       <div className="absolute inset-x-4 bottom-3 flex h-10 items-center lg:inset-x-auto lg:right-6 lg:bottom-6 lg:w-[429px]">
         <div className="-ml-2 flex" role="group" aria-label={`Slide ${current + 1} of ${count}`}>
@@ -66,6 +83,7 @@ export function HeroSlider({ slides, id }: { slides: Location[]; id?: string }) 
           </button>
         </div>
       </div>
+      <PlaceDialog place={selected} onClose={() => setSelected(null)} defaultCta={defaultCta} />
     </section>
   );
 }

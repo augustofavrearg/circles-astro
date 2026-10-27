@@ -1,6 +1,7 @@
-import { IconArrowNarrowLeft, IconArrowNarrowRight, IconMapPin, IconX } from "@tabler/icons-react";
+import { IconArrowNarrowLeft, IconArrowNarrowRight } from "@tabler/icons-react";
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import type { HomePage, Space } from "@/domain/content";
+import type { HomePage, Link, Space } from "@/domain/content";
+import { PlaceDialog, type Place } from "./PlaceDialog";
 
 type SizedSpace = HomePage["network"]["spaces"][number];
 
@@ -11,10 +12,9 @@ const SIZES: Record<SizedSpace["size"], { card: string; image: string }> = {
   small: { card: "w-[316px]", image: "h-[232px]" },
 };
 
-export function SpacesCarousel({ spaces, defaultCta, children }: { spaces: SizedSpace[]; defaultCta: { label: string; href: string }; children?: ReactNode }) {
+export function SpacesCarousel({ spaces, defaultCta, children }: { spaces: SizedSpace[]; defaultCta: Link; children?: ReactNode }) {
   const trackRef = useRef<HTMLDivElement>(null);
-  const dialogRef = useRef<HTMLDialogElement>(null);
-  const [selected, setSelected] = useState<Space | null>(null);
+  const [selected, setSelected] = useState<Place | null>(null);
 
   // Figma's resting state on desktop: the second card starts at ~17% of the width, so the first one peeks in.
   useEffect(() => {
@@ -29,13 +29,8 @@ export function SpacesCarousel({ spaces, defaultCta, children }: { spaces: Sized
   }
 
   function open(space: Space) {
-    setSelected(space);
-    dialogRef.current?.showModal();
-  }
-
-  function close() {
-    dialogRef.current?.close();
-    setSelected(null);
+    const { title, image, access, category, address, description, details } = space;
+    setSelected({ title, image, access, category, address, details: { ...details, about: details?.about ?? description } });
   }
 
   return (
@@ -70,38 +65,7 @@ export function SpacesCarousel({ spaces, defaultCta, children }: { spaces: Sized
         })}
       </div>
 
-      <dialog ref={dialogRef} onClick={(event) => event.target === event.currentTarget && close()} onClose={() => setSelected(null)} className="m-0 ml-auto h-dvh max-h-none w-full max-w-[470px] bg-background p-0 backdrop:bg-black/50">
-        {selected && (
-          <div className="flex h-full flex-col">
-            <div className="relative h-[38vh] min-h-[260px] shrink-0">
-              {selected.image && <img src={selected.image} alt={selected.title} className="size-full object-cover" />}
-              <button type="button" onClick={close} aria-label="Close" className="absolute top-4 right-4 flex size-10 items-center justify-center rounded-full bg-white">
-                <IconX size={18} />
-              </button>
-            </div>
-            <div className="flex-1 overflow-y-auto p-6">
-              <p className="text-detail uppercase">{selected.category}</p>
-              <h2 className="mt-3 font-display text-h2">{selected.title}</h2>
-              <p className="mt-6 text-body">{selected.details?.about ?? selected.description}</p>
-              {selected.details?.price && (
-                <div className="mt-8 border-t border-black/12 pt-5">
-                  <p className="text-detail text-black/50">{selected.details.price.label}</p>
-                  <p className="mt-1 font-display text-h3">{selected.details.price.value}</p>
-                </div>
-              )}
-              {selected.address && (
-                <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(selected.address)}`} target="_blank" rel="noreferrer" className="mt-8 flex items-center gap-2 text-cta">
-                  <IconMapPin size={17} /> {selected.address}
-                </a>
-              )}
-            </div>
-            <div className="flex gap-2 border-t border-black/12 p-4">
-              {selected.details?.page && <a href={selected.details.page.href} className="inline-flex h-11 flex-1 items-center justify-center rounded-full border border-black">{selected.details.page.label}</a>}
-              <a href={selected.details?.cta?.href ?? defaultCta.href} className="inline-flex h-11 flex-1 items-center justify-center rounded-full bg-black text-white">{selected.details?.cta?.label ?? defaultCta.label}</a>
-            </div>
-          </div>
-        )}
-      </dialog>
+      <PlaceDialog place={selected} onClose={() => setSelected(null)} defaultCta={defaultCta} />
     </>
   );
 }

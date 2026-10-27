@@ -1,4 +1,4 @@
-import type { HomePage, SiteSettings } from "@/domain/content";
+import type { HomePage, PlaceDetails, SiteSettings } from "@/domain/content";
 import type { Room } from "@/domain/booking";
 
 export const siteSettingsFixture: SiteSettings = {
@@ -55,6 +55,20 @@ const eventDate = {
   timeLabel: "9:00 PM - 11:30 PM GMT+2",
 };
 
+/** Figma: detail panel for Circles House Barcelona, shared by the locations slider and the network carousel. */
+const barcelonaDetails: PlaceDetails = {
+  category: "Coworking location",
+  about:
+    "Located in a natural park and only a 5 minute walk from a metro station, our house in Vallvidrera is well-located and allows you to get anywhere quickly and easily.",
+  rating: 5,
+  // Copied as written in Figma ("$" and "€" together); confirm the intended currency format.
+  price: { label: "Starting from", value: "$1.900€/month" },
+  amenities: ["coliving", "coworking"],
+  directions: "20 minutes from Gràcia by public transport.",
+  cta: { label: "Book Now", href: "/rooms?location=barcelona" },
+  // "Learn more" goes here once the Barcelona location page exists.
+};
+
 export const homePageFixture: HomePage = {
   hero: {
     title: "The coliving and coworking community, designed for entrepreneurs and innovators.",
@@ -72,6 +86,8 @@ export const homePageFixture: HomePage = {
       address: "Cami de Vallvidrera al Tibidabo 5, Barcelona, Spain",
       href: "/rooms?location=barcelona",
       image: "/home/circles-front.png",
+      access: "Members only",
+      details: barcelonaDetails,
     },
     {
       name: "Circles House Andorra",
@@ -106,14 +122,7 @@ export const homePageFixture: HomePage = {
         access: "Members only",
         address: "Vallvidrera, Barcelona",
         image: "/home/circles-front.png",
-        details: {
-          about: "Located in a natural park and a five-minute walk from the metro, our Barcelona house offers quiet without disconnecting you from the city.",
-          rating: 5,
-          price: { label: "Starting from", value: "€1,900 / month" },
-          amenities: ["coliving", "coworking"],
-          directions: "20 minutes from Gràcia by public transport.",
-          page: { label: "Choose a room", href: "/rooms?location=barcelona" },
-        },
+        details: barcelonaDetails,
       },
       {
         size: "medium",
