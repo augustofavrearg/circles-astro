@@ -146,8 +146,30 @@ export type HomePage = {
   newsletter: { description: string };
 };
 
+/** A FAQ answer as plain blocks, so fixtures and the CMS can share one shape. */
+export type FaqBlock = { type: "paragraph"; text: string } | { type: "list"; items: string[] };
+
+export type FaqItem = {
+  question: string;
+  answer: FaqBlock[];
+};
+
+export type AmbassadorsPage = {
+  seo: { title: string; description: string };
+  intro: {
+    eyebrow: string;
+    title: string;
+    lead: string;
+    body: string;
+    cta?: Link;
+    image?: string;
+  };
+  faq: { eyebrow: string; title: string; items: FaqItem[] };
+};
+
 export interface ContentRepository {
   getSiteSettings(): Promise<SiteSettings>;
   getHomePage(): Promise<HomePage>;
+  getAmbassadorsPage(): Promise<AmbassadorsPage>;
   getRooms(location?: string): Promise<import("./booking").Room[]>;
 }

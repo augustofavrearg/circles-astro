@@ -1,4 +1,4 @@
-import type { HomePage, PlaceDetails, SiteSettings } from "@/domain/content";
+import type { AmbassadorsPage, HomePage, PlaceDetails, SiteSettings } from "@/domain/content";
 import type { Room } from "@/domain/booking";
 
 export const siteSettingsFixture: SiteSettings = {
@@ -26,6 +26,7 @@ export const siteSettingsFixture: SiteSettings = {
       { label: "Memberships", href: "/#membership" },
       { label: "About us", href: "/#about" },
       { label: "News", href: "/#news" },
+      { label: "Become an Ambassador", href: "/ambassadors" },
     ],
     legal: [
       { label: "Terms & Conditions", href: "/legal/terms" },
@@ -254,6 +255,50 @@ export const homePageFixture: HomePage = {
   newsletter: {
     description:
       "Join our newsletter to connect with a vibrant community of entrepreneurs and innovators at Circles House. Stay updated and be part of our unique ecosystem!",
+  },
+};
+
+// Figma only shows the answer to the first question; the others are still pending.
+const PENDING_ANSWER = [{ type: "paragraph" as const, text: "Answer coming soon." }];
+
+export const ambassadorsPageFixture: AmbassadorsPage = {
+  seo: {
+    title: "Become a Circles Ambassador · Circles House",
+    description: "Bring people together at Circles and earn a reward every time someone joins an event through your referral code.",
+  },
+  intro: {
+    eyebrow: "Partnerships",
+    title: "Become a Circles Ambassador",
+    lead: "At Circles, we love collaborating with people who naturally bring others together.",
+    body: "If you enjoy our events and want to earn a referral fee when friends or followers join through you, we’d love to have you as an ambassador. The process is simple: apply below, and if approved, we’ll give you a unique referral code you can share. Every time someone joins a Circles event through your code, you earn a reward.",
+    // The application destination is not defined yet; the button appears once `cta` has a link.
+  },
+  faq: {
+    eyebrow: "FAQ",
+    title: "What you need to know",
+    items: [
+      {
+        question: "How do I get to Circle’s house?",
+        answer: [
+          {
+            type: "paragraph",
+            text: "We’re located in a fantastic area within a natural park, offering stunning views and a peaceful environment. Plus, it’s just a short trip to the city center when you want to explore!\nWe’re near Sarria, a charming local Catalan neighborhood, accessible by a single funicular. It’s a great spot to experience local life and the real essence of Barcelona. Other central areas like Gracia, Plaça Catalunya, and Diagonal are only 20–30 minutes away.",
+          },
+          { type: "paragraph", text: "Here’s how to get to us:" },
+          {
+            type: "list",
+            items: [
+              "Take the S1/S2 metro to Peu de Funicular, then the Funicular to Vallvidrera Superior. From there, it’s a 7-minute walk or a ride on bus 111 to our location.",
+              "From the airport, take the Aerobús to Plaça Catalunya, then connect to the S1/S2 metro line. By taxi, we’re just 20 minutes from the airport.",
+            ],
+          },
+        ],
+      },
+      { question: "What’s the minimum stay?", answer: PENDING_ANSWER },
+      { question: "How do I get groceries or essentials?", answer: PENDING_ANSWER },
+      { question: "What’s included during my stay?", answer: PENDING_ANSWER },
+      { question: "What’s the community like? How is it managed?", answer: PENDING_ANSWER },
+    ],
   },
 };
 

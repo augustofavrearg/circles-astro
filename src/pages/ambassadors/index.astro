@@ -1,0 +1,36 @@
+---
+import SiteLayout from "@/layouts/SiteLayout.astro";
+import Button from "@/components/ui/Button.astro";
+import Eyebrow from "@/components/ui/Eyebrow.astro";
+import Media from "@/components/ui/Media.astro";
+import Faq from "@/components/sections/Faq.astro";
+import Newsletter from "@/components/sections/Newsletter.astro";
+import { getContentRepository } from "@/services/content/repository";
+
+const repository = await getContentRepository();
+// The newsletter copy lives on the home page content for now.
+const [settings, page, home] = await Promise.all([repository.getSiteSettings(), repository.getAmbassadorsPage(), repository.getHomePage()]);
+const { intro, faq } = page;
+---
+
+<SiteLayout settings={settings} title={page.seo.title} description={page.seo.description}>
+  <!--
+    Figma mobile: eyebrow, title, red lead, body, button, then a full-width image.
+    No desktop frame yet: on desktop the copy and the image sit side by side.
+  -->
+  <section class="grid gap-x-16 px-4 pt-13 lg:grid-cols-[minmax(0,1fr)_540px] lg:items-start lg:px-6 lg:pt-16">
+    <div>
+      <Eyebrow>{intro.eyebrow}</Eyebrow>
+      <h1 class="mt-3 max-w-[760px] font-display text-h1 leading-[1.2] lg:leading-(--text-h1--line-height)">{intro.title}</h1>
+      <p class="mt-4 max-w-[640px] font-display text-[1.1875rem] leading-[1.15] text-red lg:text-[1.25rem]">{intro.lead}</p>
+      <p class="mt-4 max-w-[560px] text-[0.9375rem] leading-[1.4]">{intro.body}</p>
+      {intro.cta && <Button href={intro.cta.href} class="mt-12 min-w-62.5">{intro.cta.label}</Button>}
+    </div>
+    <div class="relative mt-4 h-[720px] overflow-hidden lg:mt-0 lg:h-[640px]">
+      <Media src={intro.image} alt="Barcelona seen from Circles House" eager />
+    </div>
+  </section>
+
+  <Faq {...faq} />
+  <Newsletter description={home.newsletter.description} />
+</SiteLayout>

@@ -1,10 +1,11 @@
 import { items } from "@wix/data";
-import type { ContentRepository, HomePage, SiteSettings } from "@/domain/content";
+import type { AmbassadorsPage, ContentRepository, HomePage, SiteSettings } from "@/domain/content";
 import type { Room } from "@/domain/booking";
 
 const COLLECTIONS = {
   siteSettings: "SiteSettings",
   homePage: "HomePage",
+  ambassadorsPage: "AmbassadorsPage",
   rooms: "Rooms",
 } as const;
 
@@ -33,6 +34,7 @@ function mapRoom(item: Record<string, unknown>): Room {
 export const wixCmsRepository: ContentRepository = {
   getSiteSettings: () => getSingleton<SiteSettings>(COLLECTIONS.siteSettings),
   getHomePage: () => getSingleton<HomePage>(COLLECTIONS.homePage),
+  getAmbassadorsPage: () => getSingleton<AmbassadorsPage>(COLLECTIONS.ambassadorsPage),
   async getRooms(location?: string) {
     let query = items.query(COLLECTIONS.rooms).eq("published", true).ascending("sortOrder").limit(100);
     if (location) query = query.eq("locationId", location);

@@ -1,5 +1,5 @@
 import type { ContentRepository } from "@/domain/content";
-import { homePageFixture, roomsFixture, siteSettingsFixture } from "./fixtures";
+import { ambassadorsPageFixture, homePageFixture, roomsFixture, siteSettingsFixture } from "./fixtures";
 
 export const fixtureRepository: ContentRepository = {
   async getSiteSettings() {
@@ -7,6 +7,9 @@ export const fixtureRepository: ContentRepository = {
   },
   async getHomePage() {
     return homePageFixture;
+  },
+  async getAmbassadorsPage() {
+    return ambassadorsPageFixture;
   },
   async getRooms(location?: string) {
     return location ? roomsFixture.filter((room) => room.locationId === location) : roomsFixture;
