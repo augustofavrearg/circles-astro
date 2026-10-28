@@ -154,19 +154,45 @@ export type FaqItem = {
   answer: FaqBlock[];
 };
 
+/** Intro block shared by the Ambassadors and Partnerships pages. */
+export type PageIntro = {
+  eyebrow: string;
+  title: string;
+  lead: string;
+  /** Line breaks are kept, as in Figma. */
+  body: string;
+  /** Short aside: next to the image on desktop, below it on mobile. */
+  note?: string;
+  cta?: Link;
+  image?: string;
+};
+
+export type FaqSection = { eyebrow: string; title: string; items: FaqItem[] };
+
 export type AmbassadorsPage = {
   seo: { title: string; description: string };
-  intro: {
-    eyebrow: string;
-    title: string;
-    lead: string;
-    body: string;
-    /** Short aside shown next to the image on desktop only (Figma). */
-    note?: string;
-    cta?: Link;
-    image?: string;
-  };
-  faq: { eyebrow: string; title: string; items: FaqItem[] };
+  intro: PageIntro;
+  faq: FaqSection;
+};
+
+export type Partner = {
+  slug: string;
+  name: string;
+  description: string;
+  /** Logo file; the name is shown in its place until one exists. */
+  logo?: string;
+  href?: string;
+  /** Highlighted as "Partner of the month". */
+  featured?: boolean;
+};
+
+export type PartnershipsPage = {
+  seo: { title: string; description: string };
+  intro: PageIntro;
+  partners: { eyebrow: string; title: string; featuredLabel: string; items: Partner[] };
+  /** Yellow band: the body reuses the site promotion text. */
+  membership: { title: string; primaryCta?: Link; secondaryCta?: Link };
+  faq: FaqSection;
 };
 
 /** A promotion on /deals. `description` keeps paragraphs separated by a blank line. */
@@ -206,6 +232,7 @@ export interface ContentRepository {
   getSiteSettings(): Promise<SiteSettings>;
   getHomePage(): Promise<HomePage>;
   getAmbassadorsPage(): Promise<AmbassadorsPage>;
+  getPartnershipsPage(): Promise<PartnershipsPage>;
   getDeals(): Promise<Deal[]>;
   getEventsPage(): Promise<EventsPage>;
   getEvents(city?: string): Promise<EventSummary[]>;

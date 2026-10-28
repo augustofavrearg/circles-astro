@@ -1,0 +1,23 @@
+---
+import type { PartnershipsPage } from "@/domain/content";
+import Button from "@/components/ui/Button.astro";
+
+type Props = PartnershipsPage["membership"] & { text?: string };
+const { title, primaryCta, secondaryCta, text } = Astro.props;
+---
+
+<!-- Figma: yellow band — title on top, the members' discount and two actions at the bottom. -->
+<section class="mt-24 px-4 lg:mt-44 lg:px-6">
+  <div class="flex flex-col bg-yellow p-6 lg:min-h-[272px]">
+    <h2 class="font-display text-h1 leading-[1.25] lg:leading-[1.15]">{title}</h2>
+    <div class="mt-12 lg:mt-auto lg:flex lg:items-end lg:justify-between lg:gap-8">
+      {text && <p class="font-display text-[1.125rem] leading-[1.2] lg:text-[1rem]">{text}</p>}
+      {(primaryCta || secondaryCta) && (
+        <div class="mt-6 flex gap-3 lg:mt-0 lg:shrink-0 lg:gap-2">
+          {secondaryCta && <Button href={secondaryCta.href} variant="secondary">{secondaryCta.label}</Button>}
+          {primaryCta && <Button href={primaryCta.href}>{primaryCta.label}</Button>}
+        </div>
+      )}
+    </div>
+  </div>
+</section>

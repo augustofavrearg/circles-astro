@@ -1,4 +1,4 @@
-import type { AmbassadorsPage, Deal, EventSummary, EventsPage, HomePage, PlaceDetails, SiteSettings } from "@/domain/content";
+import type { AmbassadorsPage, Deal, EventSummary, EventsPage, FaqSection, HomePage, PartnershipsPage, PlaceDetails, SiteSettings } from "@/domain/content";
 import type { Room } from "@/domain/booking";
 
 export const siteSettingsFixture: SiteSettings = {
@@ -264,6 +264,35 @@ export const homePageFixture: HomePage = {
 // Figma only shows the answer to the first question; the others are still pending.
 const PENDING_ANSWER = [{ type: "paragraph" as const, text: "Answer coming soon." }];
 
+// Figma shows the same FAQ on Ambassadors and Partnerships.
+const sharedFaq: FaqSection = {
+  eyebrow: "FAQ",
+  title: "What you need to know",
+  items: [
+    {
+      question: "How do I get to Circles house?",
+      answer: [
+        {
+          type: "paragraph",
+          text: "We’re located in a fantastic area within a natural park, offering stunning views and a peaceful environment. Plus, it’s just a short trip to the city center when you want to explore!\nWe’re near Sarria, a charming local Catalan neighborhood, accessible by a single funicular. It’s a great spot to experience local life and the real essence of Barcelona. Other central areas like Gracia, Plaça Catalunya, and Diagonal are only 20–30 minutes away.",
+        },
+        { type: "paragraph", text: "Here’s how to get to us:" },
+        {
+          type: "list",
+          items: [
+            "Take the S1/S2 metro to Peu de Funicular, then the Funicular to Vallvidrera Superior. From there, it’s a 7-minute walk or a ride on bus 111 to our location.",
+            "From the airport, take the Aerobús to Plaça Catalunya, then connect to the S1/S2 metro line. By taxi, we’re just 20 minutes from the airport.",
+          ],
+        },
+      ],
+    },
+    { question: "What’s the minimum stay?", answer: PENDING_ANSWER },
+    { question: "How do I do groceries or get essentials?", answer: PENDING_ANSWER },
+    { question: "What’s covered during my stay?", answer: PENDING_ANSWER },
+    { question: "What’s the community like? How is it managed?", answer: PENDING_ANSWER },
+  ],
+};
+
 export const ambassadorsPageFixture: AmbassadorsPage = {
   seo: {
     title: "Become a Circles Ambassador · Circles House",
@@ -278,33 +307,7 @@ export const ambassadorsPageFixture: AmbassadorsPage = {
     note: "No complicated dashboard — just a straightforward partnership.",
     // The application destination is not defined yet; the button appears once `cta` has a link.
   },
-  faq: {
-    eyebrow: "FAQ",
-    title: "What you need to know",
-    items: [
-      {
-        question: "How do I get to Circles house?",
-        answer: [
-          {
-            type: "paragraph",
-            text: "We’re located in a fantastic area within a natural park, offering stunning views and a peaceful environment. Plus, it’s just a short trip to the city center when you want to explore!\nWe’re near Sarria, a charming local Catalan neighborhood, accessible by a single funicular. It’s a great spot to experience local life and the real essence of Barcelona. Other central areas like Gracia, Plaça Catalunya, and Diagonal are only 20–30 minutes away.",
-          },
-          { type: "paragraph", text: "Here’s how to get to us:" },
-          {
-            type: "list",
-            items: [
-              "Take the S1/S2 metro to Peu de Funicular, then the Funicular to Vallvidrera Superior. From there, it’s a 7-minute walk or a ride on bus 111 to our location.",
-              "From the airport, take the Aerobús to Plaça Catalunya, then connect to the S1/S2 metro line. By taxi, we’re just 20 minutes from the airport.",
-            ],
-          },
-        ],
-      },
-      { question: "What’s the minimum stay?", answer: PENDING_ANSWER },
-      { question: "How do I do groceries or get essentials?", answer: PENDING_ANSWER },
-      { question: "What’s covered during my stay?", answer: PENDING_ANSWER },
-      { question: "What’s the community like? How is it managed?", answer: PENDING_ANSWER },
-    ],
-  },
+  faq: sharedFaq,
 };
 
 export const dealsFixture: Deal[] = [
@@ -326,6 +329,58 @@ export const dealsFixture: Deal[] = [
     cta: { label: "Book Now", href: "/rooms" },
   },
 ];
+
+export const partnershipsPageFixture: PartnershipsPage = {
+  seo: {
+    title: "Partnerships · Circles House",
+    description: "Partner with Circles House to increase your rental revenue through smart design and tech-enabled operations.",
+  },
+  intro: {
+    eyebrow: "Partnerships",
+    title: "Increase your rental revenue by up to +50%",
+    lead: "Unlock new opportunities for your team.",
+    body: "Circles is a coliving brand and operator that designs and manages residential and commercial properties to appeal to the growing market of remote workers and\ndistributed teams. We deliver exceptional performance to our partners through smart design and tech-enabled operations.",
+    // Desktop Figma (v1.14); mobile (v1.13) reads "We create a culturally diverse international community through digital conscious nomadism."
+    note: "We deliver exceptional performance to our partners through smart design and tech-enabled operations.",
+    // "Become a Partner" appears once it has a destination.
+  },
+  partners: {
+    eyebrow: "Why join",
+    title: "Why partner with Circles?",
+    featuredLabel: "Partner of the month",
+    // Logos and partner links are pending; the name stands in for the logo meanwhile.
+    items: [
+      {
+        slug: "barcelona-tech-city",
+        name: "Barcelona Tech City",
+        description:
+          "Tech Barcelona is an independent private non-profit association that works to reinforce Barcelona as a model of the international digital and technological ecosystem.",
+        featured: true,
+      },
+      {
+        slug: "nomad-in-transylvania",
+        name: "Nomad in Transylvania",
+        description: "We craft unique journeys that offer a blend of working, exploration, adventure, and networking.",
+      },
+      {
+        slug: "karisma",
+        name: "Karisma",
+        description: "Join a curated community of growth-minded 7+ figure founders, vetted and matched to accelerate your next chapter.",
+      },
+      {
+        slug: "nomadico",
+        name: "Nomadico",
+        description: "We are building a network of affordable and authentic community coliving spaces for nomads and remote workers.",
+      },
+    ],
+  },
+  membership: {
+    title: "Become a member and get discounts for all our partners",
+    // Same destination as "Apply" in the home Memberships section; "Book a Call" is pending.
+    primaryCta: { label: "Join us", href: "/api/auth/login" },
+  },
+  faq: sharedFaq,
+};
 
 export const eventsPageFixture: EventsPage = {
   title: "Live Surrounded by Nature",

@@ -1,0 +1,59 @@
+---
+import { IconArrowUpRight } from "@tabler/icons-react";
+import type { PartnershipsPage } from "@/domain/content";
+import SectionHeading from "@/components/ui/SectionHeading.astro";
+
+type Props = PartnershipsPage["partners"];
+const { eyebrow, title, featuredLabel, items } = Astro.props;
+---
+
+<!--
+  Figma "Why partner with Circles?": the featured partner (logo, label, name) sits above a red rule,
+  the rest are rows of logo | description | arrow on desktop and stacked blocks on mobile.
+-->
+<section class="pt-40 lg:pt-34">
+  <SectionHeading {eyebrow} {title} class="items-start text-left" />
+  <ul class="mt-20 px-4 lg:mt-16 lg:px-6">
+    {items.map((partner) => (
+      <li
+        class:list={[
+          "grid lg:grid-cols-[minmax(0,1fr)_650px_48px] lg:items-center lg:gap-x-6",
+          partner.featured ? "border-b border-red py-8" : "border-b border-black/12 py-6 lg:py-8",
+        ]}
+      >
+        <div class:list={["min-w-0", partner.featured && "lg:flex lg:items-center lg:gap-6"]}>
+          {partner.logo ? (
+            <img
+              src={partner.logo}
+              alt={partner.featured ? "" : partner.name}
+              loading="lazy"
+              class:list={[partner.featured ? "size-[135px] object-cover" : "h-[72px] w-auto max-w-full object-contain object-left"]}
+            />
+          ) : (
+            !partner.featured && <p class="font-display text-[2rem] leading-[1.1]">{partner.name}</p>
+          )}
+          {partner.featured && (
+            <div class:list={[partner.logo ? "mt-8 lg:mt-0" : ""]}>
+              <p class="text-detail">{featuredLabel}</p>
+              <p class="mt-1 font-display text-[2.25rem] leading-[1.2]">{partner.name}</p>
+            </div>
+          )}
+        </div>
+        <p class="mt-6 text-[0.9375rem] leading-[1.4] lg:mt-0 lg:text-[0.875rem] lg:leading-[1.5]">{partner.description}</p>
+        {partner.href ? (
+          <a
+            href={partner.href}
+            target="_blank"
+            rel="noreferrer"
+            aria-label={`Visit ${partner.name}`}
+            class="mt-6 flex h-7 w-12 items-center justify-center rounded-full bg-black text-white lg:mt-0"
+          >
+            <IconArrowUpRight size={14} stroke={1.75} />
+          </a>
+        ) : (
+          <span class="hidden lg:block" />
+        )}
+      </li>
+    ))}
+  </ul>
+</section>

@@ -1,5 +1,14 @@
 import type { ContentRepository } from "@/domain/content";
-import { ambassadorsPageFixture, dealsFixture, eventsFixture, eventsPageFixture, homePageFixture, roomsFixture, siteSettingsFixture } from "./fixtures";
+import {
+  ambassadorsPageFixture,
+  dealsFixture,
+  eventsFixture,
+  eventsPageFixture,
+  homePageFixture,
+  partnershipsPageFixture,
+  roomsFixture,
+  siteSettingsFixture,
+} from "./fixtures";
 
 export const fixtureRepository: ContentRepository = {
   async getSiteSettings() {
@@ -10,6 +19,9 @@ export const fixtureRepository: ContentRepository = {
   },
   async getAmbassadorsPage() {
     return ambassadorsPageFixture;
+  },
+  async getPartnershipsPage() {
+    return partnershipsPageFixture;
   },
   async getDeals() {
     return dealsFixture;
