@@ -17,7 +17,7 @@ const [settings, page, home] = await Promise.all([repository.getSiteSettings(), 
   <PageIntro intro={page.intro} imageAlt="Vallvidrera at sunset, with Tibidabo in the distance" bodyClass="lg:max-w-[510px]" />
   <InvestorBenefits {...page.benefits} />
   <InvestorFeatures {...page.features} />
-  <MemberDiscounts {...page.band} text={settings.promotion} class="lg:mt-21" />
+  <MemberDiscounts {...page.band} text={settings.promotion} compact class="lg:mt-21" />
   <!-- Figma For Investors keeps the questions in sentence case on desktop. -->
   <Faq {...page.faq} centered uppercase={false} />
   <Newsletter description={home.newsletter.description} class="mt-12" />

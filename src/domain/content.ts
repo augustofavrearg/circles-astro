@@ -245,12 +245,31 @@ export type ForInvestorsPage = {
   faq: FaqSection;
 };
 
+export type TeamMember = {
+  slug: string;
+  name: string;
+  role: string;
+  photo?: string;
+  /** "Learn more" destination; the link is hidden without one. */
+  href?: string;
+};
+
+export type TeamPage = {
+  seo: { title: string; description: string };
+  intro: PageIntro;
+  members: { eyebrow: string; title: string };
+  band: CtaBand;
+  faq: FaqSection;
+};
+
 export interface ContentRepository {
   getSiteSettings(): Promise<SiteSettings>;
   getHomePage(): Promise<HomePage>;
   getAmbassadorsPage(): Promise<AmbassadorsPage>;
   getPartnershipsPage(): Promise<PartnershipsPage>;
   getForInvestorsPage(): Promise<ForInvestorsPage>;
+  getTeamPage(): Promise<TeamPage>;
+  getTeamMembers(): Promise<TeamMember[]>;
   getDeals(): Promise<Deal[]>;
   getEventsPage(): Promise<EventsPage>;
   getEvents(city?: string): Promise<EventSummary[]>;

@@ -9,6 +9,8 @@ import type {
   PartnershipsPage,
   PlaceDetails,
   SiteSettings,
+  TeamMember,
+  TeamPage,
 } from "@/domain/content";
 import type { Room } from "@/domain/booking";
 
@@ -451,6 +453,34 @@ export const forInvestorsPageFixture: ForInvestorsPage = {
   band: { title: "Become an Investor" },
   faq: sharedFaq,
 };
+
+export const teamPageFixture: TeamPage = {
+  seo: {
+    title: "Our team · Circles House",
+    description: "Meet the founders behind Circles House, a culturally diverse international community for digital nomads and entrepreneurs.",
+  },
+  intro: {
+    eyebrow: "Our team",
+    title: "BEHIND CIRCLES",
+    lead: "Countless personal adventures.",
+    body: "Whether you’re a remote-first company or hybrid team, Business Memberships make it easy for your employees to stay comfortable and productive while traveling and working remotely.",
+    note: "We create a culturally diverse international community through digital conscious nomadism.",
+  },
+  members: { eyebrow: "Meet the founders", title: "Our Values that we Share" },
+  // Same destination as "Join us" on Partnerships.
+  band: { title: "Stay longer and Save more", primaryCta: { label: "Join us", href: "/api/auth/login" } },
+  faq: sharedFaq,
+};
+
+// Photos and "Learn more" links are pending.
+export const teamMembersFixture: TeamMember[] = [
+  { slug: "natalia-juncosa", name: "Natalia Juncosa", role: "Co-founder & design director" },
+  { slug: "enric-sole", name: "Enric Sole", role: "Co-founder & CEO" },
+  { slug: "loic-malsch", name: "Loic Malsch", role: "Co-founder" },
+  { slug: "karen-prats", name: "Karen Prats", role: "Co-founder" },
+  { slug: "vanina-arballo", name: "Vanina Arballo", role: "Creative" },
+  { slug: "gui-perdrix", name: "Gui Perdrix", role: "Co-founder" },
+];
 
 export const eventsPageFixture: EventsPage = {
   title: "Live Surrounded by Nature",

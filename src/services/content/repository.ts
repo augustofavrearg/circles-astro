@@ -9,6 +9,8 @@ import {
   partnershipsPageFixture,
   roomsFixture,
   siteSettingsFixture,
+  teamMembersFixture,
+  teamPageFixture,
 } from "./fixtures";
 
 export const fixtureRepository: ContentRepository = {
@@ -26,6 +28,12 @@ export const fixtureRepository: ContentRepository = {
   },
   async getForInvestorsPage() {
     return forInvestorsPageFixture;
+  },
+  async getTeamPage() {
+    return teamPageFixture;
+  },
+  async getTeamMembers() {
+    return teamMembersFixture;
   },
   async getDeals() {
     return dealsFixture;

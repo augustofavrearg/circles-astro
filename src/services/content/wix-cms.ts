@@ -9,6 +9,8 @@ import type {
   HomePage,
   PartnershipsPage,
   SiteSettings,
+  TeamMember,
+  TeamPage,
 } from "@/domain/content";
 import type { Room } from "@/domain/booking";
 
@@ -18,6 +20,8 @@ const COLLECTIONS = {
   ambassadorsPage: "AmbassadorsPage",
   partnershipsPage: "PartnershipsPage",
   forInvestorsPage: "ForInvestorsPage",
+  teamPage: "TeamPage",
+  teamMembers: "TeamMembers",
   rooms: "Rooms",
   deals: "Deals",
   eventsPage: "EventsPage",
@@ -86,12 +90,30 @@ function mapEvent(item: Record<string, unknown>): EventSummary {
   };
 }
 
+function mapTeamMember(item: Record<string, unknown>): TeamMember {
+  const slug = text(item.slug) || text(item._id);
+  const name = text(item.name);
+  if (!slug || !name) throw new Error("Wix CMS team member is missing slug or name.");
+  return {
+    slug,
+    name,
+    role: text(item.role),
+    photo: text(item.photo) || undefined,
+    href: text(item.href) || undefined,
+  };
+}
+
 export const wixCmsRepository: ContentRepository = {
   getSiteSettings: () => getSingleton<SiteSettings>(COLLECTIONS.siteSettings),
   getHomePage: () => getSingleton<HomePage>(COLLECTIONS.homePage),
   getAmbassadorsPage: () => getSingleton<AmbassadorsPage>(COLLECTIONS.ambassadorsPage),
   getPartnershipsPage: () => getSingleton<PartnershipsPage>(COLLECTIONS.partnershipsPage),
   getForInvestorsPage: () => getSingleton<ForInvestorsPage>(COLLECTIONS.forInvestorsPage),
+  getTeamPage: () => getSingleton<TeamPage>(COLLECTIONS.teamPage),
+  async getTeamMembers() {
+    const result = await items.query(COLLECTIONS.teamMembers).eq("published", true).ascending("sortOrder").limit(100).find({ consistentRead: true });
+    return result.items.map((item) => mapTeamMember(item as Record<string, unknown>));
+  },
   getEventsPage: () => getSingleton<EventsPage>(COLLECTIONS.eventsPage),
   async getEvents(city?: string) {
     let query = items.query(COLLECTIONS.events).eq("published", true).ascending("sortOrder").limit(100);
