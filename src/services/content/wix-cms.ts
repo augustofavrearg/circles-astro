@@ -1,5 +1,15 @@
 import { items } from "@wix/data";
-import type { AmbassadorsPage, ContentRepository, Deal, EventSummary, EventsPage, HomePage, PartnershipsPage, SiteSettings } from "@/domain/content";
+import type {
+  AmbassadorsPage,
+  ContentRepository,
+  Deal,
+  EventSummary,
+  EventsPage,
+  ForInvestorsPage,
+  HomePage,
+  PartnershipsPage,
+  SiteSettings,
+} from "@/domain/content";
 import type { Room } from "@/domain/booking";
 
 const COLLECTIONS = {
@@ -7,6 +17,7 @@ const COLLECTIONS = {
   homePage: "HomePage",
   ambassadorsPage: "AmbassadorsPage",
   partnershipsPage: "PartnershipsPage",
+  forInvestorsPage: "ForInvestorsPage",
   rooms: "Rooms",
   deals: "Deals",
   eventsPage: "EventsPage",
@@ -80,6 +91,7 @@ export const wixCmsRepository: ContentRepository = {
   getHomePage: () => getSingleton<HomePage>(COLLECTIONS.homePage),
   getAmbassadorsPage: () => getSingleton<AmbassadorsPage>(COLLECTIONS.ambassadorsPage),
   getPartnershipsPage: () => getSingleton<PartnershipsPage>(COLLECTIONS.partnershipsPage),
+  getForInvestorsPage: () => getSingleton<ForInvestorsPage>(COLLECTIONS.forInvestorsPage),
   getEventsPage: () => getSingleton<EventsPage>(COLLECTIONS.eventsPage),
   async getEvents(city?: string) {
     let query = items.query(COLLECTIONS.events).eq("published", true).ascending("sortOrder").limit(100);

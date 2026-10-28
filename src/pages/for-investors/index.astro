@@ -1,0 +1,24 @@
+---
+import SiteLayout from "@/layouts/SiteLayout.astro";
+import PageIntro from "@/components/sections/PageIntro.astro";
+import InvestorBenefits from "@/components/sections/InvestorBenefits.astro";
+import InvestorFeatures from "@/components/sections/InvestorFeatures.astro";
+import MemberDiscounts from "@/components/sections/MemberDiscounts.astro";
+import Faq from "@/components/sections/Faq.astro";
+import Newsletter from "@/components/sections/Newsletter.astro";
+import { getContentRepository } from "@/services/content/repository";
+
+const repository = await getContentRepository();
+// The newsletter copy lives on the home page content for now.
+const [settings, page, home] = await Promise.all([repository.getSiteSettings(), repository.getForInvestorsPage(), repository.getHomePage()]);
+---
+
+<SiteLayout settings={settings} title={page.seo.title} description={page.seo.description}>
+  <PageIntro intro={page.intro} imageAlt="Vallvidrera at sunset, with Tibidabo in the distance" bodyClass="lg:max-w-[510px]" />
+  <InvestorBenefits {...page.benefits} />
+  <InvestorFeatures {...page.features} />
+  <MemberDiscounts {...page.band} text={settings.promotion} class="lg:mt-21" />
+  <!-- Figma For Investors keeps the questions in sentence case on desktop. -->
+  <Faq {...page.faq} centered uppercase={false} />
+  <Newsletter description={home.newsletter.description} class="mt-12" />
+</SiteLayout>

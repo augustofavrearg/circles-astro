@@ -164,8 +164,13 @@ export type PageIntro = {
   /** Short aside: next to the image on desktop, below it on mobile. */
   note?: string;
   cta?: Link;
+  /** Outlined button shown before `cta`. */
+  secondaryCta?: Link;
   image?: string;
 };
+
+/** Yellow call-to-action band (Partnerships, For Investors); the body reuses the site promotion text. */
+export type CtaBand = { title: string; primaryCta?: Link; secondaryCta?: Link };
 
 export type FaqSection = { eyebrow: string; title: string; items: FaqItem[] };
 
@@ -190,8 +195,7 @@ export type PartnershipsPage = {
   seo: { title: string; description: string };
   intro: PageIntro;
   partners: { eyebrow: string; title: string; featuredLabel: string; items: Partner[] };
-  /** Yellow band: the body reuses the site promotion text. */
-  membership: { title: string; primaryCta?: Link; secondaryCta?: Link };
+  membership: CtaBand;
   faq: FaqSection;
 };
 
@@ -228,11 +232,25 @@ export type EventsPage = {
   cities: { slug: string; name: string }[];
 };
 
+export type InvestorBenefit = { label: string; title: string; text: string; image?: string };
+
+export type InvestorFeature = { title: string; text: string; cta?: Link; image?: string };
+
+export type ForInvestorsPage = {
+  seo: { title: string; description: string };
+  intro: PageIntro;
+  benefits: { eyebrow: string; title: string; items: InvestorBenefit[] };
+  features: { eyebrow: string; title: string; items: InvestorFeature[] };
+  band: CtaBand;
+  faq: FaqSection;
+};
+
 export interface ContentRepository {
   getSiteSettings(): Promise<SiteSettings>;
   getHomePage(): Promise<HomePage>;
   getAmbassadorsPage(): Promise<AmbassadorsPage>;
   getPartnershipsPage(): Promise<PartnershipsPage>;
+  getForInvestorsPage(): Promise<ForInvestorsPage>;
   getDeals(): Promise<Deal[]>;
   getEventsPage(): Promise<EventsPage>;
   getEvents(city?: string): Promise<EventSummary[]>;

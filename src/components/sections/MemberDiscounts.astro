@@ -1,13 +1,14 @@
 ---
-import type { PartnershipsPage } from "@/domain/content";
+import type { CtaBand } from "@/domain/content";
 import Button from "@/components/ui/Button.astro";
+import { cn } from "@/lib/cn";
 
-type Props = PartnershipsPage["membership"] & { text?: string };
-const { title, primaryCta, secondaryCta, text } = Astro.props;
+type Props = CtaBand & { text?: string; class?: string };
+const { title, primaryCta, secondaryCta, text, class: className } = Astro.props;
 ---
 
-<!-- Figma: yellow band — title on top, the members' discount and two actions at the bottom. -->
-<section class="mt-24 px-4 lg:mt-44 lg:px-6">
+<!-- Figma: yellow band (Partnerships, For Investors) — title on top, the members' discount and two actions at the bottom. -->
+<section class={cn("mt-24 px-4 lg:mt-44 lg:px-6", className)}>
   <div class="flex flex-col bg-yellow p-6 lg:min-h-[272px]">
     <h2 class="font-display text-h1 leading-[1.25] lg:leading-[1.15]">{title}</h2>
     <div class="mt-12 lg:mt-auto lg:flex lg:items-end lg:justify-between lg:gap-8">

@@ -1,4 +1,15 @@
-import type { AmbassadorsPage, Deal, EventSummary, EventsPage, FaqSection, HomePage, PartnershipsPage, PlaceDetails, SiteSettings } from "@/domain/content";
+import type {
+  AmbassadorsPage,
+  Deal,
+  EventSummary,
+  EventsPage,
+  FaqSection,
+  ForInvestorsPage,
+  HomePage,
+  PartnershipsPage,
+  PlaceDetails,
+  SiteSettings,
+} from "@/domain/content";
 import type { Room } from "@/domain/booking";
 
 export const siteSettingsFixture: SiteSettings = {
@@ -379,6 +390,65 @@ export const partnershipsPageFixture: PartnershipsPage = {
     // Same destination as "Apply" in the home Memberships section; "Book a Call" is pending.
     primaryCta: { label: "Join us", href: "/api/auth/login" },
   },
+  faq: sharedFaq,
+};
+
+export const forInvestorsPageFixture: ForInvestorsPage = {
+  seo: {
+    title: "For Investors · Circles House",
+    description: "Open the world up to your team with Circles House: homes built for work, a remote community and a dedicated account manager.",
+  },
+  intro: {
+    eyebrow: "For investors",
+    title: "Open the world up to your team.",
+    // Desktop Figma (v1.14); mobile (v1.13) reads "Countless personal adventures."
+    lead: "Unlock new opportunities for your team.",
+    body: "Our team of founders are passionate about building this community of entrepreneurs and making a difference for digital nomads around the world to make them feel like they have a home away from home.",
+    // Desktop ends at "digital conscious."; mobile has the full sentence.
+    note: "We create a culturally diverse international community through digital conscious nomadism.",
+    // "Book a Call" and "Request a Quote" appear once they have destinations.
+  },
+  benefits: {
+    eyebrow: "Benefits",
+    title: "Advantages of Being an Investor",
+    items: [
+      {
+        label: "Locations",
+        title: "Comfortable Homes, Built for Work",
+        text: "Ensure team members stay focused and productive with lightning fast wifi and comfortable workspaces.",
+      },
+      {
+        label: "People",
+        title: "Remote Community",
+        text: "Help employees network with other work-focused professionals to stay happy and connected.",
+      },
+      {
+        label: "Managing",
+        title: "Dedicated Account Manager",
+        text: "Your dedicated Account Manager is always available for any questions.",
+      },
+    ],
+  },
+  features: {
+    eyebrow: "Why invest",
+    title: "Investment Features",
+    items: [
+      {
+        title: "Instant Approval",
+        text: "All employees are granted immediate approval, allowing them to effortlessly bypass the Circles application process. This streamlined approach ensures that they can quickly access the necessary resources and tools without any delays, enhancing overall productivity and efficiency within the organization.",
+      },
+      {
+        title: "Flexible Membership Transfer",
+        text: "In the event that an employee decides to leave the company, it is important to note that their membership can be seamlessly transferred to another employee within the organization. This process ensures that the benefits and privileges associated with the membership are not lost and can continue to be utilized by a new team member, thereby maintaining continuity and support for our workforce.",
+      },
+      {
+        title: "Referral Incentive",
+        // As in Figma; "Outsite" is another coliving brand, so this likely needs to read "Circles".
+        text: "Earn an impressive $500 in Outsite credits by referring a company that has 10 or more employees and successfully signs up with us. This is a fantastic opportunity to not only help your network discover our services but also to reap the rewards for your efforts!",
+      },
+    ],
+  },
+  band: { title: "Become an Investor" },
   faq: sharedFaq,
 };
 

@@ -4,6 +4,7 @@ import {
   dealsFixture,
   eventsFixture,
   eventsPageFixture,
+  forInvestorsPageFixture,
   homePageFixture,
   partnershipsPageFixture,
   roomsFixture,
@@ -22,6 +23,9 @@ export const fixtureRepository: ContentRepository = {
   },
   async getPartnershipsPage() {
     return partnershipsPageFixture;
+  },
+  async getForInvestorsPage() {
+    return forInvestorsPageFixture;
   },
   async getDeals() {
     return dealsFixture;
