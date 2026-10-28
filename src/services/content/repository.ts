@@ -11,6 +11,7 @@ import {
   siteSettingsFixture,
   teamMembersFixture,
   teamPageFixture,
+  whatIsCirclesPageFixture,
 } from "./fixtures";
 
 export const fixtureRepository: ContentRepository = {
@@ -34,6 +35,9 @@ export const fixtureRepository: ContentRepository = {
   },
   async getTeamMembers() {
     return teamMembersFixture;
+  },
+  async getWhatIsCirclesPage() {
+    return whatIsCirclesPageFixture;
   },
   async getDeals() {
     return dealsFixture;

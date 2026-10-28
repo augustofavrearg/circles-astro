@@ -1,0 +1,12 @@
+---
+import Eyebrow from "@/components/ui/Eyebrow.astro";
+
+type Props = { eyebrow: string; text: string };
+const { eyebrow, text } = Astro.props;
+---
+
+<!-- Figma "Why join": a single centered statement. -->
+<section class="px-4 pt-34 text-center lg:px-6 lg:pt-28">
+  <Eyebrow>{eyebrow}</Eyebrow>
+  <p class="mx-auto mt-5 max-w-[340px] font-display text-[2.25rem] leading-[1.15] lg:max-w-[1180px] lg:text-[4.25rem] lg:leading-[1.08]">{text}</p>
+</section>

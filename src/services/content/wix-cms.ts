@@ -11,6 +11,7 @@ import type {
   SiteSettings,
   TeamMember,
   TeamPage,
+  WhatIsCirclesPage,
 } from "@/domain/content";
 import type { Room } from "@/domain/booking";
 
@@ -22,6 +23,7 @@ const COLLECTIONS = {
   forInvestorsPage: "ForInvestorsPage",
   teamPage: "TeamPage",
   teamMembers: "TeamMembers",
+  whatIsCirclesPage: "WhatIsCirclesPage",
   rooms: "Rooms",
   deals: "Deals",
   eventsPage: "EventsPage",
@@ -110,6 +112,7 @@ export const wixCmsRepository: ContentRepository = {
   getPartnershipsPage: () => getSingleton<PartnershipsPage>(COLLECTIONS.partnershipsPage),
   getForInvestorsPage: () => getSingleton<ForInvestorsPage>(COLLECTIONS.forInvestorsPage),
   getTeamPage: () => getSingleton<TeamPage>(COLLECTIONS.teamPage),
+  getWhatIsCirclesPage: () => getSingleton<WhatIsCirclesPage>(COLLECTIONS.whatIsCirclesPage),
   async getTeamMembers() {
     const result = await items.query(COLLECTIONS.teamMembers).eq("published", true).ascending("sortOrder").limit(100).find({ consistentRead: true });
     return result.items.map((item) => mapTeamMember(item as Record<string, unknown>));

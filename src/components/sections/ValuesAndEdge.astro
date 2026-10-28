@@ -1,0 +1,32 @@
+---
+import type { WhatIsCirclesPage } from "@/domain/content";
+import Eyebrow from "@/components/ui/Eyebrow.astro";
+import Media from "@/components/ui/Media.astro";
+
+type Props = Pick<WhatIsCirclesPage, "values" | "edge">;
+const { values, edge } = Astro.props;
+---
+
+<!-- Figma: black values card and red "Beyond the Edge" card, side by side on desktop, stacked on mobile. -->
+<section class="mt-18 grid gap-0 px-4 lg:mt-20 lg:grid-cols-[minmax(0,1fr)_427px] lg:gap-2 lg:px-6">
+  <div class="flex flex-col bg-black p-6 text-white lg:min-h-[766px]">
+    <Eyebrow>{values.eyebrow}</Eyebrow>
+    <h2 class="mt-5 font-display text-h2 leading-[1.08] lg:mt-3">{values.title}</h2>
+    <ul class="mt-16 lg:mt-24">
+      {values.items.map((item) => (
+        <li class="border-b border-white/15 py-4 first:pt-0">
+          <h3 class="font-display text-[2rem] leading-[1.25] uppercase">{item.title}</h3>
+          <p class="mt-1 text-[0.9375rem] leading-[1.4] lg:text-[0.875rem]">{item.text}</p>
+        </li>
+      ))}
+    </ul>
+  </div>
+  <div class="flex flex-col items-center bg-red p-6 text-center lg:min-h-[766px]">
+    <div class="relative aspect-[382/423] w-full overflow-hidden">
+      <Media src={edge.image} alt="A member reading in a Circles House bedroom" />
+    </div>
+    <h2 class="mt-9 font-display text-[2rem] leading-[1.2] uppercase lg:mt-8">{edge.title}</h2>
+    <p class="mt-5 max-w-[360px] text-[0.9375rem] leading-[1.4] lg:mt-4 lg:text-[0.875rem]">{edge.text}</p>
+    {edge.footnote && <p class="mt-auto pt-24 text-detail lg:pt-12">{edge.footnote}</p>}
+  </div>
+</section>

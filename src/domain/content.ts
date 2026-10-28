@@ -262,6 +262,17 @@ export type TeamPage = {
   faq: FaqSection;
 };
 
+export type WhatIsCirclesPage = {
+  seo: { title: string; description: string };
+  intro: PageIntro;
+  purpose: { eyebrow: string; text: string };
+  values: { eyebrow: string; title: string; items: { title: string; text: string }[] };
+  edge: { title: string; text: string; footnote?: string; image?: string };
+  /** `lead` and `paragraphs` keep Figma's line breaks. */
+  manifesto: { eyebrow: string; title: string; lead: string; paragraphs: string[]; images: string[] };
+  faq: FaqSection;
+};
+
 export interface ContentRepository {
   getSiteSettings(): Promise<SiteSettings>;
   getHomePage(): Promise<HomePage>;
@@ -270,6 +281,7 @@ export interface ContentRepository {
   getForInvestorsPage(): Promise<ForInvestorsPage>;
   getTeamPage(): Promise<TeamPage>;
   getTeamMembers(): Promise<TeamMember[]>;
+  getWhatIsCirclesPage(): Promise<WhatIsCirclesPage>;
   getDeals(): Promise<Deal[]>;
   getEventsPage(): Promise<EventsPage>;
   getEvents(city?: string): Promise<EventSummary[]>;

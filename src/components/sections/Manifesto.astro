@@ -1,0 +1,23 @@
+---
+import type { WhatIsCirclesPage } from "@/domain/content";
+import Eyebrow from "@/components/ui/Eyebrow.astro";
+import { ManifestoGallery } from "@/islands/ManifestoGallery";
+
+type Props = WhatIsCirclesPage["manifesto"];
+const { eyebrow, title, lead, paragraphs, images } = Astro.props;
+---
+
+<!-- Figma "Manifesto": full-width red band — copy on the left, photo gallery on the right (stacked on mobile). -->
+<section class="mt-30 bg-red px-4 py-10 lg:mt-28 lg:grid lg:grid-cols-[minmax(0,1fr)_552px] lg:gap-x-12 lg:px-6 lg:py-6">
+  <div class="lg:pt-6">
+    <Eyebrow>{eyebrow}</Eyebrow>
+    <h2 class="mt-6 font-display text-[2.25rem] leading-[1.2] lg:mt-8 lg:text-[3.625rem]">{title}</h2>
+    <p class="mt-5 font-display text-[2rem] leading-[1.25] whitespace-pre-line lg:max-w-[560px] lg:text-[1.875rem]">{lead}</p>
+    <div class="mt-5 max-w-[620px] text-[0.9375rem] leading-[1.4] lg:text-[0.875rem]">
+      {paragraphs.map((paragraph) => <p class="mb-6 whitespace-pre-line last:mb-0">{paragraph}</p>)}
+    </div>
+  </div>
+  <div class="mt-12 aspect-[396/536] lg:mt-0 lg:aspect-auto lg:h-[718px]">
+    <ManifestoGallery client:visible images={images} label={`${eyebrow} photos`} />
+  </div>
+</section>

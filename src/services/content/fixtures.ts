@@ -11,6 +11,7 @@ import type {
   SiteSettings,
   TeamMember,
   TeamPage,
+  WhatIsCirclesPage,
 } from "@/domain/content";
 import type { Room } from "@/domain/booking";
 
@@ -481,6 +482,63 @@ export const teamMembersFixture: TeamMember[] = [
   { slug: "vanina-arballo", name: "Vanina Arballo", role: "Creative" },
   { slug: "gui-perdrix", name: "Gui Perdrix", role: "Co-founder" },
 ];
+
+export const whatIsCirclesPageFixture: WhatIsCirclesPage = {
+  seo: {
+    title: "What is Circles · Circles House",
+    description: "One community, one home worldwide: a global boutique coliving chain for self-starters, entrepreneurs and creators.",
+  },
+  intro: {
+    eyebrow: "What is Circles",
+    title: "ONE COMMUNITY, ONE HOME WORLDWIDE",
+    lead: "A multitude of life journeys.",
+    body: "Our mission is to build a global and decentralized modern boutique coliving chain for self-starters, entrepreneurs, and creators focused on creating meaningful relationships.\nWe strive to inspire humans to embrace digital nomadism and live a fulfilling life by exploring the world and working remotely.",
+    note: "We create a culturally diverse international community through digital conscious nomadism.",
+  },
+  purpose: {
+    eyebrow: "Why join",
+    text: "Here at Circles, our primary purpose is to create a culturally diverse international community through digital conscious nomadism.",
+  },
+  values: {
+    eyebrow: "Why join",
+    title: "Our Values that we Share",
+    items: [
+      {
+        title: "Human centric",
+        text: "We bring humans to the center of every decision. Kindness, love, respect, genuinity and the desire to see your peers grow is key to creating personal and professional relationships that will last a lifetime.",
+      },
+      {
+        title: "Creativity",
+        text: "Innovation, design, and passion are fundamental elements of Circles. Every detail says something, we innovate to make a difference, and our passion for design makes us unique.",
+      },
+      {
+        title: "Wellbeing",
+        text: "When you co—live at Circles, life is about enjoying the ride and having experiences that focus on wellbeing and personal growth. Find your purpose and thrive!",
+      },
+      {
+        title: "Inner sense of accountability",
+        text: "We believe in doing things that matter and being worldly conscious individuals. We strive to do more with less and we are always thinking about how to create a positive impact for ourselves, others, and our planet as a collective.",
+      },
+    ],
+  },
+  edge: {
+    title: "Beyond the edge",
+    text: "Sometimes pushing yourself to do things that make you uncomfortable is the best way to grow as a person. Explore every ambitious aspect outside of your comfort zone to live a brave and enriching life.",
+    footnote: "Diamonds are made from pressure and so are we as humans.",
+  },
+  manifesto: {
+    eyebrow: "Manifesto",
+    title: "Our Invitation",
+    lead: "To the curious, the courageous, the creatives, the doers—\nYou are welcome here.",
+    paragraphs: [
+      "At Circles House, we believe in a new way of living and working—one that challenges isolation, fuels purpose, and cultivates connection. We are the intersection of human relationships, meaningful work, and personal wellbeing. Here, life isn’t compartmentalized—living and working converge into a richer, more intentional existence.",
+      "We exist to reinvent what it means to be home and what it means to build.\nIn a world fragmented by endless screens and solo pursuits, we choose community, collaboration, and consciousness.\nWe empower individuals to be creators of impact, not just consumers of space.",
+    ],
+    // Gallery photos are pending; the arrows appear once there is more than one.
+    images: [],
+  },
+  faq: sharedFaq,
+};
 
 export const eventsPageFixture: EventsPage = {
   title: "Live Surrounded by Nature",
