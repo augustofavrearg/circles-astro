@@ -1,0 +1,33 @@
+---
+import { IconHome, IconShield } from "@tabler/icons-react";
+import type { LocationPage, SpaceAmenity } from "@/domain/content";
+import Button from "@/components/ui/Button.astro";
+import Eyebrow from "@/components/ui/Eyebrow.astro";
+import Media from "@/components/ui/Media.astro";
+
+type Props = LocationPage["hero"]["card"] & { image?: string; photosAlt: string };
+const { eyebrow, title, text, cta, amenities, access, image, photosAlt } = Astro.props;
+const AMENITY_LABELS: Record<SpaceAmenity, string> = { coliving: "Coliving", coworking: "Coworking" };
+---
+
+<!--
+  Figma "Location - Barcelona" hero: full-bleed photo with a white card (eyebrow, title, text, Book, amenities).
+  Mobile: the card overlaps the bottom of the photo. "See all Photos" waits for the gallery photos.
+-->
+<section class="relative lg:flex lg:h-[762px] lg:items-center">
+  <div class="relative h-[420px] overflow-hidden lg:absolute lg:inset-0 lg:h-auto">
+    <Media src={image} alt={photosAlt} eager />
+  </div>
+  <div class="relative mx-4 -mt-16 flex flex-col bg-background p-6 lg:mx-0 lg:mt-0 lg:ml-6 lg:min-h-[475px] lg:w-[425px] lg:p-6">
+    <Eyebrow>{eyebrow}</Eyebrow>
+    <h2 class="mt-12 font-display text-[2rem] leading-[1.2] lg:mt-auto lg:text-[2.125rem]">{title}</h2>
+    <p class="mt-4 text-[0.9375rem] leading-[1.45] lg:text-[0.8125rem]">{text}</p>
+    {cta && <Button href={cta.href} class="mt-8 self-start">{cta.label}</Button>}
+    <ul class="mt-8 flex flex-wrap gap-x-5 gap-y-2 border-t border-black/12 pt-3 text-detail text-black/60">
+      {amenities.map((amenity) => (
+        <li class="flex items-center gap-1.5"><IconHome size={14} stroke={1.25} aria-hidden="true" />{AMENITY_LABELS[amenity]}</li>
+      ))}
+      {access && <li class="flex items-center gap-1.5"><IconShield size={14} stroke={1.25} aria-hidden="true" />{access}</li>}
+    </ul>
+  </div>
+</section>

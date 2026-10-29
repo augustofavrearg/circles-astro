@@ -9,6 +9,7 @@ import type {
   ForInvestorsPage,
   HomePage,
   LifePage,
+  LocationPage,
   MembershipsPage,
   MonthPage,
   PartnershipsPage,
@@ -32,6 +33,7 @@ const COLLECTIONS = {
   monthPages: "MonthPages",
   coworkingPages: "CoworkingPages",
   lifePage: "LifePage",
+  locationPages: "LocationPages",
   rooms: "Rooms",
   deals: "Deals",
   eventsPage: "EventsPage",
@@ -136,6 +138,10 @@ export const wixCmsRepository: ContentRepository = {
   async getCoworkingPage(city: string) {
     const result = await items.query(COLLECTIONS.coworkingPages).eq("city", city).eq("published", true).limit(1).find({ consistentRead: true });
     return result.items[0] as unknown as CoworkingPage | undefined;
+  },
+  async getLocationPage(slug: string) {
+    const result = await items.query(COLLECTIONS.locationPages).eq("slug", slug).eq("published", true).limit(1).find({ consistentRead: true });
+    return result.items[0] as unknown as LocationPage | undefined;
   },
   async getMonthPage(slug: string) {
     const result = await items.query(COLLECTIONS.monthPages).eq("slug", slug).eq("published", true).limit(1).find({ consistentRead: true });

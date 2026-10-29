@@ -378,6 +378,28 @@ export type LifePage = {
   faq: FaqSection;
 };
 
+/** A photo with a caption, as in the location pages' "Travel slowly" carousel. */
+export type Experience = { title: string; text: string; image?: string; wide?: boolean };
+
+export type LocationPage = {
+  /** City slug, e.g. "barcelona"; also picks the rooms and the default events filter. */
+  slug: string;
+  seo: { title: string; description: string };
+  hero: {
+    eyebrow: string;
+    title: string;
+    image?: string;
+    card: { eyebrow: string; title: string; text: string; cta?: Link; amenities: SpaceAmenity[]; access?: string };
+  };
+  space: { title: string; text: string; amenitiesLabel: string; amenities: string[]; image?: string };
+  rooms: { eyebrow: string; title: string; text: string };
+  band: CtaBand;
+  experiences: { eyebrow: string; title: string; subtitle: string; items: Experience[] };
+  location: { eyebrow: string; title: string; text: string; mapImage?: string; mapHref?: string };
+  manager: { eyebrow: string; title: string; paragraphs: string[]; image?: string };
+  faq: FaqSection;
+};
+
 export interface ContentRepository {
   getSiteSettings(): Promise<SiteSettings>;
   getHomePage(): Promise<HomePage>;
@@ -391,6 +413,7 @@ export interface ContentRepository {
   getMonthPage(slug: string): Promise<MonthPage | undefined>;
   getCoworkingPage(city: string): Promise<CoworkingPage | undefined>;
   getLifePage(): Promise<LifePage>;
+  getLocationPage(slug: string): Promise<LocationPage | undefined>;
   getDeals(): Promise<Deal[]>;
   getEventsPage(): Promise<EventsPage>;
   getEvents(city?: string): Promise<EventSummary[]>;

@@ -1,0 +1,121 @@
+---
+import { IconMapPinFilled } from "@tabler/icons-react";
+import SiteLayout from "@/layouts/SiteLayout.astro";
+import LocationHero from "@/components/sections/LocationHero.astro";
+import RoomCard from "@/components/sections/RoomCard.astro";
+import MemberDiscounts from "@/components/sections/MemberDiscounts.astro";
+import ExperiencesCarousel from "@/components/sections/ExperiencesCarousel.astro";
+import Testimonials from "@/components/sections/Testimonials.astro";
+import HouseManager from "@/components/sections/HouseManager.astro";
+import Faq from "@/components/sections/Faq.astro";
+import Newsletter from "@/components/sections/Newsletter.astro";
+import Button from "@/components/ui/Button.astro";
+import Eyebrow from "@/components/ui/Eyebrow.astro";
+import Media from "@/components/ui/Media.astro";
+import SectionHeading from "@/components/ui/SectionHeading.astro";
+import { BookingSearch } from "@/islands/BookingSearch";
+import { EventsFilter } from "@/islands/EventsFilter";
+import { SectionTabs } from "@/islands/SectionTabs";
+import { createCloudbedsProvider } from "@/services/booking/cloudbeds";
+import { getContentRepository } from "@/services/content/repository";
+
+const repository = await getContentRepository();
+const page = await repository.getLocationPage(Astro.params.city ?? "");
+if (!page) return new Response("Not found", { status: 404 });
+
+// Reviews, "Happening now" and the newsletter copy come from the home page content for now.
+const [settings, rooms, home] = await Promise.all([repository.getSiteSettings(), repository.getRooms(page.slug), repository.getHomePage()]);
+const booking = createCloudbedsProvider(import.meta.env.CLOUDBEDS_ALLOWED_ORIGIN);
+const { happeningNow } = home;
+const eventsCity = happeningNow.cities.find((city) => city.toLowerCase() === page.slug) ?? "all";
+
+const tabs = [
+  { label: "Space", href: "#space" },
+  { label: "Rooms", href: "#rooms" },
+  { label: "Experiences", href: "#experiences" },
+  { label: "Location", href: "#location" },
+  { label: "Reviews", href: "#reviews" },
+  { label: "FAQ", href: "#faq" },
+];
+---
+
+<SiteLayout settings={settings} title={page.seo.title} description={page.seo.description}>
+  <!-- Figma "Location - Barcelona": centered title, dates and guests, then the hero photo. -->
+  <section class="px-4 pt-8 pb-6 text-center lg:px-6 lg:pt-14 lg:pb-7">
+    <Eyebrow>{page.hero.eyebrow}</Eyebrow>
+    <h1 class="mt-2 font-display text-h1 leading-[1.2] lg:leading-(--text-h1--line-height)">{page.hero.title}</h1>
+    <BookingSearch client:load fixedLocation={page.slug} className="mt-8 text-left lg:mt-14" />
+  </section>
+
+  <LocationHero {...page.hero.card} image={page.hero.image} photosAlt={`${page.hero.title} building`} />
+  <SectionTabs client:load tabs={tabs} label={`${page.hero.title} sections`} />
+
+  <section id="space" class="grid scroll-mt-32 gap-10 px-4 pt-12 lg:grid-cols-[minmax(0,1fr)_635px] lg:gap-12 lg:px-6 lg:pt-12">
+    <div class="flex flex-col">
+      <h2 class="max-w-[560px] font-display text-[2rem] leading-[1.2] lg:text-[2.125rem]">{page.space.title}</h2>
+      <p class="mt-3 max-w-[640px] text-[0.9375rem] leading-[1.45] lg:text-[0.8125rem]">{page.space.text}</p>
+      <h3 class="mt-12 text-detail uppercase lg:mt-16">{page.space.amenitiesLabel}</h3>
+      <ul class="mt-3 flex max-w-[560px] flex-wrap gap-1">
+        {page.space.amenities.map((amenity) => <li class="rounded-xs bg-black/8 px-2 py-1 text-detail">{amenity}</li>)}
+      </ul>
+    </div>
+    <div class="relative aspect-[635/470] overflow-hidden">
+      <Media src={page.space.image} alt="" />
+    </div>
+  </section>
+
+  <section id="rooms" class="scroll-mt-32 px-4 pt-28 lg:px-6">
+    <header class="text-center">
+      <Eyebrow>{page.rooms.eyebrow}</Eyebrow>
+      <h2 class="mt-3 font-display text-[2.375rem] leading-[1.3] uppercase lg:text-[2.25rem] lg:leading-[1.2]">{page.rooms.title}</h2>
+      <p class="mx-auto mt-3 max-w-[600px] text-[0.9375rem] leading-[1.45] lg:max-w-[820px] lg:text-[0.8125rem]">{page.rooms.text}</p>
+      <BookingSearch client:visible fixedLocation={page.slug} className="mx-auto mt-8 max-w-[860px] text-left lg:mt-12" />
+    </header>
+    <div class="mt-16 grid gap-4 lg:mt-24 lg:grid-cols-2 lg:gap-3">
+      {rooms.map((room) => <RoomCard room={room} bookingHref={booking.getRedirect(room).toString()} />)}
+    </div>
+  </section>
+
+  <MemberDiscounts {...page.band} text={settings.promotion} compact class="mt-4 lg:mt-3" />
+
+  <ExperiencesCarousel id="experiences" {...page.experiences} />
+
+  <section id="location" class="scroll-mt-32 px-4 pt-28 lg:px-6 lg:pt-36">
+    <header class="text-center">
+      <Eyebrow>{page.location.eyebrow}</Eyebrow>
+      <h2 class="mt-3 font-display text-[2.375rem] leading-[1.2] lg:text-[2.5rem]">{page.location.title}</h2>
+      <p class="mx-auto mt-6 max-w-[860px] text-[0.9375rem] leading-[1.45] lg:text-[0.8125rem]">{page.location.text}</p>
+    </header>
+    <div class="relative mt-12 h-[420px] overflow-hidden bg-surface lg:mt-12 lg:h-[720px]">
+      {page.location.mapImage && <Media src={page.location.mapImage} alt="" />}
+      {page.location.mapHref ? (
+        <a href={page.location.mapHref} target="_blank" rel="noreferrer" aria-label={`Open ${page.hero.title} in Google Maps`} class="absolute inset-0 flex items-center justify-center">
+          <IconMapPinFilled size={28} className="text-red" aria-hidden="true" />
+        </a>
+      ) : (
+        <span class="absolute inset-0 flex items-center justify-center"><IconMapPinFilled size={28} className="text-red" aria-hidden="true" /></span>
+      )}
+    </div>
+  </section>
+
+  <div id="reviews" class="scroll-mt-32">
+    <Testimonials testimonials={home.testimonials} />
+  </div>
+
+  <HouseManager {...page.manager} />
+  <Faq {...page.faq} centered uppercase={false} />
+
+  {happeningNow.events.length > 0 && (
+    <section class="pt-28">
+      <div class="flex items-end justify-between gap-4 lg:pr-6">
+        <SectionHeading eyebrow={happeningNow.eyebrow} title={happeningNow.title} class="w-full lg:w-auto" />
+        <Button href="/events" variant="secondary" class="hidden lg:inline-flex">{happeningNow.viewAll.label}</Button>
+      </div>
+      <div class="mt-7">
+        <EventsFilter client:visible events={happeningNow.events} cities={happeningNow.cities} initialCity={eventsCity} />
+      </div>
+    </section>
+  )}
+
+  <Newsletter description={home.newsletter.description} class="mt-12" />
+</SiteLayout>

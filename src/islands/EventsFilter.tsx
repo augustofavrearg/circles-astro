@@ -1,8 +1,9 @@
 import { useMemo, useState } from "react";
 import type { CircleEvent } from "@/domain/content";
 
-export function EventsFilter({ events, cities }: { events: CircleEvent[]; cities: string[] }) {
-  const [city, setCity] = useState("all");
+/** `initialCity`: the city selected on load (the location pages start on their own city). */
+export function EventsFilter({ events, cities, initialCity = "all" }: { events: CircleEvent[]; cities: string[]; initialCity?: string }) {
+  const [city, setCity] = useState(initialCity);
   const visible = useMemo(() => (city === "all" ? events : events.filter((event) => event.city === city)), [city, events]);
 
   return (

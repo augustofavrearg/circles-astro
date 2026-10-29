@@ -8,6 +8,7 @@ import {
   forInvestorsPageFixture,
   homePageFixture,
   lifePageFixture,
+  locationPagesFixture,
   membershipsPageFixture,
   monthPagesFixture,
   partnershipsPageFixture,
@@ -48,6 +49,9 @@ export const fixtureRepository: ContentRepository = {
   },
   async getLifePage() {
     return lifePageFixture;
+  },
+  async getLocationPage(slug: string) {
+    return locationPagesFixture.find((page) => page.slug === slug);
   },
   async getCoworkingPage(city: string) {
     return coworkingPagesFixture.find((page) => page.city === city);

@@ -8,6 +8,7 @@ import type {
   ForInvestorsPage,
   HomePage,
   LifePage,
+  LocationPage,
   MembershipsPage,
   MonthPage,
   PartnershipsPage,
@@ -89,7 +90,7 @@ const barcelonaDetails: PlaceDetails = {
   amenities: ["coliving", "coworking"],
   directions: "20 minutes from Gràcia by public transport.",
   cta: { label: "Book Now", href: "/rooms?location=barcelona" },
-  // "Learn more" goes here once the Barcelona location page exists.
+  page: { label: "Learn more", href: "/locations/barcelona" },
 };
 
 export const homePageFixture: HomePage = {
@@ -772,6 +773,77 @@ export const lifePageFixture: LifePage = {
   faq: sharedFaq,
 };
 
+// Figma "Location - Barcelona" words two questions slightly differently from the shared FAQ.
+const locationFaq: FaqSection = {
+  ...sharedFaq,
+  items: sharedFaq.items.map((item, index) =>
+    index === 0 ? { ...item, question: "How do I get to Circle’s house?" } : index === 3 ? { ...item, question: "What’s included during my stay?" } : item,
+  ),
+};
+
+export const locationPagesFixture: LocationPage[] = [
+  {
+    slug: "barcelona",
+    seo: {
+      title: "Circles House Barcelona",
+      description: "Modern private lofts and shared rooftop spaces to live, work & play, a short walk from the metro in Vallvidrera.",
+    },
+    hero: {
+      eyebrow: "Location",
+      title: "Circles House Barcelona",
+      image: "/home/circles-front.png",
+      // "See all Photos" appears once the gallery has photos.
+      card: {
+        eyebrow: "The space",
+        title: "Your new home in Barcelona’s Gothic Quarter.",
+        text: "Located in a natural park and only a 5 minute walk from a metro station, our house in Vallvidrera is well-located and allows you to get anywhere quickly and easily.",
+        cta: { label: "Book", href: "#rooms" },
+        amenities: ["coliving", "coworking"],
+        access: "Members only",
+      },
+    },
+    space: {
+      title: "Modern private lofts and shared rooftop spaces to live, work & play.",
+      text: "Circles House is a thriving community of entrepreneurs, digital nomads, and innovators. To ensure everyone is a good fit and adds value to our unique ecosystem, we’ve designed a simple and quick application process.",
+      amenitiesLabel: "Property amenities",
+      // Only the amenities fully legible in the Figma captures; the rest are pending.
+      amenities: ["A/C in rooms", "Free Wi-Fi", "Laundry service"],
+    },
+    rooms: {
+      eyebrow: "Rooms",
+      title: "A room for your needs",
+      text: "Our house offers a range of thoughtfully designed rooms to suit various lifestyles, combining luxury and functionality. Whether you’re looking for a monthly stay or a flexible option, we’ve got you covered.",
+    },
+    band: { title: "Stay longer and Save more", primaryCta: { label: "Join us", href: "/api/auth/login" } },
+    experiences: {
+      eyebrow: "Experience",
+      title: "Travel slowly in Barcelona",
+      subtitle: "Take your time, get to know the city",
+      // Photos are pending.
+      items: [
+        { title: "Explore the Gothic Quarter", text: "Amble between centuries old architecture and hole-in-the-wall tapas bars" },
+        { title: "Swim at Barceloneta", text: "Your local beach is just 15 minutes on foot", wide: true },
+      ],
+    },
+    location: {
+      eyebrow: "Location",
+      title: "In the Heart of the Gothic Quarter",
+      text: "Located in a natural park and only a 5 minute walk from a metro station, our house in Vallvidrera is well-located and allows you to get anywhere quickly and easily. Whether you want to go to the heart of Placa Catalunya, Barceloneta beach, or the mountains, the proximity of our house to the metro means all of this is possible.",
+      // The map image is pending; the link opens the address in Google Maps.
+      mapHref: "https://www.google.com/maps/search/?api=1&query=Cam%C3%AD%20de%20Vallvidrera%20al%20Tibidabo%2C%205%2C%2008017%20Barcelona",
+    },
+    manager: {
+      eyebrow: "Meet your House Manager",
+      title: "Hi, I'm Teagan, community manager.",
+      paragraphs: [
+        "I’ll make sure you will enjoy your time in Circles House—whether that’s joining our events, discovering the best work spots, or connecting with like-minded members who make this place special.",
+        "Connect with fellow members who share your passions and interests, you’ll find that this community is what makes Circles House a truly special place to be.",
+      ],
+    },
+    faq: locationFaq,
+  },
+];
+
 export const eventsPageFixture: EventsPage = {
   title: "Live Surrounded by Nature",
   subtitle: "See What Makes our Inspiring Coworking Spaces Perfect for Entrepreneurs and Innovators",
@@ -844,5 +916,42 @@ export const roomsFixture: Room[] = [
     image: "/home/andorra-panoremic.png",
     description: "Our brightest room, designed for long stays and slow mornings above the city.",
     bookingUrl: "https://hotels.cloudbeds.com/",
+  },
+  // From Figma "Location - Barcelona"; photos are pending.
+  {
+    id: "queen-room",
+    name: "Queen Room",
+    locationId: "barcelona",
+    locationName: "Circles House Barcelona",
+    description: "Private room with a single bed and ensuite bathroom, featuring a dedicated desk, wardrobe and A/C.",
+    bookingUrl: "https://hotels.cloudbeds.com/",
+    houseLabel: "Barcelona House",
+    features: ["20m2", "Shared Bathroom", "Terrace", "Desk", "360º View", "Couple friendly"],
+    views: "Mountain View",
+    price: { label: "Starting from", value: "$1.900€/month" },
+  },
+  {
+    id: "4-bed-shared-suite",
+    name: "4 Bed Shared Suite",
+    locationId: "barcelona",
+    locationName: "Circles House Barcelona",
+    description: "Private room with a single bed and ensuite bathroom, featuring a dedicated desk, wardrobe and A/C.",
+    bookingUrl: "https://hotels.cloudbeds.com/",
+    houseLabel: "Barcelona House",
+    features: ["20m2", "Bathroom", "Terrace", "Desk", "360º View", "Couple friendly"],
+    views: "Sea View + City View",
+    price: { label: "Starting from", value: "$1.900€/month" },
+  },
+  {
+    id: "6-bed-shared-suite",
+    name: "6 Bed Shared Suite",
+    locationId: "barcelona",
+    locationName: "Circles House Barcelona",
+    description: "Private room with a single bed and ensuite bathroom, featuring a dedicated desk, wardrobe and A/C.",
+    bookingUrl: "https://hotels.cloudbeds.com/",
+    houseLabel: "Barcelona House",
+    features: ["20m2", "Bathroom", "Terrace", "Desk", "360º View", "Couple friendly"],
+    views: "Sea View + City View",
+    price: { label: "Starting from", value: "$1.900€/month" },
   },
 ];

@@ -26,9 +26,13 @@ function Segment({ label, value, placeholder, className = "", children }: { labe
 
 const nativeControl = "absolute inset-0 size-full cursor-pointer appearance-none opacity-0";
 
-export function BookingSearch({ locations }: { locations: SearchLocation[] }) {
+/**
+ * `fixedLocation`: the location pages' bar (Figma "Location - Barcelona") — dates and guests only,
+ * always expanded, stretched to its container.
+ */
+export function BookingSearch({ locations = [], fixedLocation, className = "" }: { locations?: SearchLocation[]; fixedLocation?: string; className?: string }) {
   const available = locations.filter((location) => !location.comingSoon);
-  const [location, setLocation] = useState("");
+  const [location, setLocation] = useState(fixedLocation ?? "");
   const [checkIn, setCheckIn] = useState("");
   const [checkOut, setCheckOut] = useState("");
   const [guests, setGuests] = useState("1");
@@ -62,7 +66,7 @@ export function BookingSearch({ locations }: { locations: SearchLocation[] }) {
 
   return (
     <>
-      {!expanded && (
+      {!expanded && !fixedLocation && (
         <div className="flex items-center gap-0.5 lg:hidden">
           <button
             type="button"
@@ -78,18 +82,29 @@ export function BookingSearch({ locations }: { locations: SearchLocation[] }) {
           </a>
         </div>
       )}
-    <form id="booking-search" onSubmit={submit} aria-label="Search stays" className={`${expanded ? "grid" : "hidden lg:grid"} w-full max-w-[873px] grid-cols-2 gap-0.75 xl:flex xl:items-center`}>
-      <Segment label="Location" value={locationName} placeholder="Anywhere" className="col-span-2 rounded-lg xl:w-[269px] xl:shrink-0">
-        <select ref={locationRef} value={location} onChange={(event) => setLocation(event.target.value)} className={nativeControl}>
-          <option value="">Anywhere</option>
-          {available.map((item) => (
-            <option key={item.slug} value={item.slug}>
-              {item.city}
-            </option>
-          ))}
-        </select>
-      </Segment>
-      <div className="col-span-2 flex min-w-0 gap-px xl:w-[369px] xl:shrink-0">
+    <form
+      id={fixedLocation ? undefined : "booking-search"}
+      onSubmit={submit}
+      aria-label="Search stays"
+      className={
+        fixedLocation
+          ? `grid w-full grid-cols-[minmax(0,1fr)_auto] gap-0.75 sm:flex sm:items-center ${className}`
+          : `${expanded ? "grid" : "hidden lg:grid"} w-full max-w-[873px] grid-cols-2 gap-0.75 xl:flex xl:items-center ${className}`
+      }
+    >
+      {!fixedLocation && (
+        <Segment label="Location" value={locationName} placeholder="Anywhere" className="col-span-2 rounded-lg xl:w-[269px] xl:shrink-0">
+          <select ref={locationRef} value={location} onChange={(event) => setLocation(event.target.value)} className={nativeControl}>
+            <option value="">Anywhere</option>
+            {available.map((item) => (
+              <option key={item.slug} value={item.slug}>
+                {item.city}
+              </option>
+            ))}
+          </select>
+        </Segment>
+      )}
+      <div className={fixedLocation ? "col-span-2 flex min-w-0 gap-px sm:flex-1" : "col-span-2 flex min-w-0 gap-px xl:w-[369px] xl:shrink-0"}>
         <Segment label="Check in" value={formatDate(checkIn)} placeholder="Add dates" className="flex-1 rounded-l-lg">
           <input
             type="date"
@@ -106,7 +121,7 @@ export function BookingSearch({ locations }: { locations: SearchLocation[] }) {
           <input type="date" value={checkOut} min={checkIn || undefined} onChange={(event) => setCheckOut(event.target.value)} onClick={showPicker} className={nativeControl} />
         </Segment>
       </div>
-      <Segment label="Guests" value={guests} placeholder="1" className="rounded-lg xl:w-[168px] xl:shrink-0 [&>span>span:first-child]:text-black/45">
+      <Segment label="Guests" value={guests} placeholder="1" className={`rounded-lg [&>span>span:first-child]:text-black/45 ${fixedLocation ? "sm:w-[168px] sm:shrink-0" : "xl:w-[168px] xl:shrink-0"}`}>
         <select value={guests} onChange={(event) => setGuests(event.target.value)} className={nativeControl}>
           {GUEST_OPTIONS.map((count) => (
             <option key={count} value={count}>
