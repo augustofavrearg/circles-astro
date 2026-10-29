@@ -8,22 +8,22 @@ const { items } = Astro.props;
 
 <!--
   Figma "Life @ Circles": grey stat cards (illustration, big number, label) alternating with
-  photos that carry a red title. Mobile frame only; on desktop each pair sits side by side.
+  photos that carry a red title. Desktop: two columns, the photo switching sides on every other row.
 -->
-<section class="mt-12 grid gap-2 px-4 lg:grid-cols-2 lg:px-6">
-  {items.map((item) => (
-    <>
-      <div class="flex aspect-[408/412] flex-col items-center justify-center bg-surface px-6 text-center">
+<section class="mt-12 grid grid-cols-1 gap-2 px-4 lg:mt-10 lg:gap-1.5 lg:px-3">
+  {items.map((item, index) => (
+    <div class="grid grid-cols-1 gap-2 lg:grid-cols-2 lg:gap-1.5">
+      <div class:list={["flex aspect-[408/412] flex-col items-center justify-center bg-surface px-6 text-center lg:aspect-[668/445]", index % 2 === 1 && "lg:order-2"]}>
         <div class="size-[110px]">
           {item.stat.illustration && <img src={item.stat.illustration} alt="" loading="lazy" class="size-full object-contain" />}
         </div>
         <p class="mt-4 font-display text-[6.25rem] leading-[1.1]">{item.stat.value}</p>
         <p class="mt-6 text-[0.9375rem]">{item.stat.label}</p>
       </div>
-      <div class="relative flex aspect-[408/412] items-center justify-center overflow-hidden">
+      <div class:list={["relative flex aspect-[408/412] items-center justify-center overflow-hidden lg:aspect-[668/445]", index % 2 === 1 && "lg:order-1"]}>
         <Media src={item.photo.image} alt="" />
-        <h2 class="relative px-6 text-center font-display text-[3.5rem] leading-[1.05] text-red">{item.photo.title}</h2>
+        <h2 class="relative px-6 text-center font-display text-[3.5rem] leading-[1.05] text-red lg:text-[3.875rem]">{item.photo.title}</h2>
       </div>
-    </>
+    </div>
   ))}
 </section>

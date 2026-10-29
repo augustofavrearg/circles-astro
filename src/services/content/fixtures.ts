@@ -763,7 +763,12 @@ export const lifePageFixture: LifePage = {
     { stat: { value: "68%", label: "Members Engaged in Wellness Activities" }, photo: { title: "Collaboration" } },
   ],
   spaces: barcelonaCoworkingSpaces,
-  band: { title: "Stay longer and Save more", primaryCta: { label: "Join us", href: "/api/auth/login" } },
+  // Desktop Figma (v1.14); mobile shows "Stay longer and Save more" with "Join us".
+  band: {
+    title: "Become a Member",
+    secondaryCta: { label: "Book a Stay", href: "/rooms" },
+    primaryCta: { label: "Become a member", href: "/memberships" },
+  },
   faq: sharedFaq,
 };
 
