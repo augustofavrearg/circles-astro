@@ -335,6 +335,35 @@ export type MonthPage = {
   faq: FaqSection;
 };
 
+export type CoworkingAmenity = "wifi" | "booths" | "meeting" | "printing" | "gym" | "events" | "rooftop";
+
+export type CoworkingPlan = {
+  title: string;
+  subtitle: string;
+  includes: string[];
+  price: string;
+  /** Shown on the red card in Figma. */
+  highlighted?: boolean;
+  cta?: Link;
+  secondaryCta?: Link;
+};
+
+export type CoworkingPage = {
+  /** City slug, e.g. "barcelona". */
+  city: string;
+  seo: { title: string; description: string };
+  hero: { eyebrow: string; title: string; subtitle: string; image?: string };
+  spaces: {
+    eyebrow: string;
+    items: { title: string; text: string; images: string[] }[];
+    amenities: { icon: CoworkingAmenity; label: string }[];
+    cta?: Link;
+  };
+  pricing: { eyebrow: string; title: string; includesLabel: string; plans: CoworkingPlan[] };
+  band: CtaBand;
+  faq: FaqSection;
+};
+
 export interface ContentRepository {
   getSiteSettings(): Promise<SiteSettings>;
   getHomePage(): Promise<HomePage>;
@@ -346,6 +375,7 @@ export interface ContentRepository {
   getWhatIsCirclesPage(): Promise<WhatIsCirclesPage>;
   getMembershipsPage(): Promise<MembershipsPage>;
   getMonthPage(slug: string): Promise<MonthPage | undefined>;
+  getCoworkingPage(city: string): Promise<CoworkingPage | undefined>;
   getDeals(): Promise<Deal[]>;
   getEventsPage(): Promise<EventsPage>;
   getEvents(city?: string): Promise<EventSummary[]>;

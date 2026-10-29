@@ -1,6 +1,7 @@
 import type { ContentRepository } from "@/domain/content";
 import {
   ambassadorsPageFixture,
+  coworkingPagesFixture,
   dealsFixture,
   eventsFixture,
   eventsPageFixture,
@@ -43,6 +44,9 @@ export const fixtureRepository: ContentRepository = {
   },
   async getMembershipsPage() {
     return membershipsPageFixture;
+  },
+  async getCoworkingPage(city: string) {
+    return coworkingPagesFixture.find((page) => page.city === city);
   },
   async getMonthPage(slug: string) {
     return monthPagesFixture.find((page) => page.slug === slug);

@@ -2,6 +2,7 @@ import { items } from "@wix/data";
 import type {
   AmbassadorsPage,
   ContentRepository,
+  CoworkingPage,
   Deal,
   EventSummary,
   EventsPage,
@@ -28,6 +29,7 @@ const COLLECTIONS = {
   whatIsCirclesPage: "WhatIsCirclesPage",
   membershipsPage: "MembershipsPage",
   monthPages: "MonthPages",
+  coworkingPages: "CoworkingPages",
   rooms: "Rooms",
   deals: "Deals",
   eventsPage: "EventsPage",
@@ -128,6 +130,10 @@ export const wixCmsRepository: ContentRepository = {
   getTeamPage: () => getSingleton<TeamPage>(COLLECTIONS.teamPage),
   getWhatIsCirclesPage: () => getSingleton<WhatIsCirclesPage>(COLLECTIONS.whatIsCirclesPage),
   getMembershipsPage: () => getSingleton<MembershipsPage>(COLLECTIONS.membershipsPage),
+  async getCoworkingPage(city: string) {
+    const result = await items.query(COLLECTIONS.coworkingPages).eq("city", city).eq("published", true).limit(1).find({ consistentRead: true });
+    return result.items[0] as unknown as CoworkingPage | undefined;
+  },
   async getMonthPage(slug: string) {
     const result = await items.query(COLLECTIONS.monthPages).eq("slug", slug).eq("published", true).limit(1).find({ consistentRead: true });
     return result.items[0] as unknown as MonthPage | undefined;

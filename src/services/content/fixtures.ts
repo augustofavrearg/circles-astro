@@ -1,5 +1,6 @@
 import type {
   AmbassadorsPage,
+  CoworkingPage,
   Deal,
   EventSummary,
   EventsPage,
@@ -43,6 +44,7 @@ export const siteSettingsFixture: SiteSettings = {
       { label: "Memberships", href: "/memberships" },
       { label: "About us", href: "/#about" },
       { label: "News", href: "/#news" },
+      { label: "Coworking Barcelona", href: "/coworking/barcelona" },
       { label: "Events Barcelona", href: "/events/barcelona" },
       { label: "Events Andorra", href: "/events/andorra" },
       { label: "Become an Ambassador", href: "/ambassadors" },
@@ -681,6 +683,61 @@ export const monthPagesFixture: MonthPage[] = [
     external: { eyebrow: "External events", title: "What else is happening in the city this month.", items: [wagnerEvening, carmenEvening, traviataEvening] },
     // Figma shows "December @ Circles" on the June page; confirm which season this block should follow.
     seasonal: { eyebrow: "Seasonal events", title: "December @ Circles", items: [wagnerEvening, carmenEvening, traviataEvening] },
+    faq: sharedFaq,
+  },
+];
+
+const coworkingIncludes = ["Coworking", "Social club", "Gym and Shower", "Meeting Rooms", "Booths", "Bar and free coffee", "Gardens", "Rooftop"];
+
+export const coworkingPagesFixture: CoworkingPage[] = [
+  {
+    city: "barcelona",
+    seo: {
+      title: "Coworking in Barcelona · Circles House",
+      description: "Hot desks, cabins, gyms and booths surrounded by nature, with day, 10-day and monthly passes.",
+    },
+    hero: {
+      eyebrow: "Coworking @ Circles Barcelona",
+      title: "Work Surrounded by Nature",
+      subtitle: "See What Makes our Inspiring Coworking Spaces Perfect for Entrepreneurs and Innovators",
+    },
+    spaces: {
+      eyebrow: "Coworking spaces",
+      // Figma only shows the Hot desks text; the other descriptions and every photo are pending.
+      items: [
+        {
+          title: "Hot desks",
+          text: "Our hot desks are situated in a vibrant co-working space, just a short stroll from public transport. They offer a flexible and convenient option for those looking to work in a dynamic environment.",
+          images: [],
+        },
+        { title: "Cabins", text: "", images: [] },
+        { title: "Gyms", text: "", images: [] },
+        { title: "Booths", text: "", images: [] },
+      ],
+      amenities: [
+        { icon: "wifi", label: "High speed Wi-fi" },
+        { icon: "booths", label: "Booths" },
+        { icon: "meeting", label: "Meeting room" },
+        { icon: "printing", label: "Printing area" },
+        { icon: "gym", label: "Gym and shower" },
+        { icon: "events", label: "Event room" },
+        { icon: "rooftop", label: "360º Rooftop" },
+      ],
+      // "Book" appears once it has a destination.
+    },
+    pricing: {
+      eyebrow: "Why join",
+      title: "Coworking Pricing Options",
+      includesLabel: "Includes access to:",
+      // "Contact" and "Apply Now" appear once they have destinations.
+      plans: [
+        { title: "Day pass", subtitle: "Use it in a period of 30 days", includes: coworkingIncludes, price: "15€ +VAT" },
+        { title: "10 days pass", subtitle: "Use it in a period of 30 days", includes: coworkingIncludes, price: "120€ +VAT" },
+        { title: "Monthly pass", subtitle: "30 days access", includes: coworkingIncludes, price: "150€ +VAT", highlighted: true },
+        { title: "Monthly pass", subtitle: "+ FIXED DESK", includes: coworkingIncludes, price: "180€ +VAT" },
+      ],
+    },
+    band: { title: "Stay longer and Save more", primaryCta: { label: "Join us", href: "/api/auth/login" } },
     faq: sharedFaq,
   },
 ];

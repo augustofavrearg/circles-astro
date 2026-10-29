@@ -1,0 +1,38 @@
+---
+import { IconCircleCheck } from "@tabler/icons-react";
+import type { CoworkingPage } from "@/domain/content";
+import Button from "@/components/ui/Button.astro";
+import SectionHeading from "@/components/ui/SectionHeading.astro";
+
+type Props = CoworkingPage["pricing"];
+const { eyebrow, title, includesLabel, plans } = Astro.props;
+---
+
+<!-- Figma "Coworking Pricing Options": four plan cards, the highlighted one in red. -->
+<section class="pt-24 lg:pt-28">
+  <SectionHeading {eyebrow} {title} class="lg:items-center lg:text-center" />
+  <ul class="mt-16 grid gap-2 px-4 sm:grid-cols-2 lg:grid-cols-4 lg:px-6">
+    {plans.map((plan) => (
+      <li class:list={["flex flex-col p-4 pb-6", plan.highlighted ? "bg-red" : "bg-surface"]}>
+        <h3 class="font-display text-[1.75rem] leading-[1.2] uppercase">{plan.title}</h3>
+        <p class:list={["mt-1 text-detail", plan.highlighted ? "text-white" : "text-red"]}>{plan.subtitle}</p>
+        <p class="mt-6 text-detail">{includesLabel}</p>
+        <ul class="mt-2 flex flex-col gap-1 text-detail">
+          {plan.includes.map((item) => (
+            <li class="flex items-center gap-1.5">
+              <IconCircleCheck size={14} stroke={1.5} aria-hidden="true" className={plan.highlighted ? "" : "text-red"} />
+              {item}
+            </li>
+          ))}
+        </ul>
+        <p class="mt-6 border-t border-black/12 pt-4 font-display text-[1.75rem] leading-[1.2]">{plan.price}</p>
+        {(plan.secondaryCta || plan.cta) && (
+          <div class="mt-4 grid gap-2">
+            {plan.secondaryCta && <Button href={plan.secondaryCta.href} variant="secondary" class="w-full">{plan.secondaryCta.label}</Button>}
+            {plan.cta && <Button href={plan.cta.href} class="w-full">{plan.cta.label}</Button>}
+          </div>
+        )}
+      </li>
+    ))}
+  </ul>
+</section>
