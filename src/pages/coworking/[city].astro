@@ -38,7 +38,7 @@ const { happeningNow } = home;
   {happeningNow.events.length > 0 && (
     <section class="pt-28">
       <div class="flex items-end justify-between gap-4 lg:pr-6">
-        <SectionHeading eyebrow={happeningNow.eyebrow} title={happeningNow.title} class="items-start text-left" />
+        <SectionHeading eyebrow={happeningNow.eyebrow} title={happeningNow.title} class="w-full lg:w-auto" />
         <Button href="/events" variant="secondary" class="hidden lg:inline-flex">{happeningNow.viewAll.label}</Button>
       </div>
       <div class="mt-7">

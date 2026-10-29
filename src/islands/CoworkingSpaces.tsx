@@ -36,10 +36,11 @@ export function CoworkingSpaces({ eyebrow, items, amenities, cta }: CoworkingPag
   }
 
   return (
-    <section className="bg-surface px-4 py-6 lg:grid lg:grid-cols-[minmax(0,640px)_536px] lg:justify-between lg:gap-x-12 lg:px-6 lg:py-5">
-      <div className="flex flex-col">
-        <p className="text-detail uppercase">{eyebrow}</p>
-        <ul className="mt-16 lg:mt-auto lg:pt-24">
+    <section className="flex flex-col bg-surface px-4 py-6 lg:grid lg:grid-cols-[minmax(0,640px)_536px] lg:justify-between lg:gap-x-12 lg:px-6 lg:py-5">
+      <p className="text-detail uppercase lg:hidden">{eyebrow}</p>
+      <div className="order-2 flex flex-col lg:order-none">
+        <p className="hidden text-detail uppercase lg:block">{eyebrow}</p>
+        <ul className="mt-8 lg:mt-auto lg:pt-24">
           {items.map((item, index) => {
             const active = index === selected;
             return (
@@ -48,7 +49,7 @@ export function CoworkingSpaces({ eyebrow, items, amenities, cta }: CoworkingPag
                   type="button"
                   onClick={() => choose(index)}
                   aria-expanded={active}
-                  className={`w-full py-2 text-left font-display text-[1.75rem] leading-[1.3] transition-opacity ${active ? "" : "hover:opacity-60"}`}
+                  className={`w-full py-2 text-left font-display text-[2.25rem] lg:text-[1.75rem] leading-[1.3] transition-opacity ${active ? "" : "hover:opacity-60"}`}
                 >
                   {item.title}
                 </button>
@@ -58,7 +59,7 @@ export function CoworkingSpaces({ eyebrow, items, amenities, cta }: CoworkingPag
           })}
         </ul>
         <div className="mt-10 flex flex-col gap-6 border-t border-black/12 pt-4 lg:mt-10 lg:flex-row lg:items-center lg:justify-between">
-          <ul className="flex max-w-[420px] flex-wrap gap-x-4 gap-y-2 text-[0.6875rem]">
+          <ul className="flex max-w-[420px] flex-wrap gap-x-4 gap-y-2 text-[0.8125rem] lg:text-[0.6875rem]">
             {amenities.map((amenity) => {
               const Icon = ICONS[amenity.icon];
               return (
@@ -77,7 +78,7 @@ export function CoworkingSpaces({ eyebrow, items, amenities, cta }: CoworkingPag
         </div>
       </div>
 
-      <div className="relative mt-8 aspect-[454/588] bg-black/8 lg:mt-0 lg:aspect-[536/600]">
+      <div className="relative order-1 mt-6 aspect-[408/360] bg-black/8 lg:order-none lg:mt-0 lg:aspect-[536/600]">
         {images[photo] && <img src={images[photo]} alt={space?.title ?? ""} loading="lazy" className="size-full object-cover" />}
         {images.length > 1 && (
           <div className="absolute bottom-4 left-4 flex gap-2" role="group" aria-label={`${space?.title} photos`}>
