@@ -618,12 +618,33 @@ export const membershipsPageFixture: MembershipsPage = {
   faq: sharedFaq,
 };
 
-// Figma shows the same card in both carousels; the real external and seasonal events are pending.
+// Figma shows the same three events in both carousels, all in August; the real ones are pending.
 const wagnerEvening = {
   title: "“Der fliegende Holländer” by Wagner",
   venue: "Palau de la Música Catalana C/ Palau de la Música 4-6, 08003 Barcelona",
   dateLabel: "Monday, August 18",
   timeLabel: "9:00 PM - 11:30 PM GMT+2",
+};
+
+// Figma "The space" cards on the June page. Photos are pending; the card cut off on the left in Figma is left out.
+const juneSpaces: MonthPage["space"]["spaces"] = [
+  { size: "large", category: "Coworking space", title: "Hot desks", access: "Members only" },
+  { size: "medium", category: "Coliving space", title: "Cabins", access: "Members only" },
+  { size: "small", category: "Health", title: "Gyms", access: "Members only" },
+];
+
+const carmenEvening = {
+  title: "“Carmen” by Bizet",
+  venue: "Gran Teatre del Liceu Carrer de Sant Pau, 65, 08001 Barcelona",
+  dateLabel: "Tuesday, August 19",
+  timeLabel: "8:00 PM - 10:30 PM GMT+2",
+};
+
+const traviataEvening = {
+  title: "“La Traviata” by Verdi",
+  venue: "Teatre Nacional de Catalunya Carrer de les Arts, 10, 08013 Barcelona",
+  dateLabel: "Wednesday, August 20",
+  timeLabel: "8:30 PM - 11:00 PM GMT+2",
 };
 
 export const monthPagesFixture: MonthPage[] = [
@@ -645,11 +666,10 @@ export const monthPagesFixture: MonthPage[] = [
       title: "Start your stay here",
       subtitle: "Please complete the form to apply for your free week.",
     },
-    // Figma's spaces are cut off ("Coliving spa…", "Cabi…"); the home network spaces stand in until they are defined.
     space: {
       eyebrow: "The space",
       title: "Modern private lofts and shared rooftop spaces to live, work & play.",
-      spaces: homePageFixture.network.spaces,
+      spaces: juneSpaces,
     },
     rooms: {
       eyebrow: "Why join",
@@ -658,9 +678,9 @@ export const monthPagesFixture: MonthPage[] = [
     },
     band: { title: "Stay longer and Save more", primaryCta: { label: "Join us", href: "/api/auth/login" } },
     events: { eyebrow: "Why join", title: "What you will say Yes to" },
-    external: { eyebrow: "External events", title: "What else is happening in the city this month.", items: [wagnerEvening] },
+    external: { eyebrow: "External events", title: "What else is happening in the city this month.", items: [wagnerEvening, carmenEvening, traviataEvening] },
     // Figma shows "December @ Circles" on the June page; confirm which season this block should follow.
-    seasonal: { eyebrow: "Seasonal events", title: "December @ Circles", items: [wagnerEvening] },
+    seasonal: { eyebrow: "Seasonal events", title: "December @ Circles", items: [wagnerEvening, carmenEvening, traviataEvening] },
     faq: sharedFaq,
   },
 ];
@@ -706,6 +726,18 @@ export const roomsFixture: Room[] = [
     features: ["20m2", "Bathroom", "Terrace", "Desk", "360º View", "Couple friendly"],
     views: "Mountain View + Sea View",
     // As in Figma ("$" and "€" together); confirm the currency format.
+    price: { label: "Starting from", value: "$1.900€/month" },
+  },
+  {
+    id: "king-studio-terrace-city",
+    name: "King Studio + Terrace",
+    locationId: "barcelona",
+    locationName: "Circles House Barcelona",
+    description: "Private room with a single bed and ensuite bathroom, featuring a dedicated desk, wardrobe and A/C.",
+    bookingUrl: "https://hotels.cloudbeds.com/",
+    houseLabel: "Barcelona House",
+    features: ["20m2", "Bathroom", "Terrace", "Desk", "360º View", "Couple friendly"],
+    views: "Mountain View + City View",
     price: { label: "Starting from", value: "$1.900€/month" },
   },
   {

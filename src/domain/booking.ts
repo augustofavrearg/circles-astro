@@ -11,6 +11,7 @@ export type Room = {
   gallery?: string[];
   features?: string[];
   views?: string;
+  floorPlan?: string;
   price?: { label: string; value: string };
 };
 

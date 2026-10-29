@@ -65,6 +65,7 @@ function mapRoom(item: Record<string, unknown>): Room {
     gallery: textList(item.gallery),
     features: textList(item.features),
     views: text(item.views) || undefined,
+    floorPlan: text(item.floorPlan) || undefined,
     price: text(item.priceValue) ? { label: text(item.priceLabel) || "Starting from", value: text(item.priceValue) } : undefined,
   };
 }

@@ -6,7 +6,7 @@ import Media from "@/components/ui/Media.astro";
 
 type Props = StayForm & { id: string; roomTypes: string[]; variant?: "light" | "red" };
 const { id, eyebrow, title, subtitle, image, roomTypes, variant = "light" } = Astro.props;
-const field = "flex min-h-16 flex-col justify-center rounded-lg bg-black/8 px-4 py-2.5 text-[0.9375rem] leading-[1.4]";
+const field = "flex min-h-16 flex-col lg:min-h-12 lg:py-2 lg:text-[0.8125rem] justify-center rounded-lg bg-black/8 px-4 py-2.5 text-[0.9375rem] leading-[1.4]";
 const control = "w-full bg-transparent text-black/45 placeholder:text-black/45 disabled:cursor-not-allowed";
 ---
 
@@ -15,12 +15,13 @@ const control = "w-full bg-transparent text-black/45 placeholder:text-black/45 d
   Where applications go is not decided yet and Circles does not store personal data itself,
   so the form is rendered disabled instead of faking a submission.
 -->
-<section id={id} class:list={["px-4 py-12 lg:px-6", variant === "red" && "bg-red"]}>
-  <Eyebrow class="text-[1.125rem]">{eyebrow}</Eyebrow>
-  <h2 class="mt-7 max-w-[340px] font-display text-[2.25rem] leading-[1.3] uppercase lg:max-w-none">{title}</h2>
-  <p class="mt-1 font-display text-[1.125rem] leading-[1.3]">{subtitle}</p>
+<section id={id} class:list={["px-4 py-12 lg:grid lg:grid-cols-[515px_minmax(0,454px)] lg:justify-between lg:gap-x-12 lg:px-6 lg:py-5", variant === "red" && "bg-red"]}>
+  <div class="lg:pt-6">
+  <Eyebrow class="text-[1.125rem] lg:text-[0.9375rem]">{eyebrow}</Eyebrow>
+  <h2 class="mt-7 max-w-[340px] font-display text-[2.25rem] leading-[1.3] uppercase lg:mt-10 lg:text-[3rem] lg:leading-[1.15]">{title}</h2>
+  <p class="mt-1 font-display text-[1.125rem] leading-[1.3] lg:text-[0.9375rem]">{subtitle}</p>
 
-  <form class="mt-20 grid gap-3" aria-describedby={`${id}-note`}>
+  <form class="mt-20 grid gap-3 lg:mt-11" aria-describedby={`${id}-note`}>
     <label class={field}>
       Full Name
       <input type="text" name="name" autocomplete="name" placeholder="Enter here..." disabled class={control} />
@@ -67,8 +68,9 @@ const control = "w-full bg-transparent text-black/45 placeholder:text-black/45 d
     </div>
     <p id={`${id}-note`} class="sr-only">Applications open once the form provider is connected.</p>
   </form>
+  </div>
 
-  <div class="relative mt-9 aspect-[455/802] overflow-hidden lg:aspect-[16/9]">
+  <div class="relative mt-9 aspect-[455/802] overflow-hidden lg:mt-0 lg:aspect-[454/588]">
     <Media src={image} alt="A Circles House bedroom with mountain views" />
   </div>
 </section>

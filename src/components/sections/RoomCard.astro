@@ -10,7 +10,7 @@ const photos = room.gallery?.length ? room.gallery : room.image ? [room.image] :
 
 <!-- Figma "A Room for your Needs" card: photo gallery with the house tag, features, name, views, price and actions. -->
 <article class="border border-black/8 bg-white">
-  <div class="relative aspect-[455/432]">
+  <div class="relative aspect-[455/432] lg:aspect-[532/317]">
     {photos.length > 1 ? (
       <ManifestoGallery client:visible images={photos} label={`${room.name} photos`} />
     ) : (
@@ -18,28 +18,33 @@ const photos = room.gallery?.length ? room.gallery : room.image ? [room.image] :
     )}
     {room.houseLabel && <span class="absolute top-4 left-4 rounded bg-black/45 px-4 py-1 text-detail text-white">{room.houseLabel}</span>}
   </div>
-  <div class="p-4 pt-5">
-    {room.features && room.features.length > 0 && (
-      <ul class="flex flex-wrap gap-x-2 gap-y-0.5 text-detail text-black/50">
-        {room.features.map((feature, index) => (
-          <li class="flex items-center gap-2">
-            {index > 0 && <span aria-hidden="true" class="size-1 rounded-full bg-red" />}
-            {feature}
-          </li>
-        ))}
-      </ul>
-    )}
-    <h3 class="mt-5 font-display text-[2.25rem] leading-[1.2]">{room.name}</h3>
-    {room.views && <p class="mt-1 font-display text-[1.125rem] text-red">{room.views}</p>}
-    {room.description && <p class="mt-5 text-[0.9375rem] leading-[1.4]">{room.description}</p>}
-    <div class="mt-6 border-t border-black/12 pt-5">
+  <div class="p-4 pt-5 lg:px-3.5 lg:pt-4 lg:pb-6">
+    <div class="flex items-start justify-between gap-4">
+      {room.features && room.features.length > 0 && (
+        <ul class="flex flex-wrap gap-x-2 gap-y-0.5 text-detail text-black/50 lg:text-[0.6875rem]">
+          {room.features.map((feature, index) => (
+            <li class="flex items-center gap-2">
+              {index > 0 && <span aria-hidden="true" class="size-1 rounded-full bg-red" />}
+              {feature}
+            </li>
+          ))}
+        </ul>
+      )}
+      {room.floorPlan && (
+        <a href={room.floorPlan} target="_blank" rel="noreferrer" class="hidden shrink-0 text-[0.8125rem] hover:underline lg:block">View floor plan</a>
+      )}
+    </div>
+    <h3 class="mt-5 font-display text-[2.25rem] leading-[1.2] lg:mt-6 lg:text-[1.75rem]">{room.name}</h3>
+    {room.views && <p class="mt-1 font-display text-[1.125rem] text-red lg:text-[0.9375rem]">{room.views}</p>}
+    {room.description && <p class="mt-5 max-w-[460px] text-[0.9375rem] leading-[1.4] lg:mt-6 lg:text-[0.8125rem]">{room.description}</p>}
+    <div class="mt-6 border-t border-black/12 pt-5 lg:flex lg:items-end lg:justify-between lg:gap-4 lg:pt-3">
       {room.price && (
-        <p class="text-[1.125rem]">
-          <span class="block text-[0.9375rem] text-black/50">{room.price.label}</span>
+        <p class="text-[1.125rem] lg:text-[0.9375rem]">
+          <span class="block text-[0.9375rem] text-black/50 lg:text-[0.8125rem]">{room.price.label}</span>
           {room.price.value}
         </p>
       )}
-      <div class="mt-3 flex gap-1">
+      <div class="mt-3 flex gap-1 lg:mt-0">
         <!-- Availability, dates and payment stay in Cloudbeds. "Contact" appears once it has a destination. -->
         <Button href={bookingHref} rel="external">Choose dates</Button>
       </div>
