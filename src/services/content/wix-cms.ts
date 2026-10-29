@@ -8,6 +8,7 @@ import type {
   EventsPage,
   ForInvestorsPage,
   HomePage,
+  LifePage,
   MembershipsPage,
   MonthPage,
   PartnershipsPage,
@@ -30,6 +31,7 @@ const COLLECTIONS = {
   membershipsPage: "MembershipsPage",
   monthPages: "MonthPages",
   coworkingPages: "CoworkingPages",
+  lifePage: "LifePage",
   rooms: "Rooms",
   deals: "Deals",
   eventsPage: "EventsPage",
@@ -130,6 +132,7 @@ export const wixCmsRepository: ContentRepository = {
   getTeamPage: () => getSingleton<TeamPage>(COLLECTIONS.teamPage),
   getWhatIsCirclesPage: () => getSingleton<WhatIsCirclesPage>(COLLECTIONS.whatIsCirclesPage),
   getMembershipsPage: () => getSingleton<MembershipsPage>(COLLECTIONS.membershipsPage),
+  getLifePage: () => getSingleton<LifePage>(COLLECTIONS.lifePage),
   async getCoworkingPage(city: string) {
     const result = await items.query(COLLECTIONS.coworkingPages).eq("city", city).eq("published", true).limit(1).find({ consistentRead: true });
     return result.items[0] as unknown as CoworkingPage | undefined;

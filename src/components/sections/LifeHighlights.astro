@@ -1,0 +1,29 @@
+---
+import type { LifeHighlight } from "@/domain/content";
+import Media from "@/components/ui/Media.astro";
+
+type Props = { items: LifeHighlight[] };
+const { items } = Astro.props;
+---
+
+<!--
+  Figma "Life @ Circles": grey stat cards (illustration, big number, label) alternating with
+  photos that carry a red title. Mobile frame only; on desktop each pair sits side by side.
+-->
+<section class="mt-12 grid gap-2 px-4 lg:grid-cols-2 lg:px-6">
+  {items.map((item) => (
+    <>
+      <div class="flex aspect-[408/412] flex-col items-center justify-center bg-surface px-6 text-center">
+        <div class="size-[110px]">
+          {item.stat.illustration && <img src={item.stat.illustration} alt="" loading="lazy" class="size-full object-contain" />}
+        </div>
+        <p class="mt-4 font-display text-[6.25rem] leading-[1.1]">{item.stat.value}</p>
+        <p class="mt-6 text-[0.9375rem]">{item.stat.label}</p>
+      </div>
+      <div class="relative flex aspect-[408/412] items-center justify-center overflow-hidden">
+        <Media src={item.photo.image} alt="" />
+        <h2 class="relative px-6 text-center font-display text-[3.5rem] leading-[1.05] text-red">{item.photo.title}</h2>
+      </div>
+    </>
+  ))}
+</section>

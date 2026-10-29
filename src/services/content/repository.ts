@@ -7,6 +7,7 @@ import {
   eventsPageFixture,
   forInvestorsPageFixture,
   homePageFixture,
+  lifePageFixture,
   membershipsPageFixture,
   monthPagesFixture,
   partnershipsPageFixture,
@@ -44,6 +45,9 @@ export const fixtureRepository: ContentRepository = {
   },
   async getMembershipsPage() {
     return membershipsPageFixture;
+  },
+  async getLifePage() {
+    return lifePageFixture;
   },
   async getCoworkingPage(city: string) {
     return coworkingPagesFixture.find((page) => page.city === city);

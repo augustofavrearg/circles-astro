@@ -1,0 +1,32 @@
+---
+import SiteLayout from "@/layouts/SiteLayout.astro";
+import LifeHighlights from "@/components/sections/LifeHighlights.astro";
+import MemberDiscounts from "@/components/sections/MemberDiscounts.astro";
+import Faq from "@/components/sections/Faq.astro";
+import Newsletter from "@/components/sections/Newsletter.astro";
+import Eyebrow from "@/components/ui/Eyebrow.astro";
+import { CoworkingSpaces } from "@/islands/CoworkingSpaces";
+import { getContentRepository } from "@/services/content/repository";
+
+const repository = await getContentRepository();
+// The newsletter copy lives on the home page content for now.
+const [settings, page, home] = await Promise.all([repository.getSiteSettings(), repository.getLifePage(), repository.getHomePage()]);
+---
+
+<SiteLayout settings={settings} title={page.seo.title} description={page.seo.description}>
+  <section class="px-4 pt-11 lg:px-6 lg:pt-16">
+    <Eyebrow>{page.intro.eyebrow}</Eyebrow>
+    <h1 class="mt-3 max-w-[900px] font-display text-[2.375rem] leading-[1.25] lg:text-h1 lg:leading-(--text-h1--line-height)">{page.intro.title}</h1>
+    <p class="mt-3 max-w-[560px] text-[0.9375rem] leading-[1.45]">{page.intro.body}</p>
+  </section>
+
+  <LifeHighlights items={page.highlights} />
+
+  <div class="mt-2 px-4 lg:mt-24 lg:px-0">
+    <CoworkingSpaces client:visible {...page.spaces} />
+  </div>
+
+  <MemberDiscounts {...page.band} text={settings.promotion} compact class="mt-10 lg:mt-24" />
+  <Faq {...page.faq} centered uppercase={false} />
+  <Newsletter description={home.newsletter.description} class="mt-12" />
+</SiteLayout>

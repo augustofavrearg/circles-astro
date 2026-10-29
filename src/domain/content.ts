@@ -364,6 +364,20 @@ export type CoworkingPage = {
   faq: FaqSection;
 };
 
+export type LifeHighlight = {
+  stat: { value: string; label: string; illustration?: string };
+  photo: { title: string; image?: string };
+};
+
+export type LifePage = {
+  seo: { title: string; description: string };
+  intro: { eyebrow: string; title: string; body: string };
+  highlights: LifeHighlight[];
+  spaces: CoworkingPage["spaces"];
+  band: CtaBand;
+  faq: FaqSection;
+};
+
 export interface ContentRepository {
   getSiteSettings(): Promise<SiteSettings>;
   getHomePage(): Promise<HomePage>;
@@ -376,6 +390,7 @@ export interface ContentRepository {
   getMembershipsPage(): Promise<MembershipsPage>;
   getMonthPage(slug: string): Promise<MonthPage | undefined>;
   getCoworkingPage(city: string): Promise<CoworkingPage | undefined>;
+  getLifePage(): Promise<LifePage>;
   getDeals(): Promise<Deal[]>;
   getEventsPage(): Promise<EventsPage>;
   getEvents(city?: string): Promise<EventSummary[]>;

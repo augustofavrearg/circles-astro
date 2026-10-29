@@ -7,6 +7,7 @@ import type {
   FaqSection,
   ForInvestorsPage,
   HomePage,
+  LifePage,
   MembershipsPage,
   MonthPage,
   PartnershipsPage,
@@ -689,6 +690,32 @@ export const monthPagesFixture: MonthPage[] = [
 
 const coworkingIncludes = ["Coworking", "Social club", "Gym and Shower", "Meeting Rooms", "Booths", "Bar and free coffee", "Gardens", "Rooftop"];
 
+// Shared by the Barcelona coworking page and Life @ Circles.
+const barcelonaCoworkingSpaces: CoworkingPage["spaces"] = {
+  eyebrow: "Coworking spaces",
+  // Figma only shows the Hot desks text; the other descriptions and every photo are pending.
+  items: [
+    {
+      title: "Hot desks",
+      text: "Our hot desks are situated in a vibrant co-working space, just a short stroll from public transport. They offer a flexible and convenient option for those looking to work in a dynamic environment.",
+      images: [],
+    },
+    { title: "Cabins", text: "", images: [] },
+    { title: "Gyms", text: "", images: [] },
+    { title: "Booths", text: "", images: [] },
+  ],
+  amenities: [
+    { icon: "wifi", label: "High speed Wi-fi" },
+    { icon: "booths", label: "Booths" },
+    { icon: "meeting", label: "Meeting room" },
+    { icon: "printing", label: "Printing area" },
+    { icon: "gym", label: "Gym and shower" },
+    { icon: "events", label: "Event room" },
+    { icon: "rooftop", label: "360º Rooftop" },
+  ],
+  // "Book" appears once it has a destination.
+};
+
 export const coworkingPagesFixture: CoworkingPage[] = [
   {
     city: "barcelona",
@@ -701,30 +728,7 @@ export const coworkingPagesFixture: CoworkingPage[] = [
       title: "Work Surrounded by Nature",
       subtitle: "See What Makes our Inspiring Coworking Spaces Perfect for Entrepreneurs and Innovators",
     },
-    spaces: {
-      eyebrow: "Coworking spaces",
-      // Figma only shows the Hot desks text; the other descriptions and every photo are pending.
-      items: [
-        {
-          title: "Hot desks",
-          text: "Our hot desks are situated in a vibrant co-working space, just a short stroll from public transport. They offer a flexible and convenient option for those looking to work in a dynamic environment.",
-          images: [],
-        },
-        { title: "Cabins", text: "", images: [] },
-        { title: "Gyms", text: "", images: [] },
-        { title: "Booths", text: "", images: [] },
-      ],
-      amenities: [
-        { icon: "wifi", label: "High speed Wi-fi" },
-        { icon: "booths", label: "Booths" },
-        { icon: "meeting", label: "Meeting room" },
-        { icon: "printing", label: "Printing area" },
-        { icon: "gym", label: "Gym and shower" },
-        { icon: "events", label: "Event room" },
-        { icon: "rooftop", label: "360º Rooftop" },
-      ],
-      // "Book" appears once it has a destination.
-    },
+    spaces: barcelonaCoworkingSpaces,
     pricing: {
       eyebrow: "Why join",
       title: "Coworking Pricing Options",
@@ -741,6 +745,27 @@ export const coworkingPagesFixture: CoworkingPage[] = [
     faq: sharedFaq,
   },
 ];
+
+export const lifePageFixture: LifePage = {
+  seo: {
+    title: "Life @ Circles · Circles House",
+    description: "A community where people grow, connect, and feel at home.",
+  },
+  intro: {
+    eyebrow: "Life @ Circles",
+    title: "A community where people grow, connect, and feel at home.",
+    body: "Our digital community is where ambitious entrepreneurs come together with seamless opportunities to engage, share ideas, spark connections, and turn visions into reality.",
+  },
+  // Illustrations and photos are pending.
+  highlights: [
+    { stat: { value: "7.3", label: "Weeks Average Stay Duration" }, photo: { title: "Instant Community" } },
+    { stat: { value: "312+", label: "Collaborative Projects Initiated" }, photo: { title: "Focused Channels" } },
+    { stat: { value: "68%", label: "Members Engaged in Wellness Activities" }, photo: { title: "Collaboration" } },
+  ],
+  spaces: barcelonaCoworkingSpaces,
+  band: { title: "Stay longer and Save more", primaryCta: { label: "Join us", href: "/api/auth/login" } },
+  faq: sharedFaq,
+};
 
 export const eventsPageFixture: EventsPage = {
   title: "Live Surrounded by Nature",
