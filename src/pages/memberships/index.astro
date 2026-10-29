@@ -1,0 +1,27 @@
+---
+import SiteLayout from "@/layouts/SiteLayout.astro";
+import MembershipIntro from "@/components/sections/MembershipIntro.astro";
+import MembershipBenefits from "@/components/sections/MembershipBenefits.astro";
+import MemberHub from "@/components/sections/MemberHub.astro";
+import MembershipPricing from "@/components/sections/MembershipPricing.astro";
+import MembersCarousel from "@/components/sections/MembersCarousel.astro";
+import MemberDiscounts from "@/components/sections/MemberDiscounts.astro";
+import Faq from "@/components/sections/Faq.astro";
+import Newsletter from "@/components/sections/Newsletter.astro";
+import { getContentRepository } from "@/services/content/repository";
+
+const repository = await getContentRepository();
+// The newsletter copy lives on the home page content for now.
+const [settings, page, home] = await Promise.all([repository.getSiteSettings(), repository.getMembershipsPage(), repository.getHomePage()]);
+---
+
+<SiteLayout settings={settings} title={page.seo.title} description={page.seo.description}>
+  <MembershipIntro {...page.intro} />
+  <MembershipBenefits {...page.benefits} />
+  <MemberHub {...page.hub} />
+  <MembershipPricing {...page.pricing} />
+  <MembersCarousel {...page.members} />
+  <MemberDiscounts {...page.band} text={settings.promotion} compact class="lg:mt-28" />
+  <Faq {...page.faq} centered uppercase={false} />
+  <Newsletter description={home.newsletter.description} class="mt-12" />
+</SiteLayout>

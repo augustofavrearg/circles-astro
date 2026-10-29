@@ -6,6 +6,7 @@ import {
   eventsPageFixture,
   forInvestorsPageFixture,
   homePageFixture,
+  membershipsPageFixture,
   partnershipsPageFixture,
   roomsFixture,
   siteSettingsFixture,
@@ -38,6 +39,9 @@ export const fixtureRepository: ContentRepository = {
   },
   async getWhatIsCirclesPage() {
     return whatIsCirclesPageFixture;
+  },
+  async getMembershipsPage() {
+    return membershipsPageFixture;
   },
   async getDeals() {
     return dealsFixture;

@@ -6,6 +6,7 @@ import type {
   FaqSection,
   ForInvestorsPage,
   HomePage,
+  MembershipsPage,
   PartnershipsPage,
   PlaceDetails,
   SiteSettings,
@@ -38,7 +39,7 @@ export const siteSettingsFixture: SiteSettings = {
       { label: "Book a Stay", href: "/rooms" },
     ],
     extras: [
-      { label: "Memberships", href: "/#membership" },
+      { label: "Memberships", href: "/memberships" },
       { label: "About us", href: "/#about" },
       { label: "News", href: "/#news" },
       { label: "Events Barcelona", href: "/events/barcelona" },
@@ -537,6 +538,82 @@ export const whatIsCirclesPageFixture: WhatIsCirclesPage = {
     // Gallery photos are pending; the arrows appear once there is more than one.
     images: [],
   },
+  faq: sharedFaq,
+};
+
+// Figma repeats the same text in four benefits and mentions "Outsite"; kept as designed until the copy is confirmed.
+const DEALS_BENEFIT = "Find Last Minute and Long-Term Deals for up to 40% Off Outsite Locations, and get deals and discounts from curated Partner companies.";
+
+export const membershipsPageFixture: MembershipsPage = {
+  seo: {
+    title: "Memberships · Circles House",
+    description: "Join Circles Membership for exclusive access to locations, deals, events, and the Member Hub.",
+  },
+  intro: {
+    eyebrow: "Memberships",
+    title: "Become a Member",
+    body: "Join Circles Membership for exclusive access to locations, deals, events, and the Member Hub.\nIt’s where everything begins.",
+    // Same destination as "Apply" in the home Memberships section; "Book a Call" is pending.
+    cta: { label: "Apply", href: "/api/auth/login" },
+  },
+  benefits: {
+    eyebrow: "Why join",
+    title: "Membership Benefits",
+    items: [
+      { title: "Discounted price for every booking", text: "Unlock exclusive booking access to over 30 Members Only locations." },
+      {
+        title: "Entrepreneur’s Hub",
+        text: "Gain access to our online community and you’ll accumulate credits with each stay, that you can use towards future reservations.",
+      },
+      { title: "Priority in Bookings", text: DEALS_BENEFIT },
+      { title: "Access when opening a New Location", text: DEALS_BENEFIT },
+      { title: "Partners’ perks all over the world", text: DEALS_BENEFIT },
+      { title: "Exclusive Members only offers", text: DEALS_BENEFIT },
+    ],
+  },
+  hub: {
+    eyebrow: "What is the hub",
+    title: "Circles Member Hub",
+    subtitle: "Circles Member Hub is a place for Members to connect, share networking opportunities, and view community events",
+    topics: ["Plan your next trip to Circles Spaces", "Expand your nomadic network", "Ask Questions and Share Knowledge"],
+    text: "Explore the vibrant surroundings, immerse yourself in local culture, and discover hidden gems that await you at every turn. Whether you’re seeking relaxation or adventure, Circles Spaces has something for everyone.",
+    // Four photos in Figma (two large, two small); pending.
+    images: [],
+    stats: [
+      { icon: "globe", label: "+40 Nationalities represented" },
+      { icon: "age", label: "36 years average age" },
+      { icon: "stay", label: "2 weeks of average stay" },
+    ],
+  },
+  pricing: {
+    eyebrow: "Pricing",
+    // Figma copy reads like a design-agency template (senior creative, design requests, Notion); pending real membership features.
+    title: "Ideal for small brands or specific projects.",
+    features: [
+      "Request at a time",
+      "Dedicated senior creative",
+      "Average delivery in 2-3 days",
+      "Unlimited revisions",
+      "Unlimited design requests",
+      "Online project management via Notion",
+    ],
+    // Figma also shows "Lifetime (Save 20%)" without a price; the toggle appears once that plan exists.
+    plans: [{ label: "Yearly", price: "€2,350/Year", note: "Cancel anytime" }],
+    // "Contact" and "Subscribe" appear once they have destinations.
+    images: [],
+  },
+  members: {
+    eyebrow: "Members",
+    title: "Meet our Members",
+    items: [
+      {
+        name: "Kimberly Defors",
+        // Truncated in Figma after "branding and ma…"; the ending needs confirming.
+        bio: "Kimberly Defors, a digital nomad specializing in branding and marketing and wellness projects.",
+      },
+    ],
+  },
+  band: { title: "Stay longer and Save more", primaryCta: { label: "Join us", href: "/api/auth/login" } },
   faq: sharedFaq,
 };
 

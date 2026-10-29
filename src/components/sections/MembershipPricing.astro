@@ -1,0 +1,37 @@
+---
+import type { MembershipsPage } from "@/domain/content";
+import Button from "@/components/ui/Button.astro";
+import Eyebrow from "@/components/ui/Eyebrow.astro";
+import { ManifestoGallery } from "@/islands/ManifestoGallery";
+import { PricingPlans } from "@/islands/PricingPlans";
+
+type Props = MembershipsPage["pricing"];
+const { eyebrow, title, features, plans, cta, secondaryCta, images } = Astro.props;
+---
+
+<!--
+  Figma "Pricing" (red band): plan toggle, title, features, price and actions, then a photo gallery.
+  Desktop frame not provided; copy and gallery sit side by side like the Manifesto band.
+-->
+<section class="bg-red px-4 py-12 lg:grid lg:grid-cols-[minmax(0,1fr)_552px] lg:gap-x-12 lg:px-6 lg:py-6">
+  <div class="lg:flex lg:flex-col lg:pt-6">
+    <Eyebrow>{eyebrow}</Eyebrow>
+    {plans.length > 1 ? <PricingPlans client:visible plans={plans} /> : null}
+    <h2 class="mt-8 font-display text-[2rem] leading-[1.3] lg:text-[2.5rem] lg:leading-[1.2]">{title}</h2>
+    <ul class="mt-2 list-disc pl-6 font-display text-[1.125rem] leading-[1.3] marker:text-[0.7em]">
+      {features.map((feature) => <li>{feature}</li>)}
+    </ul>
+    <div class="mt-9 border-t border-black/12 pt-4 lg:mt-auto">
+      {plans.length > 1 ? null : <PricingPlans plans={plans} />}
+      {(cta || secondaryCta) && (
+        <div class="mt-4 flex gap-3">
+          {secondaryCta && <Button href={secondaryCta.href} variant="secondary">{secondaryCta.label}</Button>}
+          {cta && <Button href={cta.href}>{cta.label}</Button>}
+        </div>
+      )}
+    </div>
+  </div>
+  <div class="mt-7 aspect-[356/430] lg:mt-0 lg:aspect-auto lg:h-[718px]">
+    <ManifestoGallery client:visible images={images} label={`${eyebrow} photos`} />
+  </div>
+</section>

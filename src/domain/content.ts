@@ -273,6 +273,44 @@ export type WhatIsCirclesPage = {
   faq: FaqSection;
 };
 
+export type MembershipPlan = {
+  /** Toggle label, e.g. "Yearly". */
+  label: string;
+  price: string;
+  note?: string;
+};
+
+export type Member = { name: string; bio: string; photo?: string };
+
+export type MembershipsPage = {
+  seo: { title: string; description: string };
+  intro: { eyebrow: string; title: string; body: string; cta?: Link; secondaryCta?: Link; image?: string };
+  benefits: { eyebrow: string; title: string; image?: string; items: { title: string; text: string }[] };
+  hub: {
+    eyebrow: string;
+    title: string;
+    subtitle: string;
+    /** The first topic is highlighted, as in Figma. */
+    topics: string[];
+    text: string;
+    images: string[];
+    stats: { icon: "globe" | "age" | "stay"; label: string }[];
+  };
+  pricing: {
+    eyebrow: string;
+    title: string;
+    features: string[];
+    /** The Yearly / Lifetime toggle only appears with more than one plan. */
+    plans: MembershipPlan[];
+    cta?: Link;
+    secondaryCta?: Link;
+    images: string[];
+  };
+  members: { eyebrow: string; title: string; items: Member[] };
+  band: CtaBand;
+  faq: FaqSection;
+};
+
 export interface ContentRepository {
   getSiteSettings(): Promise<SiteSettings>;
   getHomePage(): Promise<HomePage>;
@@ -282,6 +320,7 @@ export interface ContentRepository {
   getTeamPage(): Promise<TeamPage>;
   getTeamMembers(): Promise<TeamMember[]>;
   getWhatIsCirclesPage(): Promise<WhatIsCirclesPage>;
+  getMembershipsPage(): Promise<MembershipsPage>;
   getDeals(): Promise<Deal[]>;
   getEventsPage(): Promise<EventsPage>;
   getEvents(city?: string): Promise<EventSummary[]>;
