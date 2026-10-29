@@ -7,6 +7,7 @@ import {
   forInvestorsPageFixture,
   homePageFixture,
   membershipsPageFixture,
+  monthPagesFixture,
   partnershipsPageFixture,
   roomsFixture,
   siteSettingsFixture,
@@ -42,6 +43,9 @@ export const fixtureRepository: ContentRepository = {
   },
   async getMembershipsPage() {
     return membershipsPageFixture;
+  },
+  async getMonthPage(slug: string) {
+    return monthPagesFixture.find((page) => page.slug === slug);
   },
   async getDeals() {
     return dealsFixture;

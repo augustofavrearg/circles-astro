@@ -7,6 +7,7 @@ import type {
   ForInvestorsPage,
   HomePage,
   MembershipsPage,
+  MonthPage,
   PartnershipsPage,
   PlaceDetails,
   SiteSettings,
@@ -617,6 +618,53 @@ export const membershipsPageFixture: MembershipsPage = {
   faq: sharedFaq,
 };
 
+// Figma shows the same card in both carousels; the real external and seasonal events are pending.
+const wagnerEvening = {
+  title: "“Der fliegende Holländer” by Wagner",
+  venue: "Palau de la Música Catalana C/ Palau de la Música 4-6, 08003 Barcelona",
+  dateLabel: "Monday, August 18",
+  timeLabel: "9:00 PM - 11:30 PM GMT+2",
+};
+
+export const monthPagesFixture: MonthPage[] = [
+  {
+    slug: "june",
+    city: "barcelona",
+    seo: {
+      title: "June at Circles House Barcelona",
+      description: "Say yes to a month of new experiences: deep work, new ideas and community, included with your stay between June 1 and June 30.",
+    },
+    hero: {
+      eyebrow: "June@Circles House Barcelona",
+      title: "Say yes to a Month of New Experiences",
+      body: "This June, we invite you to say yes to a summer full of possibility. NEW BEGINNINGS is a month-long celebration of curiosity, creativity, and the courage to start again. Say yes to deep work, to sharing new ideas, to building with clarity and to the moments in between that keep you balanced and connected.\n\nAll of this is included with your stay at Circles between June 1 — June 30.",
+      cta: { label: "Reserve Now", href: "#rooms" },
+    },
+    form: {
+      eyebrow: "Join us",
+      title: "Start your stay here",
+      subtitle: "Please complete the form to apply for your free week.",
+    },
+    // Figma's spaces are cut off ("Coliving spa…", "Cabi…"); the home network spaces stand in until they are defined.
+    space: {
+      eyebrow: "The space",
+      title: "Modern private lofts and shared rooftop spaces to live, work & play.",
+      spaces: homePageFixture.network.spaces,
+    },
+    rooms: {
+      eyebrow: "Why join",
+      title: "A room for your needs",
+      text: "Our house offers a range of thoughtfully designed rooms to suit various lifestyles, combining luxury and functionality. Whether you’re looking for a monthly stay or a flexible option, we’ve got you covered.",
+    },
+    band: { title: "Stay longer and Save more", primaryCta: { label: "Join us", href: "/api/auth/login" } },
+    events: { eyebrow: "Why join", title: "What you will say Yes to" },
+    external: { eyebrow: "External events", title: "What else is happening in the city this month.", items: [wagnerEvening] },
+    // Figma shows "December @ Circles" on the June page; confirm which season this block should follow.
+    seasonal: { eyebrow: "Seasonal events", title: "December @ Circles", items: [wagnerEvening] },
+    faq: sharedFaq,
+  },
+];
+
 export const eventsPageFixture: EventsPage = {
   title: "Live Surrounded by Nature",
   subtitle: "See What Makes our Inspiring Coworking Spaces Perfect for Entrepreneurs and Innovators",
@@ -646,6 +694,20 @@ export const eventsFixture: EventSummary[] = [
 ];
 
 export const roomsFixture: Room[] = [
+  {
+    id: "king-studio-terrace",
+    name: "King Studio + Terrace",
+    locationId: "barcelona",
+    locationName: "Circles House Barcelona",
+    // Figma says "single bed" next to "King Studio" and "Couple friendly"; confirm the description.
+    description: "Private room with a single bed and ensuite bathroom, featuring a dedicated desk, wardrobe and A/C.",
+    bookingUrl: "https://hotels.cloudbeds.com/",
+    houseLabel: "Barcelona House",
+    features: ["20m2", "Bathroom", "Terrace", "Desk", "360º View", "Couple friendly"],
+    views: "Mountain View + Sea View",
+    // As in Figma ("$" and "€" together); confirm the currency format.
+    price: { label: "Starting from", value: "$1.900€/month" },
+  },
   {
     id: "garden-room",
     name: "Garden Room",

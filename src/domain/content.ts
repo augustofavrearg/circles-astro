@@ -311,6 +311,30 @@ export type MembershipsPage = {
   faq: FaqSection;
 };
 
+/** An event outside Circles, shown in the month pages' carousels. */
+export type ExternalEvent = { title: string; venue: string; dateLabel: string; timeLabel: string; image?: string; href?: string };
+
+export type EventCarousel = { eyebrow: string; title: string; items: ExternalEvent[] };
+
+/** Application form copy; where submissions go is still undecided, so the form renders disabled. */
+export type StayForm = { eyebrow: string; title: string; subtitle: string; image?: string };
+
+export type MonthPage = {
+  slug: string;
+  /** City slug used to pick the rooms and events. */
+  city: string;
+  seo: { title: string; description: string };
+  hero: { eyebrow: string; title: string; body: string; cta?: Link; image?: string };
+  form: StayForm;
+  space: { eyebrow: string; title: string; spaces: HomePage["network"]["spaces"] };
+  rooms: { eyebrow: string; title: string; text: string };
+  band: CtaBand;
+  events: { eyebrow: string; title: string };
+  external: EventCarousel;
+  seasonal: EventCarousel;
+  faq: FaqSection;
+};
+
 export interface ContentRepository {
   getSiteSettings(): Promise<SiteSettings>;
   getHomePage(): Promise<HomePage>;
@@ -321,6 +345,7 @@ export interface ContentRepository {
   getTeamMembers(): Promise<TeamMember[]>;
   getWhatIsCirclesPage(): Promise<WhatIsCirclesPage>;
   getMembershipsPage(): Promise<MembershipsPage>;
+  getMonthPage(slug: string): Promise<MonthPage | undefined>;
   getDeals(): Promise<Deal[]>;
   getEventsPage(): Promise<EventsPage>;
   getEvents(city?: string): Promise<EventSummary[]>;

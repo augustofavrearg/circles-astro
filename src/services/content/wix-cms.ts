@@ -8,6 +8,7 @@ import type {
   ForInvestorsPage,
   HomePage,
   MembershipsPage,
+  MonthPage,
   PartnershipsPage,
   SiteSettings,
   TeamMember,
@@ -26,6 +27,7 @@ const COLLECTIONS = {
   teamMembers: "TeamMembers",
   whatIsCirclesPage: "WhatIsCirclesPage",
   membershipsPage: "MembershipsPage",
+  monthPages: "MonthPages",
   rooms: "Rooms",
   deals: "Deals",
   eventsPage: "EventsPage",
@@ -37,6 +39,14 @@ async function getSingleton<T>(collectionId: string, key = "global"): Promise<T>
   const item = result.items[0];
   if (!item) throw new Error(`Wix CMS collection "${collectionId}" does not contain the "${key}" singleton.`);
   return item as T;
+}
+
+function text(value: unknown) {
+  return typeof value === "string" ? value : "";
+}
+
+function textList(value: unknown) {
+  return Array.isArray(value) ? value.filter((entry): entry is string => typeof entry === "string") : undefined;
 }
 
 function mapRoom(item: Record<string, unknown>): Room {
@@ -51,11 +61,12 @@ function mapRoom(item: Record<string, unknown>): Room {
     image: typeof item.image === "string" ? item.image : undefined,
     description: typeof item.description === "string" ? item.description : undefined,
     bookingUrl,
+    houseLabel: text(item.houseLabel) || undefined,
+    gallery: textList(item.gallery),
+    features: textList(item.features),
+    views: text(item.views) || undefined,
+    price: text(item.priceValue) ? { label: text(item.priceLabel) || "Starting from", value: text(item.priceValue) } : undefined,
   };
-}
-
-function text(value: unknown) {
-  return typeof value === "string" ? value : "";
 }
 
 function mapDeal(item: Record<string, unknown>): Deal {
@@ -116,6 +127,10 @@ export const wixCmsRepository: ContentRepository = {
   getTeamPage: () => getSingleton<TeamPage>(COLLECTIONS.teamPage),
   getWhatIsCirclesPage: () => getSingleton<WhatIsCirclesPage>(COLLECTIONS.whatIsCirclesPage),
   getMembershipsPage: () => getSingleton<MembershipsPage>(COLLECTIONS.membershipsPage),
+  async getMonthPage(slug: string) {
+    const result = await items.query(COLLECTIONS.monthPages).eq("slug", slug).eq("published", true).limit(1).find({ consistentRead: true });
+    return result.items[0] as unknown as MonthPage | undefined;
+  },
   async getTeamMembers() {
     const result = await items.query(COLLECTIONS.teamMembers).eq("published", true).ascending("sortOrder").limit(100).find({ consistentRead: true });
     return result.items.map((item) => mapTeamMember(item as Record<string, unknown>));

@@ -1,0 +1,69 @@
+---
+import SiteLayout from "@/layouts/SiteLayout.astro";
+import MonthHero from "@/components/sections/MonthHero.astro";
+import StayApplicationForm from "@/components/sections/StayApplicationForm.astro";
+import RoomCard from "@/components/sections/RoomCard.astro";
+import EventRow from "@/components/sections/EventRow.astro";
+import ExternalEventsCarousel from "@/components/sections/ExternalEventsCarousel.astro";
+import MemberDiscounts from "@/components/sections/MemberDiscounts.astro";
+import Faq from "@/components/sections/Faq.astro";
+import Newsletter from "@/components/sections/Newsletter.astro";
+import SectionHeading from "@/components/ui/SectionHeading.astro";
+import Eyebrow from "@/components/ui/Eyebrow.astro";
+import { SpacesCarousel } from "@/islands/SpacesCarousel";
+import { createCloudbedsProvider } from "@/services/booking/cloudbeds";
+import { getContentRepository } from "@/services/content/repository";
+
+const repository = await getContentRepository();
+const page = await repository.getMonthPage(Astro.params.slug ?? "");
+if (!page) return new Response("Not found", { status: 404 });
+
+// The newsletter copy lives on the home page content for now.
+// Events are not filtered by month yet: EventSummary has no date field (Figma shows August events on the June page).
+const [settings, rooms, events, home] = await Promise.all([
+  repository.getSiteSettings(),
+  repository.getRooms(page.city),
+  repository.getEvents(page.city),
+  repository.getHomePage(),
+]);
+const booking = createCloudbedsProvider(import.meta.env.CLOUDBEDS_ALLOWED_ORIGIN);
+const roomTypes = rooms.map((room) => room.name);
+---
+
+<SiteLayout settings={settings} title={page.seo.title} description={page.seo.description}>
+  <MonthHero {...page.hero} />
+  <StayApplicationForm id="apply" {...page.form} {roomTypes} />
+
+  <section class="pt-16">
+    <SpacesCarousel client:visible spaces={page.space.spaces} defaultCta={settings.book}>
+      <SectionHeading eyebrow={page.space.eyebrow} title={page.space.title} class="items-start text-left" />
+    </SpacesCarousel>
+  </section>
+
+  <section id="rooms" class="scroll-mt-20 px-4 pt-28 lg:px-6">
+    <header class="text-center">
+      <Eyebrow>{page.rooms.eyebrow}</Eyebrow>
+      <h2 class="mt-3 font-display text-[2.375rem] leading-[1.3] uppercase">{page.rooms.title}</h2>
+      <p class="mx-auto mt-3 max-w-[600px] text-[0.9375rem] leading-[1.45]">{page.rooms.text}</p>
+    </header>
+    <div class="mt-24 grid gap-4 lg:grid-cols-2 xl:grid-cols-3">
+      {rooms.map((room) => <RoomCard room={room} bookingHref={booking.getRedirect(room).toString()} />)}
+    </div>
+  </section>
+
+  <MemberDiscounts {...page.band} text={settings.promotion} compact class="mt-4 lg:mt-28" />
+
+  <section class="pt-28">
+    <SectionHeading eyebrow={page.events.eyebrow} title={page.events.title} class="lg:items-center lg:text-center" />
+    <div class="mt-16 flex flex-col gap-2 px-4 lg:px-6">
+      {events.map((event) => <EventRow event={event} />)}
+    </div>
+  </section>
+
+  <ExternalEventsCarousel id="external-events" {...page.external} />
+  <StayApplicationForm id="apply-again" {...page.form} {roomTypes} variant="red" />
+  <ExternalEventsCarousel id="seasonal-events" {...page.seasonal} />
+
+  <Faq {...page.faq} centered uppercase={false} />
+  <Newsletter description={home.newsletter.description} class="mt-12" />
+</SiteLayout>
