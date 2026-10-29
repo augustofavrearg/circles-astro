@@ -1,0 +1,9 @@
+# Use an imperative summary, ideally no longer than 72 characters.
+<Imperative summary>
+
+# Explain the outcome and relevant scope. Wrap body text at 72 characters.
+<What changed and why>
+
+# Add only the trailers that apply. Remove placeholders and unused lines.
+# Co-Authored-By: Name <email@example.com>
+# Claude-Session: https://claude.ai/code/session_<id>

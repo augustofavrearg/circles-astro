@@ -23,6 +23,12 @@ The default `CONTENT_SOURCE=fixtures` works without Wix. Available routes:
 - `/rooms` — room selection before the external Cloudbeds flow
 - `/design-system` — non-indexed visual reference
 
+## Contributing patches
+
+Keep one logical change per commit and generate exchange patches from that
+commit. See the [patch workflow](docs/patch-workflow.md) for the shared message
+template, export commands, review steps, and repository policy.
+
 ## Content architecture
 
 Pages only use the `ContentRepository` interface in `src/domain/content.ts`.
