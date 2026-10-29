@@ -55,11 +55,11 @@ const tabs = [
       <h2 class="max-w-[560px] font-display text-[2rem] leading-[1.2] lg:text-[2.125rem]">{page.space.title}</h2>
       <p class="mt-3 max-w-[640px] text-[0.9375rem] leading-[1.45] lg:text-[0.8125rem]">{page.space.text}</p>
       <h3 class="mt-12 text-detail uppercase lg:mt-16">{page.space.amenitiesLabel}</h3>
-      <ul class="mt-3 flex max-w-[560px] flex-wrap gap-1">
+      <ul class="mt-3 flex max-w-[600px] flex-wrap gap-1">
         {page.space.amenities.map((amenity) => <li class="rounded-xs bg-black/8 px-2 py-1 text-detail">{amenity}</li>)}
       </ul>
     </div>
-    <div class="relative aspect-[635/470] overflow-hidden">
+    <div class="relative aspect-[290/193] overflow-hidden lg:aspect-[635/470]">
       <Media src={page.space.image} alt="" />
     </div>
   </section>
@@ -86,7 +86,7 @@ const tabs = [
       <h2 class="mt-3 font-display text-[2.375rem] leading-[1.2] lg:text-[2.5rem]">{page.location.title}</h2>
       <p class="mx-auto mt-6 max-w-[860px] text-[0.9375rem] leading-[1.45] lg:text-[0.8125rem]">{page.location.text}</p>
     </header>
-    <div class="relative mt-12 h-[420px] overflow-hidden bg-surface lg:mt-12 lg:h-[720px]">
+    <div class="relative mt-12 h-[730px] overflow-hidden bg-surface lg:mt-12 lg:h-[720px]">
       {page.location.mapImage && <Media src={page.location.mapImage} alt="" />}
       {page.location.mapHref ? (
         <a href={page.location.mapHref} target="_blank" rel="noreferrer" aria-label={`Open ${page.hero.title} in Google Maps`} class="absolute inset-0 flex items-center justify-center">

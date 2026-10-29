@@ -46,7 +46,7 @@ const photos = room.gallery?.length ? room.gallery : room.image ? [room.image] :
       )}
       <div class="mt-3 flex gap-1 lg:mt-0">
         <!-- Availability, dates and payment stay in Cloudbeds. "Contact" appears once it has a destination. -->
-        <Button href={bookingHref} rel="external">Book a Stay</Button>
+        <Button href={bookingHref} rel="external"><span class="lg:hidden">Choose dates</span><span class="hidden lg:inline">Book a Stay</span></Button>
       </div>
     </div>
   </div>
