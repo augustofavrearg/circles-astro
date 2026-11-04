@@ -1,6 +1,7 @@
 ---
 import type { SiteSettings } from "@/domain/content";
 import { siteNavigation } from "@/config/navigation";
+import { getCanonicalUrl, getRobotsDirective, getSeoPolicy } from "@/config/seo";
 import { HeaderMenu } from "@/islands/HeaderMenu";
 import Footer from "@/components/layout/Footer.astro";
 import "@/styles/global.css";
@@ -19,6 +20,9 @@ const {
   noindex = false,
 } = Astro.props;
 const currentPath = Astro.url.pathname;
+const seoPolicy = getSeoPolicy(import.meta.env, Astro.url);
+const robotsDirective = getRobotsDirective(seoPolicy, noindex);
+const canonicalUrl = noindex ? undefined : getCanonicalUrl(seoPolicy, currentPath);
 ---
 
 <!doctype html>
@@ -27,7 +31,8 @@ const currentPath = Astro.url.pathname;
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
     <meta name="description" content={description} />
-    {noindex && <meta name="robots" content="noindex,nofollow" />}
+    <meta name="robots" content={robotsDirective} />
+    {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <title>{title}</title>
   </head>
