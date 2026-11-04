@@ -22,42 +22,8 @@ import type { Room } from "@/domain/booking";
 
 export const siteSettingsFixture: SiteSettings = {
   promotion: "Members save 15 % on trips of 7+ nights, 30% on 30+ nights trips and 35% on 60+ night trips.",
-  mainNav: [
-    { label: "Coliving", href: "/#network" },
-    { label: "Coworking", href: "/#network" },
-    { label: "Community", href: "/#community" },
-    { label: "Happening Now", href: "/#events" },
-    { label: "About", href: "/#about" },
-    { label: "Deals", href: "/deals" },
-  ],
-  login: { label: "Members Login", href: "/api/auth/login" },
-  book: { label: "Book a Stay", href: "/rooms" },
   footer: {
-    main: [
-      { label: "Coliving", href: "/#network" },
-      { label: "Coworking", href: "/#network" },
-      { label: "Community", href: "/#community" },
-      { label: "Happening Now", href: "/#events" },
-      { label: "About", href: "/#about" },
-      { label: "Deals", href: "/deals" },
-      { label: "Book a Stay", href: "/rooms" },
-    ],
-    extras: [
-      { label: "Memberships", href: "/memberships" },
-      { label: "About us", href: "/#about" },
-      { label: "News", href: "/#news" },
-      { label: "Coworking Barcelona", href: "/coworking/barcelona" },
-      { label: "Events Barcelona", href: "/events/barcelona" },
-      { label: "Events Andorra", href: "/events/andorra" },
-      { label: "Become an Ambassador", href: "/ambassadors" },
-    ],
-    legal: [
-      { label: "Terms & Conditions", href: "/legal/terms" },
-      { label: "Cookies Policy", href: "/legal/cookies" },
-      { label: "Legal Notice", href: "/legal/notice" },
-      { label: "Privacy Policy", href: "/legal/privacy" },
-    ],
-    image: "/home/footer.png",
+    image: "/images/shared/footer/coworking-office.png",
   },
   contact: {
     about: "Circles House is a community designed for entrepreneurs and innovators seeking a more meaningful way to live, work, and connect.",
@@ -100,8 +66,8 @@ export const homePageFixture: HomePage = {
       "Circles House is a thriving community of entrepreneurs, digital nomads, and innovators. To ensure everyone is a good fit and adds value to our unique ecosystem, we’ve designed a simple and quick application process.",
     video: {
       label: "Discover Circles House",
-      poster: "/home/circles-front.png",
-      src: "/home/video.mp4",
+      poster: "/images/locations/barcelona/house-exterior.png",
+      src: "/images/home/hero/circles-house.mp4",
     },
   },
   slider: [
@@ -109,7 +75,7 @@ export const homePageFixture: HomePage = {
       name: "Circles House Barcelona",
       address: "Cami de Vallvidrera al Tibidabo 5, Barcelona, Spain",
       href: "/rooms?location=barcelona",
-      image: "/home/circles-front.png",
+      image: "/images/locations/barcelona/house-exterior.png",
       access: "Members only",
       details: barcelonaDetails,
     },
@@ -117,7 +83,7 @@ export const homePageFixture: HomePage = {
       name: "Circles House Andorra",
       address: "Andorra la Vella, Andorra",
       href: "/rooms?location=andorra",
-      image: "/home/andorra-panoremic.png",
+      image: "/images/locations/andorra/landscape.png",
     },
   ],
   searchLocations: [
@@ -135,7 +101,7 @@ export const homePageFixture: HomePage = {
         description: "Thermal circuits, breathwork and cold exposure designed to restore energy and clarity.",
         access: "Public",
         address: "Andorra la Vella, Andorra",
-        image: "/home/more-meaningfull-1.png",
+        image: "/images/locations/andorra/spa-pool.png",
         comingSoon: true,
       },
       {
@@ -145,7 +111,7 @@ export const homePageFixture: HomePage = {
         description: "A home in the hills where focused work and honest community coexist.",
         access: "Members only",
         address: "Vallvidrera, Barcelona",
-        image: "/home/circles-front.png",
+        image: "/images/locations/barcelona/house-exterior.png",
         details: barcelonaDetails,
       },
       {
@@ -155,7 +121,7 @@ export const homePageFixture: HomePage = {
         description: "Local produce, biodynamic methods and a table built for conversation.",
         access: "Public",
         address: "Andorra la Vella, Andorra",
-        image: "/home/kitchen.png",
+        image: "/images/locations/andorra/restaurant-kitchen.png",
         comingSoon: true,
       },
       {
@@ -165,7 +131,7 @@ export const homePageFixture: HomePage = {
         description: "Cinema, dinners and ideas above the city.",
         access: "Members only",
         address: "Vallvidrera, Barcelona",
-        image: "/home/rooftop.png",
+        image: "/images/locations/barcelona/rooftop-community.png",
       },
     ],
   },
@@ -182,7 +148,7 @@ export const homePageFixture: HomePage = {
         title: "Movie Night",
         description:
           "Join us for a cozy Rooftop Movie Night exclusively for Circles House members! Relax and unwind with a film, great company, and snacks. This is a great chance to connect with fellow members while enjoying a laid-back evening.",
-        image: "/home/whats-comming-1.jpg",
+        image: "/images/events/barcelona/movie-night.jpg",
       },
       {
         ...eventDate,
@@ -190,7 +156,7 @@ export const homePageFixture: HomePage = {
         access: "Public",
         title: "HIIT Workout",
         description: "A high-energy session led by guest instructor Raluca Andreea.",
-        image: "/home/whats-comming-2.jpg",
+        image: "/images/events/barcelona/hiit-workout.jpg",
       },
       {
         ...eventDate,
@@ -198,7 +164,7 @@ export const homePageFixture: HomePage = {
         access: "Public",
         title: "Spanish Conversation Club",
         description: "Practice Spanish and meet an international community of founders and creatives.",
-        image: "/home/whats-comming-3.jpg",
+        image: "/images/events/barcelona/spanish-conversation-club.jpg",
       },
     ],
   },
@@ -208,8 +174,8 @@ export const homePageFixture: HomePage = {
     description: "Our digital community is where ambitious entrepreneurs come together with seamless opportunities to engage, share ideas, spark connections, and turn visions into reality.",
     cta: { label: "Apply", href: "/api/auth/login" },
     highlights: ["Instant Community", "Focused Channels", "Collaboration"],
-    image: "/home/become-a-member.png",
-    thumbnail: "/home/rooftop.png",
+    image: "/images/home/membership/rooftop-community.png",
+    thumbnail: "/images/home/membership/house-exterior.png",
   },
   introduction: {
     title: "ONE COMMUNITY, ONE HOME WORLDWIDE",
@@ -219,9 +185,9 @@ export const homePageFixture: HomePage = {
     body: "We bring humans to the center of every decision. Kindness, love, respect, genuinity and the desire to see your peers grow is key to creating personal and professional relationships that will last a lifetime.",
     cta: { label: "About us", href: "/#about" },
     images: {
-      main: "/home/more-meaningfull-1.png",
-      left: "/home/rooftop.png",
-      right: "/home/kitchen.png",
+      main: "/images/home/introduction/circles-house-aerial.png",
+      left: "/images/locations/barcelona/rooftop-community.png",
+      right: "/images/home/introduction/balcony-view.png",
     },
   },
   testimonials: [
@@ -255,7 +221,7 @@ export const homePageFixture: HomePage = {
         category: "Announcement",
         date: "Aug 21, 2025",
         href: "/#news",
-        image: "/home/last-announcements-3.png",
+        image: "/images/news/community-dinners.png",
       },
       {
         title: "Why Gen Z Doesn't Want a 9-to-5 — and What That Means for Housing",
@@ -263,7 +229,7 @@ export const homePageFixture: HomePage = {
         category: "Announcement",
         date: "Aug 21, 2025",
         href: "/#news",
-        image: "/home/last-announcements-1.png",
+        image: "/images/news/gen-z-housing.png",
       },
       {
         title: "Win a One-Week Stay at Circles House Barcelona",
@@ -271,7 +237,7 @@ export const homePageFixture: HomePage = {
         category: "Announcement",
         date: "Aug 21, 2025",
         href: "/#news",
-        image: "/home/last-announcements-2.png",
+        image: "/images/news/summer-giveaway.png",
       },
     ],
   },
@@ -791,7 +757,7 @@ export const locationPagesFixture: LocationPage[] = [
     hero: {
       eyebrow: "Location",
       title: "Circles House Barcelona",
-      image: "/home/circles-front.png",
+      image: "/images/locations/barcelona/house-exterior.png",
       // "See all Photos" appears once the gallery has photos.
       card: {
         eyebrow: "The space",
@@ -918,7 +884,7 @@ export const roomsFixture: Room[] = [
     name: "Garden Room",
     locationId: "barcelona",
     locationName: "Circles House Barcelona",
-    image: "/home/circles-front.png",
+    image: "/images/locations/barcelona/house-exterior.png",
     description: "A quiet private room with natural light and direct access to the garden level.",
     bookingUrl: "https://hotels.cloudbeds.com/",
   },
@@ -927,7 +893,7 @@ export const roomsFixture: Room[] = [
     name: "Panorama Room",
     locationId: "barcelona",
     locationName: "Circles House Barcelona",
-    image: "/home/andorra-panoremic.png",
+    image: "/images/locations/andorra/landscape.png",
     description: "Our brightest room, designed for long stays and slow mornings above the city.",
     bookingUrl: "https://hotels.cloudbeds.com/",
   },

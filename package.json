@@ -11,6 +11,8 @@
     "build": "ASTRO_TELEMETRY_DISABLED=1 wix build",
     "preview": "ASTRO_TELEMETRY_DISABLED=1 wix preview",
     "check": "ASTRO_TELEMETRY_DISABLED=1 astro check",
+    "assets:check": "node scripts/validate-figma-assets.mjs",
+    "cms:audit": "node scripts/audit-wix-cms.mjs",
     "test": "vitest run",
     "astro": "astro",
     "wix": "wix",

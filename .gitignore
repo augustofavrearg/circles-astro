@@ -5,6 +5,7 @@ dist/
 .wrangler/
 wix-error.log
 /patchs/
+/analisis/
 .env
 .env.*
 !.env.example

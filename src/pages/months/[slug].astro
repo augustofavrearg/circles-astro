@@ -11,6 +11,7 @@ import Newsletter from "@/components/sections/Newsletter.astro";
 import SectionHeading from "@/components/ui/SectionHeading.astro";
 import Eyebrow from "@/components/ui/Eyebrow.astro";
 import { SpacesCarousel } from "@/islands/SpacesCarousel";
+import { bookStayLink } from "@/config/navigation";
 import { createCloudbedsProvider } from "@/services/booking/cloudbeds";
 import { getContentRepository } from "@/services/content/repository";
 
@@ -35,7 +36,7 @@ const roomTypes = rooms.map((room) => room.name);
   <StayApplicationForm id="apply" {...page.form} {roomTypes} />
 
   <section class="pt-16">
-    <SpacesCarousel client:visible spaces={page.space.spaces} defaultCta={settings.book}>
+    <SpacesCarousel client:visible spaces={page.space.spaces} defaultCta={bookStayLink}>
       <SectionHeading eyebrow={page.space.eyebrow} title={page.space.title} class="items-start text-left" />
     </SpacesCarousel>
   </section>

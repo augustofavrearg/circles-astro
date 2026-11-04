@@ -1,5 +1,6 @@
 ---
 import type { SiteSettings } from "@/domain/content";
+import { siteNavigation } from "@/config/navigation";
 import { HeaderMenu } from "@/islands/HeaderMenu";
 import Footer from "@/components/layout/Footer.astro";
 import "@/styles/global.css";
@@ -17,6 +18,7 @@ const {
   description = "The coliving and coworking community designed for entrepreneurs and innovators.",
   noindex = false,
 } = Astro.props;
+const currentPath = Astro.url.pathname;
 ---
 
 <!doctype html>
@@ -35,8 +37,8 @@ const {
         {settings.promotion}
       </div>
     )}
-    <HeaderMenu client:load nav={settings.mainNav} login={settings.login} book={settings.book} />
+    <HeaderMenu client:load navigation={siteNavigation.header} {currentPath} />
     <main><slot /></main>
-    <Footer footer={settings.footer} contact={settings.contact} socials={settings.socials} />
+    <Footer navigation={siteNavigation.footer} footerImage={settings.footer.image} contact={settings.contact} socials={settings.socials} {currentPath} />
   </body>
 </html>

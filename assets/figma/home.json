@@ -1,0 +1,171 @@
+{
+  "figmaFileKey": "Qj5kHpnB9PH9YHuKCuI5ol",
+  "screen": {
+    "name": "Home",
+    "nodeId": "868:4509",
+    "route": "/"
+  },
+  "recoveredAt": "2026-10-30",
+  "assets": [
+    {
+      "figmaAssetId": "0221c037-8a14-4164-8ff1-5a2ae0ee55f1",
+      "figmaNode": "I868:4552;868:5291",
+      "usage": "Barcelona location and first hero slide",
+      "path": "/images/locations/barcelona/house-exterior.png",
+      "mediaType": "image/png",
+      "width": 1439,
+      "height": 960,
+      "sha256": "e30460f803f9816bec51aa1fd35553bb12c371a1b987c1f16c7a3929de1aa534"
+    },
+    {
+      "figmaAssetId": "d91d687f-2cd5-4bed-8c0f-40ff3d2816a4",
+      "figmaNode": "I868:4552;868:5290",
+      "usage": "Andorra location and second hero slide",
+      "path": "/images/locations/andorra/landscape.png",
+      "mediaType": "image/png",
+      "width": 2545,
+      "height": 679,
+      "sha256": "599cf4e3c0d11f1a1dafd005df60856edd8097fbbe6a6bb9337472e142ed36ce"
+    },
+    {
+      "figmaAssetId": "f3934c0a-63ad-4318-9e0b-9da22a72a93a",
+      "figmaNode": "I868:4562;868:5181",
+      "usage": "Spa Andorra coming-soon card",
+      "path": "/images/locations/andorra/spa-pool.png",
+      "mediaType": "image/png",
+      "width": 750,
+      "height": 750,
+      "sha256": "32dedc82ee57215267ac7b1a9fb233359a531d37118039a2159ffcc2682f3281"
+    },
+    {
+      "figmaAssetId": "70b2f781-2143-4e39-9d06-3d0ff00761da",
+      "figmaNode": "I868:4564;868:5155",
+      "usage": "Restaurant Andorra coming-soon card",
+      "path": "/images/locations/andorra/restaurant-kitchen.png",
+      "mediaType": "image/png",
+      "width": 900,
+      "height": 1196,
+      "sha256": "18a593f04987594486283241a32583b7a0bd8114baa95b9f682b4eb464cce524"
+    },
+    {
+      "figmaAssetId": "90199bf9-8adb-4d91-b960-48e124cb4754",
+      "figmaNode": "I868:4565;868:5181",
+      "usage": "Barcelona rooftop card and introduction detail",
+      "path": "/images/locations/barcelona/rooftop-community.png",
+      "mediaType": "image/png",
+      "width": 1024,
+      "height": 576,
+      "sha256": "a986ffa659c82c406a312a746c563278da82af903f212a29b783be07574d8b09"
+    },
+    {
+      "figmaAssetId": "c1db9edd-a3cd-4817-b859-2e1d662040ff",
+      "figmaNode": "868:4581:first-card",
+      "usage": "Movie Night event",
+      "path": "/images/events/barcelona/movie-night.jpg",
+      "mediaType": "image/jpeg",
+      "width": 1667,
+      "height": 2500,
+      "sha256": "5738c2bcbfcf86e4e038540b8dbab71356412705295f5ed6ec510edadd533c13"
+    },
+    {
+      "figmaAssetId": "eac7225d-8774-4910-ba4a-58ac69194a57",
+      "figmaNode": "I868:4583;868:5243",
+      "usage": "HIIT Workout event",
+      "path": "/images/events/barcelona/hiit-workout.jpg",
+      "mediaType": "image/jpeg",
+      "width": 934,
+      "height": 1401,
+      "sha256": "1bd65e5a892b3ebb653af0d8fb7b600fac030ab4ef30e13d3ebebc558cc97fe8"
+    },
+    {
+      "figmaAssetId": "8bdb1fb7-b4b9-4f13-a9cd-fc01b51b5436",
+      "figmaNode": "I868:4584;868:5243",
+      "usage": "Spanish Conversation Club event",
+      "path": "/images/events/barcelona/spanish-conversation-club.jpg",
+      "mediaType": "image/jpeg",
+      "width": 1401,
+      "height": 934,
+      "sha256": "261d4e096bde0c17f1e00e0193f23af95ae5f9656e157561dc8310276a4bcf7b"
+    },
+    {
+      "figmaAssetId": "6a3eeeff-6390-4251-aa7b-5d81b400bdd1",
+      "figmaNode": "868:4585",
+      "usage": "Membership section background",
+      "path": "/images/home/membership/rooftop-community.png",
+      "mediaType": "image/png",
+      "width": 1707,
+      "height": 960,
+      "sha256": "4c356de8f838bc808667cc42b0558aec38169146e731ca919d65134cbf06e65c"
+    },
+    {
+      "figmaAssetId": "56ad562a-02dc-4e59-8951-d556e0edf74e",
+      "figmaNode": "868:4589",
+      "usage": "Membership card thumbnail",
+      "path": "/images/home/membership/house-exterior.png",
+      "mediaType": "image/png",
+      "width": 1164,
+      "height": 750,
+      "sha256": "13bd1be9357110ae59582ed5e2df6866c5aa997080eee88f0c0ead2cc5e6a24c"
+    },
+    {
+      "figmaAssetId": "80bc4b7d-c465-4885-8cc6-0bb37c9cde6e",
+      "figmaNode": "868:4606",
+      "usage": "Introduction main aerial image",
+      "path": "/images/home/introduction/circles-house-aerial.png",
+      "mediaType": "image/png",
+      "width": 1024,
+      "height": 683,
+      "sha256": "0f380d597fcd8e51f762748236124fe4571c0eb6290918993095c5be1e589e40"
+    },
+    {
+      "figmaAssetId": "15d8c1fc-3ee9-4300-9b20-b36f480dd557",
+      "figmaNode": "868:4608",
+      "usage": "Introduction balcony detail",
+      "path": "/images/home/introduction/balcony-view.png",
+      "mediaType": "image/png",
+      "width": 280,
+      "height": 370,
+      "sha256": "5d685d54f4ad3428a1d359ef9870aedb762116d1bf552df8d13b212deaa1598d"
+    },
+    {
+      "figmaAssetId": "8206f676-9ca3-4a55-8a3e-26666b7ef20c",
+      "figmaNode": "I868:4656;284:2981",
+      "usage": "Community dinners news card",
+      "path": "/images/news/community-dinners.png",
+      "mediaType": "image/png",
+      "width": 740,
+      "height": 493,
+      "sha256": "f75ddb36ba5d81883233d13c19abc4848fe2362f600baba223fd484875c5b9bf"
+    },
+    {
+      "figmaAssetId": "fdbc0b60-6d36-4815-9972-3364eef08ae7",
+      "figmaNode": "I868:4657;284:2981",
+      "usage": "Gen Z housing news card",
+      "path": "/images/news/gen-z-housing.png",
+      "mediaType": "image/png",
+      "width": 740,
+      "height": 493,
+      "sha256": "9fc60a828fe8679b9d5529d9d46b7ca137b8e6290711cfe7e60793391d4fcbf6"
+    },
+    {
+      "figmaAssetId": "ca79d989-e5bd-4273-aed2-cff1061a5cf6",
+      "figmaNode": "I868:4658;284:2981",
+      "usage": "Summer giveaway news card",
+      "path": "/images/news/summer-giveaway.png",
+      "mediaType": "image/png",
+      "width": 740,
+      "height": 416,
+      "sha256": "0a3ef11b66cc7996cdfce586e3481ae1a40cf8ec0d8f7515f96debd01a255ba2"
+    },
+    {
+      "figmaAssetId": "902b9636-e6f1-4bd7-8886-695b5c90e10f",
+      "figmaNode": "868:4675",
+      "usage": "Footer coworking image",
+      "path": "/images/shared/footer/coworking-office.png",
+      "mediaType": "image/png",
+      "width": 379,
+      "height": 502,
+      "sha256": "b9866fa507df1066ec64d373c5e252120fef3c1a364dd9926957d62d915d01e3"
+    }
+  ]
+}

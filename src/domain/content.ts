@@ -86,13 +86,7 @@ export type NewsItem = {
 
 export type SiteSettings = {
   promotion?: string;
-  mainNav: Link[];
-  login: Link;
-  book: Link;
   footer: {
-    main: Link[];
-    extras: Link[];
-    legal: Link[];
     image?: string;
   };
   contact: {

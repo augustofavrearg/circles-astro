@@ -10,10 +10,17 @@ import {
   IconChevronUp,
 } from "@tabler/icons-react";
 import type { SiteSettings, SocialNetwork } from "@/domain/content";
+import type { FooterNavigation } from "@/domain/navigation";
+import { isVisibleNavigationItem } from "@/domain/navigation";
 import Media from "@/components/ui/Media.astro";
 
-type Props = Pick<SiteSettings, "footer" | "contact" | "socials">;
-const { footer, contact, socials } = Astro.props;
+type Props = Pick<SiteSettings, "contact" | "socials"> & { navigation: FooterNavigation; footerImage?: string; currentPath: string };
+const { navigation, footerImage, contact, socials, currentPath } = Astro.props;
+const main = navigation.main.filter(isVisibleNavigationItem);
+const extras = navigation.extras.filter(isVisibleNavigationItem);
+const legal = navigation.legal.filter(isVisibleNavigationItem);
+const normalizePath = (path: string) => path !== "/" ? path.replace(/\/+$/, "") : path;
+const isCurrent = (href: string) => normalizePath(href) === normalizePath(currentPath);
 
 const socialIcons: Record<SocialNetwork, typeof IconBrandInstagram> = {
   whatsapp: IconBrandWhatsapp,
@@ -32,7 +39,7 @@ const socialIcons: Record<SocialNetwork, typeof IconBrandInstagram> = {
 -->
 <footer id="footer" class="grid bg-background px-4 pt-4 pb-6 lg:grid-cols-[34fr_23fr_22fr_21fr] lg:px-6 lg:pt-32">
   <div class="relative h-[412px] overflow-hidden lg:col-start-1 lg:row-start-1 lg:w-[318px]">
-    <Media src={footer.image} alt="Coworking space at Circles House" />
+    <Media src={footerImage} alt="Coworking space at Circles House" />
   </div>
 
   <div class="mt-4 text-detail leading-[1.7] lg:col-span-2 lg:col-start-1 lg:row-start-2 lg:mt-12 lg:self-end">
@@ -43,16 +50,26 @@ const socialIcons: Record<SocialNetwork, typeof IconBrandInstagram> = {
   <div class="mt-12 lg:col-start-2 lg:row-start-1 lg:mt-0">
     <p class="text-detail text-black/45">Main</p>
     <nav aria-label="Footer main" class="mt-4 flex flex-col items-start lg:mt-8">
-      {footer.main.map((link) => (
-        <a href={link.href} class="font-display text-[2.25rem] leading-[1.4] hover:opacity-50 lg:text-[1.25rem] lg:leading-8">{link.label}</a>
-      ))}
+      {main.map((item) =>
+        item.status === "link" ? (
+          <a href={item.href} aria-current={isCurrent(item.href) ? "page" : undefined} class:list={["font-display text-[2.25rem] leading-[1.4] hover:opacity-50 lg:text-[1.25rem] lg:leading-8", { "underline underline-offset-4": isCurrent(item.href) }]}>{item.label}</a>
+        ) : (
+          <span class="font-display text-[2.25rem] leading-[1.4] text-black/45 lg:text-[1.25rem] lg:leading-8">{item.label} <small class="font-sans text-detail">{item.badge ?? "Coming soon"}</small></span>
+        ),
+      )}
     </nav>
   </div>
 
   <div class="mt-12 lg:col-start-3 lg:row-start-1 lg:mt-0">
     <p class="text-detail text-black/45">Extras</p>
     <nav aria-label="Footer extras" class="mt-6 flex flex-col items-start lg:mt-8">
-      {footer.extras.map((link) => <a href={link.href} class="text-[0.9375rem] leading-6 hover:opacity-50">{link.label}</a>)}
+      {extras.map((item) =>
+        item.status === "link" ? (
+          <a href={item.href} aria-current={isCurrent(item.href) ? "page" : undefined} class:list={["text-[0.9375rem] leading-6 hover:opacity-50", { "underline underline-offset-4": isCurrent(item.href) }]}>{item.label}</a>
+        ) : (
+          <span class="text-[0.9375rem] leading-6 text-black/45">{item.label} — {item.badge ?? "Coming soon"}</span>
+        ),
+      )}
     </nav>
   </div>
 
@@ -79,7 +96,11 @@ const socialIcons: Record<SocialNetwork, typeof IconBrandInstagram> = {
     </div>
   </div>
 
-  <nav aria-label="Legal" class="mt-16 grid gap-x-0 text-[0.9375rem] leading-[1.6] lg:col-span-2 lg:col-start-3 lg:row-start-2 lg:mt-12 lg:grid-flow-col lg:grid-rows-2 lg:grid-cols-[205px_auto] lg:justify-end lg:self-end">
-    {footer.legal.map((link) => <a href={link.href} class="w-fit hover:opacity-50">{link.label}</a>)}
-  </nav>
+  {legal.length > 0 && (
+    <nav aria-label="Legal" class="mt-16 grid gap-x-0 text-[0.9375rem] leading-[1.6] lg:col-span-2 lg:col-start-3 lg:row-start-2 lg:mt-12 lg:grid-flow-col lg:grid-rows-2 lg:grid-cols-[205px_auto] lg:justify-end lg:self-end">
+      {legal.map((item) =>
+        item.status === "link" ? <a href={item.href} aria-current={isCurrent(item.href) ? "page" : undefined} class:list={["w-fit hover:opacity-50", { "underline underline-offset-4": isCurrent(item.href) }]}>{item.label}</a> : <span class="text-black/45">{item.label}</span>,
+      )}
+    </nav>
+  )}
 </footer>
