@@ -9,23 +9,28 @@ const wixConfig = JSON.parse(
 );
 const wixCli = join(repositoryRoot, "node_modules", ".bin", "wix");
 
-const tokenResult = spawnSync(
-  wixCli,
-  ["token", "--site", wixConfig.siteId],
-  {
-    cwd: repositoryRoot,
-    encoding: "utf8",
-    env: { ...process.env, FORCE_COLOR: "0", NO_COLOR: "1" },
-  },
-);
+const providedToken = process.env.WIX_ACCESS_TOKEN?.trim();
+const tokenResult = providedToken
+  ? undefined
+  : spawnSync(wixCli, ["token", "--site", wixConfig.siteId], {
+      cwd: repositoryRoot,
+      encoding: "utf8",
+      env: { ...process.env, FORCE_COLOR: "0", NO_COLOR: "1" },
+    });
 
-if (tokenResult.status !== 0) {
+if (tokenResult?.error) {
+  throw new Error(
+    `Unable to start the Wix CLI to obtain a site-scoped token: ${tokenResult.error.message}`,
+  );
+}
+
+if (tokenResult && tokenResult.status !== 0) {
   throw new Error(
     `Unable to obtain a site-scoped Wix token: ${tokenResult.stderr.trim()}`,
   );
 }
 
-const token = tokenResult.stdout.trim();
+const token = providedToken || tokenResult?.stdout.trim();
 if (!token) throw new Error("The Wix CLI returned an empty access token.");
 
 async function wixRequest(url, init = {}) {
@@ -90,6 +95,11 @@ if (process.env.CMS_AUDIT_LIST === "1") {
 }
 
 const collectionFilter = process.env.CMS_AUDIT_COLLECTION?.trim();
+const includeItems = process.env.CMS_AUDIT_ITEMS === "1";
+const includedReferenceFields = (process.env.CMS_AUDIT_INCLUDE_REFERENCES ?? "")
+  .split(",")
+  .map((field) => field.trim())
+  .filter(Boolean);
 const exactIdMatches = collectionFilter
   ? allCollections.filter((collection) => collection.id === collectionFilter)
   : [];
@@ -119,7 +129,8 @@ for (const collection of collections) {
       method: "POST",
       body: JSON.stringify({
         dataCollectionId: collectionId,
-        query: { paging: { limit: 1, offset: 0 } },
+        query: { paging: { limit: includeItems ? 100 : 1, offset: 0 } },
+        includeReferencedItems: includedReferenceFields,
         returnTotalCount: true,
       }),
     }),
@@ -146,6 +157,9 @@ for (const collection of collections) {
       itemData?.pagingMetadata?.count ??
       itemData?.totalCount ??
       null,
+    items: includeItems
+      ? (itemData?.dataItems ?? []).map((item) => item.data ?? item)
+      : undefined,
     itemQueryError: itemQuery.ok ? undefined : itemQuery,
   });
 }
@@ -201,18 +215,18 @@ if (process.env.CMS_AUDIT_HEALTH === "1") {
     CHSiteSettings: [15, "siteName"],
     CHInterfaceCopy: [4, "copyKey"],
     CHPages: [9, "pageKey"],
-    CHAmenities: [6, "amenityKey"],
-    CHLocations: [19, "name"],
+    CHAmenities: [7, "amenityKey"],
+    CHLocations: [20, "name"],
     CHPeople: [10, "name"],
-    CHStayPrograms: [10, "name"],
+    CHPrograms: [10, "name"],
     CHPageSections: [25, "sectionKey"],
     CHSectionItems: [20, "itemKey"],
     CHSocialLinks: [6, "label"],
     CHNavigationItems: [15, "label"],
     CHSpaces: [17, "title"],
-    CHRooms: [16, "name"],
+    CHRooms: [17, "name"],
     CHEvents: [19, "title"],
-    CHNewsArticles: [14, "title"],
+    CHNewsArticles: [15, "title"],
     CHDeals: [13, "title"],
     CHTestimonials: [10, "authorName"],
     CHPartners: [8, "name"],
@@ -307,7 +321,7 @@ if (process.env.CMS_AUDIT_HEALTH === "1") {
         auditedAt: new Date().toISOString(),
         expectedCollectionCount: expectedIds.size,
         actualCustomCollectionCount: customCollections.length,
-        expectedManualFieldCount: 263,
+        expectedManualFieldCount: 267,
         actualManualFieldCount: manualFieldCount,
         userIndexCount,
         itemCount,
@@ -320,7 +334,7 @@ if (process.env.CMS_AUDIT_HEALTH === "1") {
           missingCollections.length === 0 &&
           unexpectedCollections.length === 0 &&
           issues.length === 0 &&
-          manualFieldCount === 263,
+          manualFieldCount === 267,
       },
       null,
       2,
