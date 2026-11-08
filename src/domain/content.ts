@@ -104,6 +104,11 @@ export type LegalPage = {
 
 export type SiteSettings = {
   promotion?: string;
+  newsletter: {
+    title: string;
+    description: string;
+    consentText: string;
+  };
   footer: {
     image?: string;
   };
@@ -157,7 +162,6 @@ export type HomePage = {
   };
   testimonials: Testimonial[];
   news: { eyebrow: string; title: string; items: NewsItem[] };
-  newsletter: { description: string };
 };
 
 /** A FAQ answer as plain blocks, so fixtures and the CMS can share one shape. */

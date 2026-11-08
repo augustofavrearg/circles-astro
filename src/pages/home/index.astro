@@ -41,5 +41,5 @@ const [settings, home] = await Promise.all([repository.getSiteSettings(), reposi
   <Introduction {...home.introduction} />
   <Testimonials testimonials={home.testimonials} />
   <NewsGrid {...home.news} />
-  <Newsletter description={home.newsletter.description} copy={settings.interfaceCopy} />
+  <Newsletter newsletter={settings.newsletter} copy={settings.interfaceCopy} />
 </SiteLayout>

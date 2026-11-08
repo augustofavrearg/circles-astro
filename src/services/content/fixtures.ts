@@ -22,6 +22,11 @@ import type { Room } from "@/domain/booking";
 
 export const siteSettingsFixture: SiteSettings = {
   promotion: "Members save 15 % on trips of 7+ nights, 30% on 30+ nights trips and 35% on 60+ night trips.",
+  newsletter: {
+    title: "Join our Newsletter",
+    description: "Join our newsletter to connect with a vibrant community of entrepreneurs and innovators at Circles House. Stay updated and be part of our unique ecosystem!",
+    consentText: "I agree to receive communications from Circles House.",
+  },
   footer: {
     image: "/images/shared/footer/coworking-office.png",
   },
@@ -243,10 +248,6 @@ export const homePageFixture: HomePage = {
         image: "/images/news/summer-giveaway.png",
       },
     ],
-  },
-  newsletter: {
-    description:
-      "Join our newsletter to connect with a vibrant community of entrepreneurs and innovators at Circles House. Stay updated and be part of our unique ecosystem!",
   },
 };
 

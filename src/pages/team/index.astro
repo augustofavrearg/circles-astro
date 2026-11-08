@@ -8,12 +8,10 @@ import Newsletter from "@/components/sections/shared/Newsletter.astro";
 import { getContentRepository } from "@/services/content/repository";
 
 const repository = await getContentRepository();
-// The newsletter copy lives on the home page content for now.
-const [settings, page, members, home] = await Promise.all([
+const [settings, page, members] = await Promise.all([
   repository.getSiteSettings(),
   repository.getTeamPage(),
   repository.getTeamMembers(),
-  repository.getHomePage(),
 ]);
 ---
 
@@ -23,5 +21,5 @@ const [settings, page, members, home] = await Promise.all([
   <MemberDiscounts {...page.band} text={settings.promotion} compact class="lg:mt-28" />
   <!-- Figma Team keeps the questions in sentence case on desktop. -->
   <Faq {...page.faq} centered uppercase={false} />
-  <Newsletter description={home.newsletter.description} copy={settings.interfaceCopy} class="mt-12" />
+  <Newsletter newsletter={settings.newsletter} copy={settings.interfaceCopy} class="mt-12" />
 </SiteLayout>

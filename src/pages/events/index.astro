@@ -5,16 +5,14 @@ import Newsletter from "@/components/sections/shared/Newsletter.astro";
 import { getContentRepository } from "@/services/content/repository";
 
 const repository = await getContentRepository();
-// The newsletter copy lives on the home page content for now.
-const [settings, page, events, home] = await Promise.all([
+const [settings, page, events] = await Promise.all([
   repository.getSiteSettings(),
   repository.getEventsPage(),
   repository.getEvents(),
-  repository.getHomePage(),
 ]);
 ---
 
 <SiteLayout settings={settings} title="Events · Circles House" description={page.subtitle}>
   <EventsListing {page} {events} />
-  <Newsletter description={home.newsletter.description} copy={settings.interfaceCopy} class="mt-12 lg:mt-10" />
+  <Newsletter newsletter={settings.newsletter} copy={settings.interfaceCopy} class="mt-12 lg:mt-10" />
 </SiteLayout>

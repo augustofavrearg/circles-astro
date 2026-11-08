@@ -5,8 +5,7 @@ import Newsletter from "@/components/sections/shared/Newsletter.astro";
 import { getContentRepository } from "@/services/content/repository";
 
 const repository = await getContentRepository();
-// The newsletter copy lives on the home page content for now.
-const [settings, deals, home] = await Promise.all([repository.getSiteSettings(), repository.getDeals(), repository.getHomePage()]);
+const [settings, deals] = await Promise.all([repository.getSiteSettings(), repository.getDeals()]);
 ---
 
 <SiteLayout
@@ -20,5 +19,5 @@ const [settings, deals, home] = await Promise.all([repository.getSiteSettings(),
   ) : (
     <p class="px-4 py-24 text-center text-body lg:px-6">There are no deals available right now.</p>
   )}
-  <Newsletter description={home.newsletter.description} copy={settings.interfaceCopy} class="mt-12" />
+  <Newsletter newsletter={settings.newsletter} copy={settings.interfaceCopy} class="mt-12" />
 </SiteLayout>

@@ -1,12 +1,13 @@
 ---
 import { IconArrowNarrowRight } from "@tabler/icons-react";
 import { cn } from "@/lib/cn";
+import type { SiteSettings } from "@/domain/content";
 
-type Props = { description: string; copy?: Record<string, string>; class?: string };
-const { description, copy = {}, class: className } = Astro.props;
-const title = copy["newsletter.title"] ?? "Join our Newsletter";
+type Props = { newsletter: SiteSettings["newsletter"]; copy?: Record<string, string>; class?: string };
+const { newsletter, copy = {}, class: className } = Astro.props;
+const { title, description, consentText } = newsletter;
 const placeholder = copy["newsletter.emailPlaceholder"] ?? "Enter your email";
-const note = copy["newsletter.disabled"] ?? "Subscriptions will open once the email provider and consent text are approved.";
+const note = copy["newsletter.disabled"] ?? consentText;
 ---
 
 <section class={cn("mt-28 px-4 lg:px-6", className)}>

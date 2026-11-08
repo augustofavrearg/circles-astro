@@ -28,6 +28,7 @@ import {
   mapMembershipPlan,
   mapNavigationItem,
   mapNewsArticle,
+  mapNewsItem,
   mapPartner,
   mapRoom,
   mapSiteSettings,
@@ -354,23 +355,25 @@ function buildNavigation(records: WixRecord[]): SiteNavigation {
 }
 
 async function loadCmsHomePage(): Promise<HomePage> {
-  const [page, locations, spaces, events, testimonials, news] = await Promise.all([
+  const [page, locations, spaces, eventRecords, testimonials, newsRecords] = await Promise.all([
     requirePage<HomePage>({ pageKey: "home" }),
     getPublishedLocations(),
     queryPublished(COLLECTIONS.spaces),
-    wixCmsRepository.getEvents(),
-    queryPublished(COLLECTIONS.testimonials),
-    wixCmsRepository.getNewsArticles(),
+    queryPublished(COLLECTIONS.events, 100, "homeSortOrder"),
+    queryPublished(COLLECTIONS.testimonials, 100, "homeSortOrder"),
+    queryPublished(COLLECTIONS.newsArticles, 100, "homeSortOrder"),
   ]);
   const locationById = new Map(locations.map((location) => [asText(location._id), location]));
+  const locationLookup = buildLocationLookup(locations);
   const featuredSpaces = spaces
     .filter((space) => asBoolean(space.featuredHome))
     .sort((left, right) => Number(left.homeSortOrder ?? 0) - Number(right.homeSortOrder ?? 0))
     .map((space) => mapSpace(space, locationById.get(referenceId(space.location))));
-  const featuredNews = news.filter((article) => {
-    const record = article as unknown as WixRecord;
-    return record.featuredHome !== false;
-  });
+  const featuredEvents = eventRecords
+    .filter((event) => asBoolean(event.featuredHome) && isCurrentOrUpcomingEvent(event))
+    .map((event) => mapEvent(event, locationLookup));
+  const featuredTestimonials = testimonials.filter((testimonial) => asBoolean(testimonial.featuredHome));
+  const featuredNews = newsRecords.filter((article) => asBoolean(article.featuredHome)).map(mapNewsItem);
   const locationCards = locations
     .filter((location) => asBoolean(location.featuredHome))
     .sort((left, right) => Number(left.homeSortOrder ?? 0) - Number(right.homeSortOrder ?? 0));
@@ -391,11 +394,11 @@ async function loadCmsHomePage(): Promise<HomePage> {
       comingSoon: asText(location.status).toLowerCase().replaceAll("-", "") === "comingsoon",
       image: wixUrl(location.cardImage) || undefined,
     })),
-    network: { ...page.network, spaces: featuredSpaces.length ? featuredSpaces : page.network.spaces },
+    network: { ...page.network, spaces: featuredSpaces },
     happeningNow: {
       ...page.happeningNow,
       cities: locations.map((location) => asText(location.slug)).filter(Boolean),
-      events: events.map((event) => ({
+      events: featuredEvents.map((event) => ({
         title: event.title,
         description: event.subtitle ?? "",
         access: "",
@@ -408,7 +411,7 @@ async function loadCmsHomePage(): Promise<HomePage> {
         cta: event.href ? { label: "Learn more", href: event.href } : undefined,
       })),
     },
-    testimonials: testimonials.map((item) => ({
+    testimonials: featuredTestimonials.map((item) => ({
       quote: asText(item.quote),
       author: asText(item.authorName),
       source: asText(item.sourceLabel),
@@ -416,7 +419,7 @@ async function loadCmsHomePage(): Promise<HomePage> {
     })),
     news: {
       ...page.news,
-      items: featuredNews.length ? featuredNews : page.news.items,
+      items: featuredNews,
     },
   };
 }

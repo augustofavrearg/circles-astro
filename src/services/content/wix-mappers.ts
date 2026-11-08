@@ -180,6 +180,11 @@ export function mapSiteSettings(item: WixRecord, socialItems: WixRecord[]): Site
   const copyright = template.replaceAll("{year}", String(new Date().getFullYear()));
   return {
     promotion: asText(item.promotionText) || undefined,
+    newsletter: {
+      title: asText(item.newsletterTitle),
+      description: asText(item.newsletterDescription),
+      consentText: asText(item.newsletterConsentText),
+    },
     footer: { image: wixUrl(item.footerImage) || undefined },
     contact: {
       about: asText(item.contactAbout),

@@ -16,7 +16,7 @@ const repository = await getContentRepository();
 const page = await repository.getCoworkingPage(Astro.params.city ?? "");
 if (!page) return new Response("Not found", { status: 404 });
 
-// "Happening now" reuses the home events and newsletter copy for now.
+// "Happening now" reuses the home events for now.
 const [settings, home] = await Promise.all([repository.getSiteSettings(), repository.getHomePage()]);
 const { happeningNow } = home;
 ---
@@ -49,5 +49,5 @@ const { happeningNow } = home;
 
   <MemberDiscounts {...page.band} text={settings.promotion} compact class="lg:mt-16" />
   <Faq {...page.faq} centered uppercase={false} />
-  <Newsletter description={home.newsletter.description} copy={settings.interfaceCopy} class="mt-12" />
+  <Newsletter newsletter={settings.newsletter} copy={settings.interfaceCopy} class="mt-12" />
 </SiteLayout>

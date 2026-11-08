@@ -7,6 +7,7 @@ import {
   mapNavigationItem,
   mapNewsArticle,
   mapRoom,
+  mapSiteSettings,
   isCurrentOrUpcomingEvent,
   resolveCmsHref,
   richContentBlocks,
@@ -19,6 +20,21 @@ const locations: LocationLookup = new Map([
 ]);
 
 describe("Wix CMS canonical mappers", () => {
+  it("maps global newsletter content from CHSiteSettings", () => {
+    expect(mapSiteSettings({
+      newsletterTitle: "Stay in the circle",
+      newsletterDescription: "News from Circles House.",
+      newsletterConsentText: "I agree to receive updates.",
+      copyrightTemplate: "© {year} Circles House",
+    }, [])).toMatchObject({
+      newsletter: {
+        title: "Stay in the circle",
+        description: "News from Circles House.",
+        consentText: "I agree to receive updates.",
+      },
+    });
+  });
+
   it("resolves internal route keys without storing internal URLs in Wix", () => {
     expect(resolveCmsHref("home")).toBe("/home");
     expect(resolveCmsHref("location", "barcelona", "rooms")).toBe("/locations/barcelona#rooms");

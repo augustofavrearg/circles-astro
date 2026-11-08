@@ -19,12 +19,10 @@ const repository = await getContentRepository();
 const page = await repository.getMonthPage(Astro.params.slug ?? "");
 if (!page) return new Response("Not found", { status: 404 });
 
-// The newsletter copy lives on the home page content for now.
-const [settings, rooms, cityEvents, home] = await Promise.all([
+const [settings, rooms, cityEvents] = await Promise.all([
   repository.getSiteSettings(),
   repository.getRooms(page.city),
   repository.getEvents(page.city),
-  repository.getHomePage(),
 ]);
 const monthAbbreviations: Record<string, string> = {
   january: "jan",
@@ -83,5 +81,5 @@ const roomTypes = rooms.map((room) => room.name);
   <ExternalEventsCarousel id="seasonal-events" {...page.seasonal} />
 
   <Faq {...page.faq} centered uppercase={false} />
-  <Newsletter description={home.newsletter.description} copy={settings.interfaceCopy} class="mt-12" />
+  <Newsletter newsletter={settings.newsletter} copy={settings.interfaceCopy} class="mt-12" />
 </SiteLayout>

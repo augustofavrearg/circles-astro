@@ -23,7 +23,7 @@ const repository = await getContentRepository();
 const page = await repository.getLocationPage(Astro.params.city ?? "");
 if (!page) return new Response("Not found", { status: 404 });
 
-// Reviews, "Happening now" and the newsletter copy come from the home page content for now.
+// Reviews and "Happening now" come from the home page content for now.
 const [settings, rooms, home] = await Promise.all([repository.getSiteSettings(), repository.getRooms(page.slug), repository.getHomePage()]);
 const booking = createCloudbedsProvider(import.meta.env.CLOUDBEDS_ALLOWED_ORIGIN);
 const { happeningNow } = home;
@@ -117,5 +117,5 @@ const tabs = [
     </section>
   )}
 
-  <Newsletter description={home.newsletter.description} copy={settings.interfaceCopy} class="mt-12" />
+  <Newsletter newsletter={settings.newsletter} copy={settings.interfaceCopy} class="mt-12" />
 </SiteLayout>

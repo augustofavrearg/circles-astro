@@ -9,8 +9,7 @@ import { CoworkingSpaces } from "@/islands/CoworkingSpaces";
 import { getContentRepository } from "@/services/content/repository";
 
 const repository = await getContentRepository();
-// The newsletter copy lives on the home page content for now.
-const [settings, page, home] = await Promise.all([repository.getSiteSettings(), repository.getLifePage(), repository.getHomePage()]);
+const [settings, page] = await Promise.all([repository.getSiteSettings(), repository.getLifePage()]);
 ---
 
 <SiteLayout settings={settings} title={page.seo.title} description={page.seo.description}>
@@ -29,5 +28,5 @@ const [settings, page, home] = await Promise.all([repository.getSiteSettings(), 
 
   <MemberDiscounts {...page.band} text={settings.promotion} compact class="mt-10 lg:mt-14" />
   <Faq {...page.faq} centered uppercase={false} />
-  <Newsletter description={home.newsletter.description} copy={settings.interfaceCopy} class="mt-12" />
+  <Newsletter newsletter={settings.newsletter} copy={settings.interfaceCopy} class="mt-12" />
 </SiteLayout>
