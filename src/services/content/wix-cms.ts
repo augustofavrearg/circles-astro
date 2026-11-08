@@ -177,9 +177,11 @@ function splitParagraphs(value: string): string[] {
 }
 
 function composeSection(section: WixRecord, sectionItems: WixRecord[]): Record<string, unknown> {
+  const componentKey = asText(section.componentKey);
   const primaryCta = mapCmsLink(section, "primary");
   const secondaryCta = mapCmsLink(section, "secondary");
   const body = asText(section.body);
+  const image = wixUrl(section.image);
   const gallery = wixGallery(section.gallery);
   const mappedItems = sectionItems.map(contentFields);
   const name = sectionName(section);
@@ -192,7 +194,7 @@ function composeSection(section: WixRecord, sectionItems: WixRecord[]): Record<s
     text: body,
     description: body,
     note: asText(section.note) || undefined,
-    image: wixUrl(section.image) || undefined,
+    image: image || undefined,
     gallery,
     images: gallery,
     layoutVariant: asText(section.layoutVariant) || undefined,
@@ -201,6 +203,68 @@ function composeSection(section: WixRecord, sectionItems: WixRecord[]): Record<s
     secondaryCta,
     items: mappedItems,
   };
+
+  if (componentKey === "home.hero") {
+    const videoSrc = wixUrl(section.primaryExternalUrl);
+    return {
+      title: asText(section.title),
+      description: body || asText(section.lead),
+      ...(image || videoSrc
+        ? {
+            video: {
+              label: asText(section.primaryCtaLabel) || asText(section.subtitle) || "Discover Circles House",
+              poster: image || undefined,
+              src: videoSrc || undefined,
+            },
+          }
+        : {}),
+    };
+  }
+
+  if (componentKey === "home.network") {
+    return { eyebrow: asText(section.eyebrow), title: asText(section.title), spaces: [] };
+  }
+
+  if (componentKey === "home.happeningNow") {
+    return {
+      eyebrow: asText(section.eyebrow),
+      title: asText(section.title),
+      cities: [],
+      viewAll: primaryCta,
+      events: [],
+    };
+  }
+
+  if (componentKey === "home.memberships") {
+    return {
+      eyebrow: asText(section.eyebrow),
+      title: asText(section.title),
+      description: body,
+      cta: primaryCta,
+      highlights: sectionItems.map((item) => asText(item.title) || asText(item.label)).filter(Boolean),
+      image: image || undefined,
+      thumbnail: gallery[0] || undefined,
+    };
+  }
+
+  if (componentKey === "home.introduction") {
+    return {
+      title: asText(section.title),
+      highlight: asText(section.subtitle),
+      intro: asText(section.lead),
+      body,
+      cta: primaryCta,
+      images: {
+        main: image || undefined,
+        left: gallery[0] || undefined,
+        right: gallery[1] || undefined,
+      },
+    };
+  }
+
+  if (componentKey === "home.news") {
+    return { eyebrow: asText(section.eyebrow), title: asText(section.title), items: [] };
+  }
 
   if (name === "faq") {
     result.items = mappedItems.map((item) => ({
@@ -355,14 +419,15 @@ function buildNavigation(records: WixRecord[]): SiteNavigation {
 }
 
 async function loadCmsHomePage(): Promise<HomePage> {
-  const [page, locations, spaces, eventRecords, testimonials, newsRecords] = await Promise.all([
-    requirePage<HomePage>({ pageKey: "home" }),
+  const [composedPage, locations, spaces, eventRecords, testimonials, newsRecords] = await Promise.all([
+    requirePage<Partial<HomePage>>({ pageKey: "home" }),
     getPublishedLocations(),
     queryPublished(COLLECTIONS.spaces),
     queryPublished(COLLECTIONS.events, 100, "homeSortOrder"),
     queryPublished(COLLECTIONS.testimonials, 100, "homeSortOrder"),
     queryPublished(COLLECTIONS.newsArticles, 100, "homeSortOrder"),
   ]);
+  const page = requireCompleteHomePage(composedPage);
   const locationById = new Map(locations.map((location) => [asText(location._id), location]));
   const locationLookup = buildLocationLookup(locations);
   const featuredSpaces = spaces
@@ -422,6 +487,19 @@ async function loadCmsHomePage(): Promise<HomePage> {
       items: featuredNews,
     },
   };
+}
+
+function requireCompleteHomePage(page: Partial<HomePage>): HomePage {
+  const requiredSections = ["seo", "hero", "network", "happeningNow", "memberships", "introduction", "news"] as const;
+  for (const key of requiredSections) {
+    if (!page[key] || typeof page[key] !== "object") {
+      throw new Error(`CHPages item "home" is missing the required "home.${key}" content.`);
+    }
+  }
+  if (!page.memberships?.cta) throw new Error('CHPageSections item "home.memberships" requires a primary CTA.');
+  if (!page.introduction?.cta) throw new Error('CHPageSections item "home.introduction" requires a primary CTA.');
+  if (!page.happeningNow?.viewAll) throw new Error('CHPageSections item "home.happeningNow" requires a primary CTA.');
+  return page as HomePage;
 }
 
 function getCmsHomePage(): Promise<HomePage> {

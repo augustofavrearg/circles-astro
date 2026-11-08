@@ -34,6 +34,36 @@ const page = (pageKey, pageType, routeKey, options = {}) => ({
   published: true,
 });
 
+const pageSectionOverrides = {
+  "home.hero": {
+    body: "A community for entrepreneurs and innovators to live, work and connect.",
+  },
+  "home.network": {
+    eyebrow: "The Circles House network",
+  },
+  "home.happeningNow": {
+    eyebrow: "Happening now",
+    primaryCtaLabel: "View all",
+    primaryRouteKey: "events",
+  },
+  "home.memberships": {
+    eyebrow: "Join us",
+    body: "Connect with ambitious entrepreneurs and turn shared ideas into action.",
+    primaryCtaLabel: "Apply",
+    primaryRouteKey: "memberships",
+  },
+  "home.introduction": {
+    subtitle: "Many life experiences",
+    lead: "Circles House brings entrepreneurs, digital nomads and innovators together.",
+    body: "We put people, kindness and meaningful collaboration at the centre of every decision.",
+    primaryCtaLabel: "About us",
+    primaryRouteKey: "what-is-circles",
+  },
+  "home.news": {
+    eyebrow: "News",
+  },
+};
+
 export const seedCollections = [
   {
     collectionId: "CHSiteSettings",
@@ -318,6 +348,11 @@ export const seedCollections = [
     keyField: "sectionKey",
     items: [
       ["home.hero", "home", "home.hero", "Welcome to the Circles House sandbox"],
+      ["home.network", "home", "home.network", "A more meaningful way to live, work and connect"],
+      ["home.happeningNow", "home", "home.happeningNow", "Here's what's coming up"],
+      ["home.memberships", "home", "home.memberships", "Become a Member"],
+      ["home.introduction", "home", "home.introduction", "One community, one home worldwide"],
+      ["home.news", "home", "home.news", "Latest announcements"],
       ["events.intro", "events", "events.intro", "Happening now"],
       ["team.intro", "team", "team.intro", "Meet the community team"],
       ["memberships.intro", "memberships", "memberships.intro", "Become a member"],
@@ -338,6 +373,7 @@ export const seedCollections = [
         eyebrow: "Sandbox",
         title,
         body: "This section is CMS-managed staging content.",
+        ...(pageSectionOverrides[sectionKey] ?? {}),
         enabled: true,
         sortOrder: index + 1,
       },
@@ -348,20 +384,35 @@ export const seedCollections = [
     keyField: "itemKey",
     items: [
       {
-        key: "home.hero.community",
+        key: "home.memberships.community",
         data: {
-          itemKey: "home.hero.community",
-          section: reference("CHPageSections", "home.hero"),
-          label: "Community",
-          title: "Live, work and connect",
-          text: "Representative sandbox item for the page composition chain.",
-          routeKey: "what-is-circles",
-          linkLabel: "Discover Circles",
+          itemKey: "home.memberships.community",
+          section: reference("CHPageSections", "home.memberships"),
+          title: "Instant Community",
           highlighted: true,
           wide: false,
-          size: "large",
           published: true,
           sortOrder: 1,
+        },
+      },
+      {
+        key: "home.memberships.focus",
+        data: {
+          itemKey: "home.memberships.focus",
+          section: reference("CHPageSections", "home.memberships"),
+          title: "Focused Channels",
+          published: true,
+          sortOrder: 2,
+        },
+      },
+      {
+        key: "home.memberships.collaboration",
+        data: {
+          itemKey: "home.memberships.collaboration",
+          section: reference("CHPageSections", "home.memberships"),
+          title: "Collaboration",
+          published: true,
+          sortOrder: 3,
         },
       },
       {

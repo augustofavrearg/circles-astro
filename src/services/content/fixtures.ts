@@ -65,6 +65,10 @@ const barcelonaDetails: PlaceDetails = {
 };
 
 export const homePageFixture: HomePage = {
+  seo: {
+    title: "Circles House · Coliving and coworking community",
+    description: "Live, work and connect with entrepreneurs and innovators at Circles House.",
+  },
   hero: {
     title: "The coliving and coworking community, designed for entrepreneurs and innovators.",
     description:

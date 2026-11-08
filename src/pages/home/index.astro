@@ -17,7 +17,7 @@ const repository = await getContentRepository();
 const [settings, home] = await Promise.all([repository.getSiteSettings(), repository.getHomePage()]);
 ---
 
-<SiteLayout settings={settings}>
+<SiteLayout settings={settings} title={home.seo.title} description={home.seo.description}>
   <Hero {...home.hero} searchLocations={home.searchLocations} nextSectionId={home.slider.length > 0 ? "locations" : undefined} />
 
   {home.slider.length > 0 && <HeroSlider client:visible id="locations" slides={home.slider} defaultCta={bookStayLink} />}

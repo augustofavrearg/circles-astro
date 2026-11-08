@@ -124,6 +124,7 @@ export type SiteSettings = {
 };
 
 export type HomePage = {
+  seo: { title: string; description: string };
   hero: {
     title: string;
     description: string;
