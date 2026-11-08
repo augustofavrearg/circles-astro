@@ -1,12 +1,13 @@
 import { IconArrowNarrowLeft, IconArrowNarrowRight } from "@tabler/icons-react";
 import { useState } from "react";
+import { mediaPlaceholderClass, USE_MEDIA_PLACEHOLDERS, type MediaPlaceholderTone } from "@/config/media";
 
 /** Figma "Manifesto" image with previous / next arrows; the arrows only render when there is more than one photo. */
-export function ManifestoGallery({ images, label }: { images: string[]; label: string }) {
+export function ManifestoGallery({ images, label, placeholderTone = "yellow" }: { images: string[]; label: string; placeholderTone?: MediaPlaceholderTone }) {
   const [current, setCurrent] = useState(0);
   const count = images.length;
 
-  if (count === 0) return <div className="size-full bg-black/8" />;
+  if (USE_MEDIA_PLACEHOLDERS || count === 0) return <div className={`size-full ${mediaPlaceholderClass(placeholderTone)}`} />;
 
   const arrow = "absolute top-1/2 flex h-7 w-12 -translate-y-1/2 items-center justify-center rounded-full transition-opacity disabled:cursor-default";
 

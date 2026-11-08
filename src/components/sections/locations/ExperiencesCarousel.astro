@@ -17,9 +17,9 @@ const { id, eyebrow, title, subtitle, items } = Astro.props;
     {items.length > 1 && <ScrollButtons client:visible targetId={`${id}-track`} label="experience" className="mt-10" />}
   </header>
   <div id={`${id}-track`} class="scrollbar-none mt-12 flex snap-x scroll-px-4 gap-1 overflow-x-auto px-4 lg:mt-12 lg:scroll-px-4 lg:px-4">
-    {items.map((item) => (
+    {items.map((item, index) => (
       <figure class:list={["relative h-[670px] w-[calc(100vw-2rem)] shrink-0 snap-start overflow-hidden lg:h-[675px]", item.wide ? "lg:w-[890px]" : "lg:w-[450px]"]}>
-        <Media src={item.image} alt="" />
+        <Media src={item.image} alt="" placeholderTone={index % 2 === 0 ? "yellow" : "blue"} />
         <figcaption class="absolute bottom-4 left-4 max-w-[calc(100%-2rem)] bg-black/55 px-3 py-2 text-white lg:max-w-[300px]">
           <p class="font-display text-[1.125rem] leading-[1.2]">{item.title}</p>
           <p class="mt-0.5 text-detail leading-[1.25]">{item.text}</p>

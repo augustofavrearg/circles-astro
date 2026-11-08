@@ -88,7 +88,7 @@ export function BookingSearch({ locations = [], fixedLocation, className = "" }:
       aria-label="Search stays"
       className={
         fixedLocation
-          ? `flex w-full items-center gap-0.75 ${className}`
+          ? `grid w-full grid-cols-[minmax(0,1fr)_3.625rem] items-center gap-0.75 sm:flex ${className}`
           : `${expanded ? "grid" : "hidden lg:grid"} w-full max-w-[873px] grid-cols-2 gap-0.75 xl:flex xl:items-center ${className}`
       }
     >
@@ -104,7 +104,7 @@ export function BookingSearch({ locations = [], fixedLocation, className = "" }:
           </select>
         </Segment>
       )}
-      <div className={fixedLocation ? "flex min-w-0 flex-1 gap-px" : "col-span-2 flex min-w-0 gap-px xl:w-[369px] xl:shrink-0"}>
+      <div className={fixedLocation ? "col-span-2 flex min-w-0 gap-px sm:col-span-1 sm:flex-1" : "col-span-2 flex min-w-0 gap-px xl:w-[369px] xl:shrink-0"}>
         <Segment label="Check in" value={formatDate(checkIn)} placeholder="Add dates" className="flex-1 rounded-l-lg">
           <input
             type="date"
@@ -121,7 +121,7 @@ export function BookingSearch({ locations = [], fixedLocation, className = "" }:
           <input type="date" value={checkOut} min={checkIn || undefined} onChange={(event) => setCheckOut(event.target.value)} onClick={showPicker} className={nativeControl} />
         </Segment>
       </div>
-      <Segment label="Guests" value={guests} placeholder="1" className={`rounded-lg [&>span>span:first-child]:text-black/45 ${fixedLocation ? "w-[84px] shrink-0 sm:w-[168px]" : "xl:w-[168px] xl:shrink-0"}`}>
+      <Segment label="Guests" value={guests} placeholder="1" className={`rounded-lg [&>span>span:first-child]:text-black/45 ${fixedLocation ? "min-w-0 sm:w-[168px] sm:shrink-0" : "xl:w-[168px] xl:shrink-0"}`}>
         <select value={guests} onChange={(event) => setGuests(event.target.value)} className={nativeControl}>
           {GUEST_OPTIONS.map((count) => (
             <option key={count} value={count}>

@@ -43,7 +43,7 @@ const tabs = [
   <!-- Figma "Location - Barcelona": centered title, dates and guests, then the hero photo. -->
   <section class="px-4 pt-8 pb-6 text-center lg:px-6 lg:pt-14 lg:pb-7">
     <Eyebrow>{page.hero.eyebrow}</Eyebrow>
-    <h1 class="mt-2 font-display text-h1 leading-[1.2] lg:leading-(--text-h1--line-height)">{page.hero.title}</h1>
+    <h1 class="mx-auto mt-2 max-w-[1100px] text-balance font-display text-h1 leading-[1.2] lg:leading-(--text-h1--line-height)">{page.hero.title}</h1>
     <BookingSearch client:load fixedLocation={page.slug} className="mt-8 text-left lg:mt-14" />
   </section>
 
@@ -60,7 +60,7 @@ const tabs = [
       </ul>
     </div>
     <div class="relative aspect-[290/193] overflow-hidden lg:aspect-[635/470]">
-      <Media src={page.space.image} alt="" />
+      <Media src={page.space.image} alt="" placeholderTone="blue" />
     </div>
   </section>
 
@@ -72,7 +72,7 @@ const tabs = [
       <BookingSearch client:visible fixedLocation={page.slug} className="mx-auto mt-8 max-w-[860px] text-left lg:mt-12" />
     </header>
     <div class="mt-16 grid gap-4 lg:mt-24 lg:grid-cols-2 lg:gap-3">
-      {rooms.map((room) => <RoomCard room={room} bookingHref={booking.getRedirect(room).toString()} />)}
+      {rooms.map((room, index) => <RoomCard room={room} bookingHref={booking.getRedirect(room).toString()} placeholderTone={index % 2 === 0 ? "yellow" : "blue"} />)}
     </div>
   </section>
 
@@ -87,7 +87,7 @@ const tabs = [
       <p class="mx-auto mt-6 max-w-[860px] text-[0.9375rem] leading-[1.45] lg:text-[0.8125rem]">{page.location.text}</p>
     </header>
     <div class="relative mt-12 h-[730px] overflow-hidden bg-surface lg:mt-12 lg:h-[720px]">
-      {page.location.mapImage && <Media src={page.location.mapImage} alt="" />}
+      <Media src={page.location.mapImage} alt="" placeholderTone="blue" />
       {page.location.mapHref ? (
         <a href={page.location.mapHref} target="_blank" rel="noreferrer" aria-label={`Open ${page.hero.title} in Google Maps`} class="absolute inset-0 flex items-center justify-center">
           <IconMapPinFilled size={28} className="text-red" aria-hidden="true" />

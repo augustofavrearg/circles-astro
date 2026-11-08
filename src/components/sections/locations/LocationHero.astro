@@ -16,11 +16,11 @@ const AMENITY_LABELS: Record<SpaceAmenity, string> = { coliving: "Coliving", cow
 -->
 <section class="relative pt-[178px] pb-[90px] lg:flex lg:h-[762px] lg:items-center lg:py-0">
   <div class="absolute inset-0 overflow-hidden">
-    <Media src={image} alt={photosAlt} eager />
+    <Media src={image} alt={photosAlt} eager placeholderTone="yellow" />
   </div>
-  <div class="relative mx-4 flex flex-col bg-background p-6 lg:mx-0 lg:ml-6 lg:min-h-[475px] lg:w-[425px] lg:p-6">
+  <div class="relative mx-4 flex min-w-0 flex-col bg-background p-6 lg:mx-0 lg:ml-6 lg:min-h-[475px] lg:w-[425px] lg:p-6">
     <Eyebrow>{eyebrow}</Eyebrow>
-    <h2 class="mt-20 font-display text-[2rem] leading-[1.2] lg:mt-auto lg:text-[2.125rem]">{title}</h2>
+    <h2 class="mt-20 text-balance font-display text-[2rem] leading-[1.2] lg:mt-auto lg:text-[2.125rem]">{title}</h2>
     <p class="mt-4 text-[0.9375rem] leading-[1.45] lg:text-[0.8125rem]">{text}</p>
     {cta && <Button href={cta.href} class="mt-8 self-start">{cta.label}</Button>}
     <ul class="mt-8 flex flex-wrap gap-x-5 gap-y-2 border-t border-black/12 pt-3 text-detail text-black/60">

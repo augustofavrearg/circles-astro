@@ -769,7 +769,7 @@ export const locationPagesFixture: LocationPage[] = [
       // "See all Photos" appears once the gallery has photos.
       card: {
         eyebrow: "The space",
-        title: "Your new home in Barcelona’s Gothic Quarter.",
+        title: "Your new home in Barcelona’s natural park.",
         text: "Located in a natural park and only a 5 minute walk from a metro station, our house in Vallvidrera is well-located and allows you to get anywhere quickly and easily.",
         cta: { label: "Book", href: "#rooms" },
         amenities: ["coliving", "coworking"],
@@ -784,17 +784,11 @@ export const locationPagesFixture: LocationPage[] = [
         "A/C in rooms",
         "Towels",
         "Room door locks",
-        "Complimentary breakfast",
-        "Mini fridge",
-        "Free Wi-Fi",
-        "Coffee maker",
-        "Flat-screen TV",
-        "Gym access",
-        "Swimming pool",
-        "Laundry service",
-        "Daily housekeeping",
-        "Concierge services",
-        "Shuttle service to airport",
+        "High-speed Wi-Fi",
+        "Community kitchen",
+        "Coworking",
+        "360º rooftop",
+        "Gym and shower",
       ],
     },
     rooms: {
@@ -802,20 +796,20 @@ export const locationPagesFixture: LocationPage[] = [
       title: "A room for your needs",
       text: "Our house offers a range of thoughtfully designed rooms to suit various lifestyles, combining luxury and functionality. Whether you’re looking for a monthly stay or a flexible option, we’ve got you covered.",
     },
-    band: { title: "Stay longer and Save more", primaryCta: { label: "Join us", href: "/api/auth/login" } },
+    band: { title: "Stay longer and Save more", primaryCta: { label: "Join us", href: "/memberships" } },
     experiences: {
       eyebrow: "Experience",
       title: "Travel slowly in Barcelona",
       subtitle: "Take your time, get to know the city",
       // Photos are pending.
       items: [
-        { title: "Explore the Gothic Quarter", text: "Amble between centuries old architecture and hole-in-the-wall tapas bars" },
-        { title: "Swim at Barceloneta", text: "Your local beach is just 15 minutes on foot", wide: true },
+        { title: "Explore Barcelona", text: "Move easily between the city centre, the coast and the hills from Vallvidrera" },
+        { title: "Swim at Barceloneta", text: "Take the metro into the city and spend the day beside the Mediterranean", wide: true },
       ],
     },
     location: {
       eyebrow: "Location",
-      title: "In the Heart of the Gothic Quarter",
+      title: "In the hills above Barcelona",
       text: "Located in a natural park and only a 5 minute walk from a metro station, our house in Vallvidrera is well-located and allows you to get anywhere quickly and easily. Whether you want to go to the heart of Placa Catalunya, Barceloneta beach, or the mountains, the proximity of our house to the metro means all of this is possible.",
       // The map image is pending; the link opens the address in Google Maps.
       mapHref: "https://www.google.com/maps/search/?api=1&query=Cam%C3%AD%20de%20Vallvidrera%20al%20Tibidabo%2C%205%2C%2008017%20Barcelona",

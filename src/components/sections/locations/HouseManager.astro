@@ -1,5 +1,6 @@
 ---
 import type { LocationPage } from "@/domain/content";
+import Media from "@/components/ui/Media.astro";
 
 type Props = LocationPage["manager"];
 const { eyebrow, title, paragraphs, image } = Astro.props;
@@ -14,7 +15,7 @@ const { eyebrow, title, paragraphs, image } = Astro.props;
       {paragraphs.map((paragraph) => <p>{paragraph}</p>)}
     </div>
   </div>
-  <div class="mt-12 aspect-[290/375] bg-black/8 lg:mt-0 lg:aspect-[545/565]">
-    {image && <img src={image} alt="" loading="lazy" class="size-full object-cover" />}
+  <div class="relative mt-12 aspect-[290/375] overflow-hidden bg-black/8 lg:mt-0 lg:aspect-[545/565]">
+    <Media src={image} alt="" placeholderTone="blue" />
   </div>
 </section>

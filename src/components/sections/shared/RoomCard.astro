@@ -1,10 +1,11 @@
 ---
 import type { Room } from "@/domain/booking";
+import type { MediaPlaceholderTone } from "@/config/media";
 import Button from "@/components/ui/Button.astro";
 import { ManifestoGallery } from "@/islands/ManifestoGallery";
 
-type Props = { room: Room; bookingHref: string };
-const { room, bookingHref } = Astro.props;
+type Props = { room: Room; bookingHref: string; placeholderTone?: MediaPlaceholderTone };
+const { room, bookingHref, placeholderTone = "yellow" } = Astro.props;
 const photos = room.gallery?.length ? room.gallery : room.image ? [room.image] : [];
 const occupancyLabel = room.occupancyType === "private" ? "Private" : room.occupancyType === "shared" ? "Shared" : undefined;
 ---
@@ -13,9 +14,9 @@ const occupancyLabel = room.occupancyType === "private" ? "Private" : room.occup
 <article class="border border-black/8 bg-white">
   <div class="relative aspect-[455/432] lg:aspect-[532/317]">
     {photos.length > 1 ? (
-      <ManifestoGallery client:visible images={photos} label={`${room.name} photos`} />
+      <ManifestoGallery client:visible images={photos} label={`${room.name} photos`} {placeholderTone} />
     ) : (
-      <ManifestoGallery images={photos} label={`${room.name} photos`} />
+      <ManifestoGallery images={photos} label={`${room.name} photos`} {placeholderTone} />
     )}
     {(room.houseLabel || occupancyLabel) && (
       <div class="absolute top-4 left-4 flex flex-wrap gap-1.5">
