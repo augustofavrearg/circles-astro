@@ -15,10 +15,15 @@ const { eyebrow, title, items } = Astro.props;
     <ScrollButtons client:visible targetId="news-track" label="announcements" />
   </div>
   <div id="news-track" class="scrollbar-none mt-12 flex snap-x scroll-px-4 gap-4 overflow-x-auto px-4 lg:mt-20 lg:scroll-px-6 lg:gap-12 lg:px-6">
-    {items.map((item) => (
+    {items.map((item, index) => (
       <a href={item.href} class="group w-[389px] max-w-[calc(100vw-3rem)] shrink-0 snap-start lg:w-[540px] lg:max-w-none">
         <div class="relative h-[388px] overflow-hidden">
-          <Media src={item.image} alt="" imageClass="transition-transform duration-700 group-hover:scale-105" />
+          <Media
+            src={item.image}
+            alt=""
+            placeholderTone={index % 2 === 0 ? "yellow" : "blue"}
+            imageClass="transition-transform duration-700 group-hover:scale-105"
+          />
           <span class="absolute top-4 left-4 rounded bg-black/45 px-4 py-1 text-detail text-white">{item.category}</span>
         </div>
         <div class="px-4">

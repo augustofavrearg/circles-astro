@@ -1,6 +1,7 @@
 import { IconArrowNarrowLeft, IconArrowNarrowRight, IconArrowUpRight } from "@tabler/icons-react";
 import { useState } from "react";
 import type { Link, Location } from "@/domain/content";
+import { alternatingMediaPlaceholder, mediaPlaceholderClass, USE_MEDIA_PLACEHOLDERS } from "@/config/media";
 import { PlaceDialog, type Place } from "./PlaceDialog";
 
 const CARD_CLASS =
@@ -39,14 +40,22 @@ export function HeroSlider({ slides, id, defaultCta }: { slides: Location[]; id?
   return (
     <section id={id} aria-roledescription="carousel" aria-label="Our locations" className="relative isolate h-svh max-h-[956px] min-h-[620px] overflow-hidden lg:h-[768px] lg:max-h-none lg:min-h-0">
       {slides.map((item, index) => (
-        <img
-          key={item.href}
-          src={item.image}
-          alt={item.name}
-          aria-hidden={index !== current}
-          loading={index === 0 ? "eager" : "lazy"}
-          className={`absolute inset-0 -z-10 size-full object-cover transition-opacity duration-700 ${index === current ? "opacity-100" : "opacity-0"}`}
-        />
+        USE_MEDIA_PLACEHOLDERS || !item.image ? (
+          <span
+            key={item.href}
+            aria-hidden="true"
+            className={`absolute inset-0 -z-10 transition-opacity duration-700 ${mediaPlaceholderClass(alternatingMediaPlaceholder(index))} ${index === current ? "opacity-100" : "opacity-0"}`}
+          />
+        ) : (
+          <img
+            key={item.href}
+            src={item.image}
+            alt={item.name}
+            aria-hidden={index !== current}
+            loading={index === 0 ? "eager" : "lazy"}
+            className={`absolute inset-0 -z-10 size-full object-cover transition-opacity duration-700 ${index === current ? "opacity-100" : "opacity-0"}`}
+          />
+        )
       ))}
 
       {slide.details ? (

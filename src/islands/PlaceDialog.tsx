@@ -1,6 +1,7 @@
 import { IconHome, IconMapPin, IconShield, IconStarFilled, IconX } from "@tabler/icons-react";
 import { useEffect, useRef } from "react";
 import type { Link, PlaceDetails, SpaceAmenity } from "@/domain/content";
+import { USE_MEDIA_PLACEHOLDERS } from "@/config/media";
 
 export type Place = {
   title: string;
@@ -51,7 +52,11 @@ export function PlaceDialog({ place, onClose, defaultCta }: { place: Place | nul
         <div className="flex h-full flex-col">
           <div className="flex-1 overflow-y-auto">
             <div className="relative h-[226px] shrink-0 bg-black/8">
-              {place.image && <img src={place.image} alt="" className="size-full object-cover" />}
+              {USE_MEDIA_PLACEHOLDERS || !place.image ? (
+                <span aria-hidden className="absolute inset-0 bg-yellow" />
+              ) : (
+                <img src={place.image} alt="" className="size-full object-cover" />
+              )}
               {place.access && <span className="absolute top-5 left-5 rounded bg-black/60 px-4 py-1 text-detail text-white">{place.access}</span>}
               <button type="button" onClick={onClose} aria-label="Close" className="absolute top-5 right-5 flex size-9 items-center justify-center rounded-full bg-black/45 text-white backdrop-blur">
                 <IconX size={16} stroke={1.75} />
@@ -98,7 +103,13 @@ export function PlaceDialog({ place, onClose, defaultCta }: { place: Place | nul
                 </ul>
               )}
 
-              {details?.mapImage && <img src={details.mapImage} alt={`Map of ${place.title}`} loading="lazy" className="mt-5 h-[125px] w-full rounded-lg object-cover" />}
+              {details?.mapImage && (
+                USE_MEDIA_PLACEHOLDERS ? (
+                  <div aria-hidden className="mt-5 h-[125px] w-full rounded-lg bg-[#3158d8]" />
+                ) : (
+                  <img src={details.mapImage} alt={`Map of ${place.title}`} loading="lazy" className="mt-5 h-[125px] w-full rounded-lg object-cover" />
+                )
+              )}
 
               {place.address && (
                 <div className="mt-4 text-[0.9375rem] leading-[1.45]">

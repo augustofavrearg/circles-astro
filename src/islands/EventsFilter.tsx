@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import type { CircleEvent } from "@/domain/content";
+import { alternatingMediaPlaceholder, mediaPlaceholderClass, USE_MEDIA_PLACEHOLDERS } from "@/config/media";
 
 /** `initialCity`: the city selected on load (the location pages start on their own city). */
 export function EventsFilter({ events, cities, initialCity = "all" }: { events: CircleEvent[]; cities: string[]; initialCity?: string }) {
@@ -24,12 +25,16 @@ export function EventsFilter({ events, cities, initialCity = "all" }: { events: 
         </div>
       </div>
       <div className="scrollbar-none mt-20 flex snap-x scroll-px-4 gap-4 overflow-x-auto px-4 pb-3 lg:mt-18 lg:scroll-px-6 lg:gap-12 lg:px-6">
-        {visible.map((event) => (
+        {visible.map((event, index) => (
           <article
             key={`${event.city}-${event.title}`}
             className="group relative h-[680px] w-[389px] max-w-[calc(100vw-3rem)] shrink-0 snap-start overflow-hidden lg:h-[720px] lg:w-[540px] lg:max-w-none"
           >
-            {event.image && <img src={event.image} alt="" loading="lazy" className="absolute inset-0 size-full object-cover" />}
+            {USE_MEDIA_PLACEHOLDERS || !event.image ? (
+              <span aria-hidden className={`absolute inset-0 ${mediaPlaceholderClass(alternatingMediaPlaceholder(index))}`} />
+            ) : (
+              <img src={event.image} alt="" loading="lazy" className="absolute inset-0 size-full object-cover" />
+            )}
             <span className="absolute top-4 left-4 rounded bg-black/60 px-4 py-1 text-detail text-white transition-all duration-300 lg:top-8 lg:left-8 lg:group-hover:top-4 lg:group-hover:left-4">
               {event.access}
             </span>

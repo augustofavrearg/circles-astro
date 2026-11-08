@@ -1,6 +1,7 @@
 import { IconArrowNarrowLeft, IconArrowNarrowRight } from "@tabler/icons-react";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import type { HomePage, Link, Space } from "@/domain/content";
+import { alternatingMediaPlaceholder, mediaPlaceholderClass, USE_MEDIA_PLACEHOLDERS } from "@/config/media";
 import { PlaceDialog, type Place } from "./PlaceDialog";
 
 type SizedSpace = HomePage["network"]["spaces"][number];
@@ -47,8 +48,9 @@ export function SpacesCarousel({ spaces, defaultCta, children }: { spaces: Sized
         </div>
       </div>
       <div ref={trackRef} className="scrollbar-none mt-28 flex snap-x scroll-px-4 items-center gap-12 overflow-x-auto px-4 pb-4 lg:mt-20 lg:snap-none lg:px-6">
-        {spaces.map((space) => {
+        {spaces.map((space, index) => {
           const size = SIZES[space.size];
+          const showPlaceholder = USE_MEDIA_PLACEHOLDERS || !space.image;
           return (
             <article key={space.title} className={`group shrink-0 snap-start ${size.card}`}>
               <p className="mb-1.5 flex gap-2 text-detail uppercase">
@@ -56,7 +58,11 @@ export function SpacesCarousel({ spaces, defaultCta, children }: { spaces: Sized
                 {space.comingSoon && <span className="text-red">Coming soon</span>}
               </p>
               <button type="button" onClick={() => open(space)} aria-haspopup="dialog" className={`relative block w-full overflow-hidden text-left text-white ${size.image}`}>
-                {space.image && <img src={space.image} alt="" loading="lazy" className="absolute inset-0 size-full object-cover transition-transform duration-700 group-hover:scale-105" />}
+                {showPlaceholder ? (
+                  <span aria-hidden className={`absolute inset-0 ${mediaPlaceholderClass(alternatingMediaPlaceholder(index))}`} />
+                ) : (
+                  <img src={space.image} alt="" loading="lazy" className="absolute inset-0 size-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                )}
                 <span className="absolute inset-0 bg-linear-to-b from-black/0 from-55% to-black/40" />
                 <span className="absolute inset-x-0 bottom-0 p-4 font-display text-h4">{space.title}</span>
               </button>
