@@ -23,6 +23,11 @@ if (wixConfig.siteId !== STAGING_SITE_ID) {
 const planSummary = seedCollections.map(({ collectionId, items }) => ({
   collectionId,
   itemCount: items.length,
+  editorialStatuses: Object.fromEntries(
+    Map.groupBy(items, (item) => item.editorialStatus ?? "unclassified")
+      .entries()
+      .map(([status, statusItems]) => [status, statusItems.length]),
+  ),
 }));
 const plannedItemCount = planSummary.reduce(
   (total, collection) => total + collection.itemCount,
@@ -38,7 +43,10 @@ if (!apply) {
         collectionCount: planSummary.length,
         plannedItemCount,
         collections: planSummary,
-        next: "Run `npm run cms:seed:staging` to apply this additive seed.",
+        warning:
+          "This seed is additive: existing keys are skipped, not updated. Provisional editorial data must be reviewed before production.",
+        next:
+          "Create and review a live create/update plan before running `npm run cms:seed:staging`.",
       },
       null,
       2,

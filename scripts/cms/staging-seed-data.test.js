@@ -41,11 +41,11 @@ function collectReferences(value, references = []) {
 }
 
 describe("Wix staging seed manifest", () => {
-  it("covers every canonical collection with 85 uniquely keyed records", () => {
+  it("covers every canonical collection with 92 uniquely keyed records", () => {
     expect(seedCollections.map(({ collectionId }) => collectionId)).toEqual(
       expectedCollections,
     );
-    expect(seedCollections.flatMap(({ items }) => items)).toHaveLength(85);
+    expect(seedCollections.flatMap(({ items }) => items)).toHaveLength(92);
 
     for (const { collectionId, keyField, items } of seedCollections) {
       const keys = items.map(({ key }) => key);
@@ -119,5 +119,24 @@ describe("Wix staging seed manifest", () => {
       expect.arrayContaining(["circles"]),
     );
     expect(events?.items.every(({ data }) => ["circles", "external"].includes(data.eventType))).toBe(true);
+  });
+
+  it("uses canonical space statuses from the Wix schema", () => {
+    const spaces = seedCollections.find(({ collectionId }) => collectionId === "CHSpaces");
+    expect(
+      spaces?.items.every(({ data }) =>
+        ["hidden", "active", "comingSoon"].includes(data.status),
+      ),
+    ).toBe(true);
+  });
+
+  it("keeps sandbox copy out of the Figma-backed Home records", () => {
+    const homeRecords = seedCollections.flatMap(({ collectionId, items }) =>
+      items
+        .filter(({ editorialStatus }) => editorialStatus?.startsWith("figma"))
+        .map(({ data }) => ({ collectionId, data })),
+    );
+
+    expect(JSON.stringify(homeRecords)).not.toMatch(/sandbox/i);
   });
 });
