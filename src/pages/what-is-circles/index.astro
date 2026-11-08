@@ -1,11 +1,11 @@
 ---
 import SiteLayout from "@/layouts/SiteLayout.astro";
-import PageIntro from "@/components/sections/PageIntro.astro";
-import PurposeStatement from "@/components/sections/PurposeStatement.astro";
-import ValuesAndEdge from "@/components/sections/ValuesAndEdge.astro";
-import Manifesto from "@/components/sections/Manifesto.astro";
-import Faq from "@/components/sections/Faq.astro";
-import Newsletter from "@/components/sections/Newsletter.astro";
+import PageIntro from "@/components/sections/shared/PageIntro.astro";
+import PurposeStatement from "@/components/sections/what-is-circles/PurposeStatement.astro";
+import ValuesAndEdge from "@/components/sections/what-is-circles/ValuesAndEdge.astro";
+import Manifesto from "@/components/sections/what-is-circles/Manifesto.astro";
+import Faq from "@/components/sections/shared/Faq.astro";
+import Newsletter from "@/components/sections/shared/Newsletter.astro";
 import { getContentRepository } from "@/services/content/repository";
 
 const repository = await getContentRepository();

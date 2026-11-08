@@ -1,10 +1,10 @@
 ---
 import SiteLayout from "@/layouts/SiteLayout.astro";
-import PageIntro from "@/components/sections/PageIntro.astro";
-import PartnerList from "@/components/sections/PartnerList.astro";
-import MemberDiscounts from "@/components/sections/MemberDiscounts.astro";
-import Faq from "@/components/sections/Faq.astro";
-import Newsletter from "@/components/sections/Newsletter.astro";
+import PageIntro from "@/components/sections/shared/PageIntro.astro";
+import PartnerList from "@/components/sections/partnerships/PartnerList.astro";
+import MemberDiscounts from "@/components/sections/shared/MemberDiscounts.astro";
+import Faq from "@/components/sections/shared/Faq.astro";
+import Newsletter from "@/components/sections/shared/Newsletter.astro";
 import { getContentRepository } from "@/services/content/repository";
 
 const repository = await getContentRepository();

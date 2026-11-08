@@ -1,13 +1,13 @@
 ---
 import SiteLayout from "@/layouts/SiteLayout.astro";
-import MembershipIntro from "@/components/sections/MembershipIntro.astro";
-import MembershipBenefits from "@/components/sections/MembershipBenefits.astro";
-import MemberHub from "@/components/sections/MemberHub.astro";
-import MembershipPricing from "@/components/sections/MembershipPricing.astro";
-import MembersCarousel from "@/components/sections/MembersCarousel.astro";
-import MemberDiscounts from "@/components/sections/MemberDiscounts.astro";
-import Faq from "@/components/sections/Faq.astro";
-import Newsletter from "@/components/sections/Newsletter.astro";
+import MembershipIntro from "@/components/sections/memberships/MembershipIntro.astro";
+import MembershipBenefits from "@/components/sections/memberships/MembershipBenefits.astro";
+import MemberHub from "@/components/sections/memberships/MemberHub.astro";
+import MembershipPricing from "@/components/sections/memberships/MembershipPricing.astro";
+import MembersCarousel from "@/components/sections/memberships/MembersCarousel.astro";
+import MemberDiscounts from "@/components/sections/shared/MemberDiscounts.astro";
+import Faq from "@/components/sections/shared/Faq.astro";
+import Newsletter from "@/components/sections/shared/Newsletter.astro";
 import { getContentRepository } from "@/services/content/repository";
 
 const repository = await getContentRepository();

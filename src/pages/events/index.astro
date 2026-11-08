@@ -1,7 +1,7 @@
 ---
 import SiteLayout from "@/layouts/SiteLayout.astro";
-import EventsListing from "@/components/sections/EventsListing.astro";
-import Newsletter from "@/components/sections/Newsletter.astro";
+import EventsListing from "@/components/sections/events/EventsListing.astro";
+import Newsletter from "@/components/sections/shared/Newsletter.astro";
 import { getContentRepository } from "@/services/content/repository";
 
 const repository = await getContentRepository();
