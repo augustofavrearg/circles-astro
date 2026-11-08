@@ -1,5 +1,22 @@
 import { routes } from "../../config/navigation";
-import type { Deal, EventSummary, Link, SiteSettings, SocialNetwork, TeamMember } from "@/domain/content";
+import type {
+  ArticleContentType,
+  Deal,
+  EventSummary,
+  FaqBlock,
+  FaqItem,
+  LegalPage,
+  Link,
+  MembershipPlan,
+  NewsArticle,
+  NewsItem,
+  Partner,
+  SiteSettings,
+  SocialNetwork,
+  Space,
+  TeamMember,
+} from "@/domain/content";
+import type { NavigationItem } from "@/domain/navigation";
 import type { Room } from "@/domain/booking";
 
 export type WixRecord = Record<string, unknown>;
@@ -20,6 +37,50 @@ export function asNumber(value: unknown): number | undefined {
 
 export function asTextList(value: unknown): string[] {
   return Array.isArray(value) ? value.map(asText).filter(Boolean) : [];
+}
+
+function richText(value: unknown): string {
+  if (!value || typeof value !== "object") return "";
+  return asText(((value as WixRecord).textData as WixRecord | undefined)?.text);
+}
+
+function richNodeText(value: unknown): string {
+  if (!value || typeof value !== "object") return "";
+  const record = value as WixRecord;
+  const ownText = richText(record);
+  if (ownText) return ownText;
+  return Array.isArray(record.nodes)
+    ? record.nodes.map(richNodeText).filter(Boolean).join(" ")
+    : "";
+}
+
+export function richContentBlocks(value: unknown): FaqBlock[] {
+  if (typeof value === "string") {
+    return value
+      .split(/\n\s*\n/)
+      .map((text) => text.trim())
+      .filter(Boolean)
+      .map((text) => ({ type: "paragraph" as const, text }));
+  }
+  if (!value || typeof value !== "object") return [];
+  const nodes = (value as WixRecord).nodes;
+  if (!Array.isArray(nodes)) return [];
+
+  return nodes.flatMap((node): FaqBlock[] => {
+    if (!node || typeof node !== "object") return [];
+    const record = node as WixRecord;
+    const type = asText(record.type);
+    if (type === "PARAGRAPH" || type === "HEADING" || type === "BLOCKQUOTE") {
+      const text = richNodeText(record).trim();
+      return text ? [{ type: "paragraph", text }] : [];
+    }
+    if (type === "BULLETED_LIST" || type === "ORDERED_LIST") {
+      const listNodes = Array.isArray(record.nodes) ? record.nodes : [];
+      const listItems = listNodes.map(richNodeText).map((text) => text.trim()).filter(Boolean);
+      return listItems.length ? [{ type: "list", items: listItems }] : [];
+    }
+    return [];
+  });
 }
 
 export function referenceId(value: unknown): string {
@@ -81,8 +142,6 @@ export function resolveCmsHref(routeKey: unknown, routeParam?: unknown, anchor?:
       case "ambassadors": href = routes.ambassadors; break;
       case "events": href = parameter ? routes.cityEvents(parameter) : routes.events; break;
       case "news": href = routes.news; break;
-      case "co-owners":
-      case "coOwners": href = routes.coOwners; break;
       case "location": href = routes.location(requireRouteParam(key, parameter)); break;
       case "coworking": href = routes.coworking(requireRouteParam(key, parameter)); break;
       case "month":
@@ -143,12 +202,14 @@ export function mapRoom(item: WixRecord, locations: LocationLookup): Room {
   const id = asText(item.slug) || asText(item._id);
   const bookingUrl = wixUrl(item.bookingUrl);
   const location = locations.get(referenceId(item.location));
+  const occupancyType = asText(item.occupancyType).toLowerCase();
   if (!id || !bookingUrl || !location) throw new Error(`CHRooms item "${id || "unknown"}" is missing slug, bookingUrl or a valid CHLocations reference.`);
   return {
     id,
     name: asText(item.name) || "Room",
     locationId: location.slug,
     locationName: location.name,
+    occupancyType: occupancyType === "private" || occupancyType === "shared" ? occupancyType : undefined,
     image: wixUrl(item.image) || undefined,
     description: asText(item.description) || undefined,
     bookingUrl,
@@ -181,6 +242,22 @@ export function mapDeal(item: WixRecord): Deal {
 function asDate(value: unknown): Date | undefined {
   const date = value instanceof Date ? value : typeof value === "string" || typeof value === "number" ? new Date(value) : undefined;
   return date && !Number.isNaN(date.valueOf()) ? date : undefined;
+}
+
+/**
+ * Keeps upcoming events and events that are currently in progress.
+ * An optional end date must be valid and cannot precede the start date.
+ */
+export function isCurrentOrUpcomingEvent(item: WixRecord, now = new Date()): boolean {
+  const startsAt = asDate(item.startsAt);
+  if (!startsAt) return false;
+
+  const hasEndsAt = item.endsAt !== undefined && item.endsAt !== null && item.endsAt !== "";
+  const endsAt = hasEndsAt ? asDate(item.endsAt) : undefined;
+  if (hasEndsAt && !endsAt) return false;
+  if (endsAt && endsAt < startsAt) return false;
+
+  return (endsAt ?? startsAt) >= now;
 }
 
 export function mapEvent(item: WixRecord, locations: LocationLookup): EventSummary {
@@ -222,6 +299,163 @@ export function mapTeamMember(item: WixRecord): TeamMember {
     role: asText(item.role),
     photo: wixUrl(item.photo) || undefined,
     href: wixUrl(item.profileUrl) || undefined,
+  };
+}
+
+export function mapFaq(item: WixRecord): FaqItem {
+  return {
+    question: asText(item.question),
+    answer: richContentBlocks(item.answer),
+  };
+}
+
+export function mapPartner(item: WixRecord): Partner {
+  return {
+    slug: asText(item.slug) || asText(item._id),
+    name: asText(item.name),
+    description: asText(item.description),
+    logo: wixUrl(item.logo) || undefined,
+    href: wixUrl(item.url) || undefined,
+    featured: asBoolean(item.featured),
+  };
+}
+
+export function mapMembershipPlan(item: WixRecord): MembershipPlan {
+  return {
+    label: asText(item.label),
+    price: asText(item.priceValue),
+    note: asText(item.note) || undefined,
+  };
+}
+
+const coworkingAmenityIcons = new Set(["wifi", "booths", "meeting", "printing", "gym", "events", "rooftop"] as const);
+type CoworkingAmenityIcon = (typeof coworkingAmenityIcons extends Set<infer T> ? T : never);
+
+/** Keeps editor-friendly Wix icon keys inside the finite icon vocabulary used by the UI. */
+export function mapCoworkingAmenityIcon(value: unknown): CoworkingAmenityIcon {
+  const key = asText(value).toLowerCase().replaceAll(/[-_\s]/g, "");
+  const aliases: Record<string, CoworkingAmenityIcon> = {
+    wifi: "wifi",
+    highspeedwifi: "wifi",
+    booth: "booths",
+    booths: "booths",
+    phonebooth: "booths",
+    meeting: "meeting",
+    meetingroom: "meeting",
+    printing: "printing",
+    printer: "printing",
+    gym: "gym",
+    fitness: "gym",
+    event: "events",
+    events: "events",
+    rooftop: "rooftop",
+    terrace: "rooftop",
+  };
+  const mapped = aliases[key];
+  return mapped && coworkingAmenityIcons.has(mapped) ? mapped : "wifi";
+}
+
+function dateLabel(value: unknown): string {
+  const date = asDate(value);
+  return date
+    ? new Intl.DateTimeFormat("en", { month: "short", day: "numeric", year: "numeric" }).format(date)
+    : "";
+}
+
+export function mapNewsItem(item: WixRecord): NewsItem {
+  const slug = asText(item.slug) || asText(item._id);
+  return {
+    title: asText(item.title),
+    excerpt: asText(item.excerpt),
+    contentType: articleContentType(item.contentType),
+    category: asText(item.category),
+    date: dateLabel(item.publishedAt),
+    image: wixUrl(item.image) || undefined,
+    href: `/news/${encodeURIComponent(slug)}`,
+  };
+}
+
+const articleContentTypes = new Set<ArticleContentType>([
+  "news",
+  "opinion",
+  "feature",
+  "guide",
+  "announcement",
+]);
+
+export function articleContentType(value: unknown): ArticleContentType {
+  const contentType = asText(value).toLowerCase() as ArticleContentType;
+  if (!articleContentTypes.has(contentType)) {
+    throw new Error(`Unknown CHNewsArticles contentType "${asText(value)}".`);
+  }
+  return contentType;
+}
+
+export function mapNewsArticle(item: WixRecord): NewsArticle {
+  const slug = asText(item.slug) || asText(item._id);
+  return {
+    ...mapNewsItem(item),
+    slug,
+    body: richContentBlocks(item.body),
+    seo: {
+      title: asText(item.seoTitle) || asText(item.title),
+      description: asText(item.seoDescription) || asText(item.excerpt),
+    },
+  };
+}
+
+export function mapLegalPage(item: WixRecord): LegalPage {
+  const slug = asText(item.slug) || asText(item._id);
+  return {
+    slug,
+    title: asText(item.title),
+    body: richContentBlocks(item.body),
+    seo: {
+      title: asText(item.seoTitle) || asText(item.title),
+      description: asText(item.seoDescription),
+    },
+    version: asText(item.version) || undefined,
+    effectiveFrom: dateLabel(item.effectiveFrom) || undefined,
+  };
+}
+
+export function mapSpace(item: WixRecord, location?: WixRecord): Space & { size: "large" | "medium" | "small" } {
+  const status = asText(item.status).toLowerCase().replaceAll("-", "");
+  const size = asText(item.homeCardSize);
+  return {
+    category: asText(item.categoryLabel) || asText(item.spaceType),
+    title: asText(item.title),
+    description: asText(item.description) || undefined,
+    access: asText(item.accessLabel) || undefined,
+    address: asText(item.addressOverride) || asText(location?.address) || undefined,
+    comingSoon: status === "comingsoon",
+    image: wixUrl(item.image) || undefined,
+    href: asText(location?.slug) ? routes.location(asText(location?.slug)) : undefined,
+    size: size === "medium" || size === "small" ? size : "large",
+  };
+}
+
+export function mapNavigationItem(item: WixRecord, children: readonly NavigationItem[] = []): NavigationItem {
+  const label = asText(item.label);
+  const status = asText(item.status).toLowerCase().replaceAll("-", "");
+  if (status === "hidden") return { status: "hidden", label };
+  if (status === "comingsoon") {
+    return {
+      status: "comingSoon",
+      label,
+      badge: asText(item.badge) || undefined,
+      image: wixUrl(item.image) || undefined,
+    };
+  }
+  const href = resolveCmsHref(item.routeKey, item.routeParam, item.anchor, item.externalUrl);
+  if (!href) return { status: "hidden", label };
+  return {
+    status: "link",
+    label,
+    href,
+    image: wixUrl(item.image) || undefined,
+    menuLabel: asText(item.menuLabel) || undefined,
+    children: children.length ? children : undefined,
   };
 }
 

@@ -13,5 +13,5 @@ const [settings, page, home] = await Promise.all([repository.getSiteSettings(), 
 <SiteLayout settings={settings} title={page.seo.title} description={page.seo.description}>
   <PageIntro intro={page.intro} imageAlt="Barcelona seen from Circles House" />
   <Faq {...page.faq} centered />
-  <Newsletter description={home.newsletter.description} class="mt-12" />
+  <Newsletter description={home.newsletter.description} copy={settings.interfaceCopy} class="mt-12" />
 </SiteLayout>

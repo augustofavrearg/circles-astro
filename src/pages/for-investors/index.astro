@@ -20,5 +20,5 @@ const [settings, page, home] = await Promise.all([repository.getSiteSettings(), 
   <MemberDiscounts {...page.band} text={settings.promotion} compact class="lg:mt-21" />
   <!-- Figma For Investors keeps the questions in sentence case on desktop. -->
   <Faq {...page.faq} centered uppercase={false} />
-  <Newsletter description={home.newsletter.description} class="mt-12" />
+  <Newsletter description={home.newsletter.description} copy={settings.interfaceCopy} class="mt-12" />
 </SiteLayout>

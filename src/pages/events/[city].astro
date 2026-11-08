@@ -15,5 +15,5 @@ const [settings, events, home] = await Promise.all([repository.getSiteSettings()
 
 <SiteLayout settings={settings} title={`Events in ${city.name} · Circles House`} description={page.subtitle}>
   <EventsListing {page} {events} city={city.slug} />
-  <Newsletter description={home.newsletter.description} class="mt-12 lg:mt-10" />
+  <Newsletter description={home.newsletter.description} copy={settings.interfaceCopy} class="mt-12 lg:mt-10" />
 </SiteLayout>

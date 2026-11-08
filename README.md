@@ -59,7 +59,7 @@ not required.
 
 Available routes include:
 
-- `/` — migrated Home
+- `/home` — migrated Home (`/` redirects permanently to it)
 - `/rooms` — room selection before the external Cloudbeds flow
 - `/design-system` — non-indexed visual reference
 
@@ -205,6 +205,9 @@ Pages only use the `ContentRepository` interface in `src/domain/content.ts`.
 
 - `src/services/content/fixtures.ts` is the offline/dev source.
 - `src/services/content/wix-cms.ts` is the Wix CMS adapter.
+- The Wix adapter never merges or falls back to fixtures. Missing required CMS
+  content fails visibly so it can be corrected before release.
+- An indexable build refuses to use `CONTENT_SOURCE=fixtures`.
 - Set `CONTENT_SOURCE=wix` only after the Wix project contains the required
   canonical `CH...` collections with published data.
 
@@ -216,6 +219,34 @@ Required Wix singleton convention:
 
 `CHRooms` references `CHLocations` through its `location` field and requires a
 published location before rooms can be rendered.
+
+### Staging CMS data
+
+The Wix site currently linked in `wix.config.json` is the staging CMS. It is
+not Wix's native Sandbox feature: staging and the future production CMS are
+separate Wix sites that share one versioned collection model.
+
+Preview the additive staging seed without writing anything:
+
+```bash
+npm run cms:seed
+```
+
+Apply it only to the approved staging `siteId`:
+
+```bash
+npm run cms:seed:staging
+```
+
+The seed covers all 21 canonical `CH...` collections and representative
+references, dates, arrays, and Rich Content. It creates missing records and
+never deletes or replaces existing CMS content. The script aborts before any
+write if `wix.config.json` does not point to the approved staging site. Run
+`npm run cms:audit` afterwards and inspect the content in the Wix dashboard.
+
+Do not change the approved staging ID inside the seed script to load production
+content. Production will use a separate, explicitly reviewed migration and
+content-import workflow.
 
 ## Cloudbeds
 

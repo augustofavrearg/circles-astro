@@ -23,6 +23,7 @@ const currentPath = Astro.url.pathname;
 const seoPolicy = getSeoPolicy(import.meta.env, Astro.url);
 const robotsDirective = getRobotsDirective(seoPolicy, noindex);
 const canonicalUrl = noindex ? undefined : getCanonicalUrl(seoPolicy, currentPath);
+const navigation = settings.navigation ?? siteNavigation;
 ---
 
 <!doctype html>
@@ -42,8 +43,8 @@ const canonicalUrl = noindex ? undefined : getCanonicalUrl(seoPolicy, currentPat
         {settings.promotion}
       </div>
     )}
-    <HeaderMenu client:load navigation={siteNavigation.header} {currentPath} />
+    <HeaderMenu client:load navigation={navigation.header} {currentPath} />
     <main><slot /></main>
-    <Footer navigation={siteNavigation.footer} footerImage={settings.footer.image} contact={settings.contact} socials={settings.socials} {currentPath} />
+    <Footer navigation={navigation.footer} footerImage={settings.footer.image} contact={settings.contact} socials={settings.socials} {currentPath} />
   </body>
 </html>

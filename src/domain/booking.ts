@@ -3,6 +3,7 @@ export type Room = {
   name: string;
   locationId: string;
   locationName: string;
+  occupancyType?: "private" | "shared";
   image?: string;
   description?: string;
   bookingUrl: string;
@@ -10,6 +11,10 @@ export type Room = {
   houseLabel?: string;
   gallery?: string[];
   features?: string[];
+  /** Normalized amenities assigned directly to this room category. */
+  amenities?: string[];
+  /** Shared amenities inherited from the room's CHLocations record. */
+  locationAmenities?: string[];
   views?: string;
   floorPlan?: string;
   price?: { label: string; value: string };

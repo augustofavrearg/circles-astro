@@ -23,5 +23,5 @@ const [settings, page, members, home] = await Promise.all([
   <MemberDiscounts {...page.band} text={settings.promotion} compact class="lg:mt-28" />
   <!-- Figma Team keeps the questions in sentence case on desktop. -->
   <Faq {...page.faq} centered uppercase={false} />
-  <Newsletter description={home.newsletter.description} class="mt-12" />
+  <Newsletter description={home.newsletter.description} copy={settings.interfaceCopy} class="mt-12" />
 </SiteLayout>

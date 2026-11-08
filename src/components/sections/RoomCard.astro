@@ -6,6 +6,7 @@ import { ManifestoGallery } from "@/islands/ManifestoGallery";
 type Props = { room: Room; bookingHref: string };
 const { room, bookingHref } = Astro.props;
 const photos = room.gallery?.length ? room.gallery : room.image ? [room.image] : [];
+const occupancyLabel = room.occupancyType === "private" ? "Private" : room.occupancyType === "shared" ? "Shared" : undefined;
 ---
 
 <!-- Figma "A Room for your Needs" card: photo gallery with the house tag, features, name, views, price and actions. -->
@@ -16,7 +17,12 @@ const photos = room.gallery?.length ? room.gallery : room.image ? [room.image] :
     ) : (
       <ManifestoGallery images={photos} label={`${room.name} photos`} />
     )}
-    {room.houseLabel && <span class="absolute top-4 left-4 rounded bg-black/45 px-4 py-1 text-detail text-white">{room.houseLabel}</span>}
+    {(room.houseLabel || occupancyLabel) && (
+      <div class="absolute top-4 left-4 flex flex-wrap gap-1.5">
+        {room.houseLabel && <span class="rounded bg-black/45 px-4 py-1 text-detail text-white">{room.houseLabel}</span>}
+        {occupancyLabel && <span class="rounded bg-white/85 px-3 py-1 text-detail text-black backdrop-blur-sm">{occupancyLabel}</span>}
+      </div>
+    )}
   </div>
   <div class="p-4 pt-5 lg:px-3.5 lg:pt-4 lg:pb-6">
     <div class="flex items-start justify-between gap-4">
@@ -37,6 +43,22 @@ const photos = room.gallery?.length ? room.gallery : room.image ? [room.image] :
     <h3 class="mt-5 font-display text-[2.25rem] leading-[1.2] lg:mt-6 lg:text-[1.75rem]">{room.name}</h3>
     {room.views && <p class="mt-1 font-display text-[1.125rem] text-red lg:text-[0.9375rem]">{room.views}</p>}
     {room.description && <p class="mt-5 max-w-[460px] text-[0.9375rem] leading-[1.4] lg:mt-6 lg:text-[0.8125rem]">{room.description}</p>}
+    {((room.amenities?.length ?? 0) > 0 || (room.locationAmenities?.length ?? 0) > 0) && (
+      <div class="mt-5 grid gap-4 border-t border-black/12 pt-4 sm:grid-cols-2">
+        {(room.amenities?.length ?? 0) > 0 && (
+          <div>
+            <p class="text-detail uppercase text-black/45">Room amenities</p>
+            <p class="mt-1 text-[0.8125rem] leading-[1.45]">{room.amenities?.join(" · ")}</p>
+          </div>
+        )}
+        {(room.locationAmenities?.length ?? 0) > 0 && (
+          <div>
+            <p class="text-detail uppercase text-black/45">House amenities</p>
+            <p class="mt-1 text-[0.8125rem] leading-[1.45]">{room.locationAmenities?.join(" · ")}</p>
+          </div>
+        )}
+      </div>
+    )}
     <div class="mt-6 border-t border-black/12 pt-5 lg:flex lg:items-end lg:justify-between lg:gap-4 lg:pt-3">
       {room.price && (
         <p class="text-[1.125rem] lg:text-[0.9375rem]">

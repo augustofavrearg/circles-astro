@@ -20,13 +20,30 @@ const page = await repository.getMonthPage(Astro.params.slug ?? "");
 if (!page) return new Response("Not found", { status: 404 });
 
 // The newsletter copy lives on the home page content for now.
-// Events are not filtered by month yet: EventSummary has no date field (Figma shows August events on the June page).
-const [settings, rooms, events, home] = await Promise.all([
+const [settings, rooms, cityEvents, home] = await Promise.all([
   repository.getSiteSettings(),
   repository.getRooms(page.city),
   repository.getEvents(page.city),
   repository.getHomePage(),
 ]);
+const monthAbbreviations: Record<string, string> = {
+  january: "jan",
+  february: "feb",
+  march: "mar",
+  april: "apr",
+  may: "may",
+  june: "jun",
+  july: "jul",
+  august: "aug",
+  september: "sep",
+  october: "oct",
+  november: "nov",
+  december: "dec",
+};
+const expectedMonth = monthAbbreviations[page.slug.toLowerCase()];
+const events = expectedMonth
+  ? cityEvents.filter((event) => event.month.toLowerCase() === expectedMonth)
+  : cityEvents;
 const booking = createCloudbedsProvider(import.meta.env.CLOUDBEDS_ALLOWED_ORIGIN);
 const roomTypes = rooms.map((room) => room.name);
 ---
@@ -66,5 +83,5 @@ const roomTypes = rooms.map((room) => room.name);
   <ExternalEventsCarousel id="seasonal-events" {...page.seasonal} />
 
   <Faq {...page.faq} centered uppercase={false} />
-  <Newsletter description={home.newsletter.description} class="mt-12" />
+  <Newsletter description={home.newsletter.description} copy={settings.interfaceCopy} class="mt-12" />
 </SiteLayout>

@@ -1,5 +1,18 @@
 import { describe, expect, it } from "vitest";
-import { mapDeal, mapEvent, mapRoom, resolveCmsHref, wixUrl, type LocationLookup } from "./wix-mappers";
+import {
+  mapCoworkingAmenityIcon,
+  mapDeal,
+  mapEvent,
+  mapFaq,
+  mapNavigationItem,
+  mapNewsArticle,
+  mapRoom,
+  isCurrentOrUpcomingEvent,
+  resolveCmsHref,
+  richContentBlocks,
+  wixUrl,
+  type LocationLookup,
+} from "./wix-mappers";
 
 const locations: LocationLookup = new Map([
   ["location-id", { slug: "barcelona", name: "Circles House Barcelona", timezone: "Europe/Madrid" }],
@@ -7,9 +20,12 @@ const locations: LocationLookup = new Map([
 
 describe("Wix CMS canonical mappers", () => {
   it("resolves internal route keys without storing internal URLs in Wix", () => {
+    expect(resolveCmsHref("home")).toBe("/home");
     expect(resolveCmsHref("location", "barcelona", "rooms")).toBe("/locations/barcelona#rooms");
     expect(resolveCmsHref("events", "barcelona")).toBe("/events/barcelona");
     expect(resolveCmsHref("memberships")).toBe("/memberships");
+    expect(resolveCmsHref("month", "june")).toBe("/months/june");
+    expect(() => resolveCmsHref("co-owners")).toThrow(/Unknown Wix CMS routeKey/);
   });
 
   it("normalizes Wix image fields", () => {
@@ -25,6 +41,7 @@ describe("Wix CMS canonical mappers", () => {
           name: "Garden room",
           location: "location-id",
           bookingUrl: { url: "https://booking.example/room" },
+          occupancyType: "private",
           features: ["Private bathroom", "Desk"],
           published: true,
         },
@@ -35,6 +52,8 @@ describe("Wix CMS canonical mappers", () => {
       locationId: "barcelona",
       locationName: "Circles House Barcelona",
       bookingUrl: "https://booking.example/room",
+      occupancyType: "private",
+      features: ["Private bathroom", "Desk"],
     });
   });
 
@@ -63,5 +82,96 @@ describe("Wix CMS canonical mappers", () => {
     );
     expect(event).toMatchObject({ slug: "movie-night", city: "barcelona", month: "Aug", day: "18" });
     expect(event.dateLabel).toContain("August 18");
+  });
+
+  it("keeps only events with valid current or future date windows", () => {
+    const now = new Date("2026-11-06T12:00:00.000Z");
+
+    expect(isCurrentOrUpcomingEvent({
+      startsAt: "2026-11-01T10:00:00.000Z",
+      endsAt: "2026-12-25T23:59:00.000Z",
+    }, now)).toBe(true);
+    expect(isCurrentOrUpcomingEvent({ startsAt: "2026-12-01T10:00:00.000Z" }, now)).toBe(true);
+    expect(isCurrentOrUpcomingEvent({ startsAt: "2026-11-01T10:00:00.000Z" }, now)).toBe(false);
+    expect(isCurrentOrUpcomingEvent({ startsAt: "not-a-date" }, now)).toBe(false);
+    expect(isCurrentOrUpcomingEvent({
+      startsAt: "2026-12-25T10:00:00.000Z",
+      endsAt: "2026-12-24T10:00:00.000Z",
+    }, now)).toBe(false);
+  });
+
+  it("maps Wix Rich Content paragraphs and lists into frontend FAQ blocks", () => {
+    const answer = {
+      nodes: [
+        { type: "PARAGRAPH", nodes: [{ type: "TEXT", textData: { text: "First answer", decorations: [] } }] },
+        {
+          type: "BULLETED_LIST",
+          nodes: [
+            { type: "LIST_ITEM", nodes: [{ type: "PARAGRAPH", nodes: [{ type: "TEXT", textData: { text: "One", decorations: [] } }] }] },
+            { type: "LIST_ITEM", nodes: [{ type: "PARAGRAPH", nodes: [{ type: "TEXT", textData: { text: "Two", decorations: [] } }] }] },
+          ],
+        },
+      ],
+    };
+    expect(richContentBlocks(answer)).toEqual([
+      { type: "paragraph", text: "First answer" },
+      { type: "list", items: ["One", "Two"] },
+    ]);
+    expect(mapFaq({ question: "Question?", answer })).toEqual({
+      question: "Question?",
+      answer: [
+        { type: "paragraph", text: "First answer" },
+        { type: "list", items: ["One", "Two"] },
+      ],
+    });
+  });
+
+  it("maps CMS navigation status and route keys", () => {
+    expect(mapNavigationItem({ label: "News", status: "link", routeKey: "news" })).toEqual({
+      status: "link",
+      label: "News",
+      href: "/news",
+      image: undefined,
+      menuLabel: undefined,
+      children: undefined,
+    });
+    expect(mapNavigationItem({ label: "Spa Andorra", status: "comingSoon", badge: "Coming soon" })).toEqual({
+      status: "comingSoon",
+      label: "Spa Andorra",
+      badge: "Coming soon",
+      image: undefined,
+    });
+  });
+
+  it("normalizes CMS amenity icon aliases and safely handles unknown values", () => {
+    expect(mapCoworkingAmenityIcon("phone-booth")).toBe("booths");
+    expect(mapCoworkingAmenityIcon("meeting_room")).toBe("meeting");
+    expect(mapCoworkingAmenityIcon("briefcase")).toBe("wifi");
+  });
+
+  it("maps only canonical CHNewsArticles content types", () => {
+    expect(mapNewsArticle({
+      slug: "community-living",
+      title: "How community changes the way we live",
+      excerpt: "A long-form article.",
+      contentType: "feature",
+      category: "Community",
+      publishedAt: "2026-11-08T12:00:00.000Z",
+      body: { nodes: [] },
+    })).toMatchObject({
+      slug: "community-living",
+      contentType: "feature",
+      category: "Community",
+    });
+
+    expect(() => mapNewsArticle({
+      slug: "invalid",
+      title: "Invalid",
+      excerpt: "Invalid type.",
+      contentType: "blog",
+      category: "Community",
+      publishedAt: "2026-11-08T12:00:00.000Z",
+      body: { nodes: [] },
+    })).toThrow('Unknown CHNewsArticles contentType "blog".');
   });
 });

@@ -7,10 +7,15 @@ describe("site navigation", () => {
   });
 
   it("uses canonical routes instead of home anchors", () => {
+    expect(routes.home).toBe("/home");
     const links = siteNavigation.header.primary.filter((item) => item.status === "link");
     expect(links.every((item) => !item.href.includes("#"))).toBe(true);
     expect(links.find((item) => item.label === "Coliving")?.href).toBe(routes.location("barcelona"));
     expect(links.find((item) => item.label === "Happening Now")?.href).toBe(routes.events);
+    expect(siteNavigation.header.primary
+      .flatMap((item) => "children" in item ? item.children ?? [] : [])
+      .find((item) => item.label === "June@Circles House Barcelona"))
+      .toEqual(expect.objectContaining({ status: "link", href: routes.month("june") }));
   });
 
   it("models unavailable Andorra services as coming soon without links", () => {
@@ -26,9 +31,9 @@ describe("site navigation", () => {
     ]);
   });
 
-  it("does not publish routes whose pages have not been created", () => {
-    expect(siteNavigation.footer.extras.find((item) => item.label === "News")?.status).toBe("hidden");
-    expect(siteNavigation.footer.extras.find((item) => item.label === "Become a co-owner")?.status).toBe("hidden");
-    expect(siteNavigation.footer.legal.every((item) => item.status === "hidden")).toBe(true);
+  it("publishes implemented content routes and contains no co-owner entry", () => {
+    expect(siteNavigation.footer.extras.find((item) => item.label === "News")?.status).toBe("link");
+    expect(siteNavigation.footer.extras.some((item) => item.label.toLowerCase().includes("co-owner"))).toBe(false);
+    expect(siteNavigation.footer.legal.every((item) => item.status === "link")).toBe(true);
   });
 });

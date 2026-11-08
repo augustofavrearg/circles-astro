@@ -1,0 +1,23 @@
+---
+import SiteLayout from "@/layouts/SiteLayout.astro";
+import Media from "@/components/ui/Media.astro";
+import RichContentBlocks from "@/components/ui/RichContentBlocks.astro";
+import { getContentRepository } from "@/services/content/repository";
+
+const repository = await getContentRepository();
+const article = await repository.getNewsArticle(Astro.params.slug ?? "");
+if (!article) return new Response("Not found", { status: 404 });
+const settings = await repository.getSiteSettings();
+---
+
+<SiteLayout settings={settings} title={article.seo.title} description={article.seo.description}>
+  <article class="px-4 py-16 lg:px-6 lg:py-24">
+    <header class="mx-auto max-w-4xl">
+      <p class="text-detail uppercase">{article.category} · {article.date}</p>
+      <h1 class="mt-4 font-display text-h1">{article.title}</h1>
+      <p class="mt-6 text-body text-black/60">{article.excerpt}</p>
+    </header>
+    {article.image && <div class="relative mx-auto mt-12 h-[60vh] max-h-[720px] max-w-6xl overflow-hidden"><Media src={article.image} alt="" eager /></div>}
+    <div class="mx-auto mt-12 max-w-3xl"><RichContentBlocks blocks={article.body} /></div>
+  </article>
+</SiteLayout>

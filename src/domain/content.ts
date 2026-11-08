@@ -75,13 +75,31 @@ export type Testimonial = {
   href?: string;
 };
 
+export type ArticleContentType = "news" | "opinion" | "feature" | "guide" | "announcement";
+
 export type NewsItem = {
   title: string;
   excerpt: string;
+  contentType: ArticleContentType;
   category: string;
   date: string;
   image?: string;
   href: string;
+};
+
+export type NewsArticle = NewsItem & {
+  slug: string;
+  body: FaqBlock[];
+  seo: { title: string; description: string };
+};
+
+export type LegalPage = {
+  slug: string;
+  title: string;
+  body: FaqBlock[];
+  seo: { title: string; description: string };
+  version?: string;
+  effectiveFrom?: string;
 };
 
 export type SiteSettings = {
@@ -96,6 +114,8 @@ export type SiteSettings = {
     copyright: string;
   };
   socials: { network: SocialNetwork; label: string; href: string }[];
+  interfaceCopy?: Record<string, string>;
+  navigation?: import("./navigation").SiteNavigation;
 };
 
 export type HomePage = {
@@ -412,4 +432,7 @@ export interface ContentRepository {
   getEventsPage(): Promise<EventsPage>;
   getEvents(city?: string): Promise<EventSummary[]>;
   getRooms(location?: string): Promise<import("./booking").Room[]>;
+  getNewsArticles(): Promise<NewsArticle[]>;
+  getNewsArticle(slug: string): Promise<NewsArticle | undefined>;
+  getLegalPage(slug: string): Promise<LegalPage | undefined>;
 }

@@ -38,7 +38,10 @@ const booking = createCloudbedsProvider(import.meta.env.CLOUDBEDS_ALLOWED_ORIGIN
                 <div>
                   <p class="text-detail uppercase">{room.locationName}</p>
                   <h2 class="mt-2 font-display text-h2">{room.name}</h2>
+                  {room.occupancyType && <p class="mt-2 text-detail uppercase text-red">{room.occupancyType}</p>}
                   {room.description && <p class="mt-4 max-w-lg text-body text-black/60">{room.description}</p>}
+                  {(room.amenities?.length ?? 0) > 0 && <p class="mt-4 text-detail text-black/60"><span class="uppercase">Room amenities:</span> {room.amenities?.join(" · ")}</p>}
+                  {(room.locationAmenities?.length ?? 0) > 0 && <p class="mt-2 text-detail text-black/60"><span class="uppercase">House amenities:</span> {room.locationAmenities?.join(" · ")}</p>}
                 </div>
                 <a
                   href={redirect}

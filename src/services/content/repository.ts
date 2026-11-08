@@ -71,12 +71,33 @@ export const fixtureRepository: ContentRepository = {
   async getRooms(location?: string) {
     return location ? roomsFixture.filter((room) => room.locationId === location) : roomsFixture;
   },
+  async getNewsArticles() {
+    return homePageFixture.news.items.map((item) => ({
+      ...item,
+      slug: item.href.split("/").filter(Boolean).at(-1) ?? "news",
+      body: [{ type: "paragraph" as const, text: item.excerpt }],
+      seo: { title: item.title, description: item.excerpt },
+    }));
+  },
+  async getNewsArticle(slug: string) {
+    return (await this.getNewsArticles()).find((article) => article.slug === slug);
+  },
+  async getLegalPage() {
+    return undefined;
+  },
 };
 
 let repositoryPromise: Promise<ContentRepository> | undefined;
 
 export async function getContentRepository(): Promise<ContentRepository> {
-  if (import.meta.env.CONTENT_SOURCE !== "wix") return fixtureRepository;
-  repositoryPromise ??= import("./wix-cms").then(({ wixCmsRepository }) => wixCmsRepository);
-  return repositoryPromise;
+  if (import.meta.env.CONTENT_SOURCE === "wix") {
+    repositoryPromise ??= import("./wix-cms").then(({ wixCmsRepository }) => wixCmsRepository);
+    return repositoryPromise;
+  }
+
+  if (import.meta.env.SEO_ALLOW_INDEXING === "true") {
+    throw new Error("CONTENT_SOURCE=wix is required when SEO_ALLOW_INDEXING=true; fixture content cannot be published as production content.");
+  }
+
+  return fixtureRepository;
 }

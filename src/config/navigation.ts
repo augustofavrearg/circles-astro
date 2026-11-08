@@ -1,7 +1,7 @@
 import type { NavigationItem, SiteNavigation } from "@/domain/navigation";
 
 export const routes = {
-  home: "/",
+  home: "/home",
   rooms: "/rooms",
   deals: "/deals",
   memberships: "/memberships",
@@ -13,7 +13,6 @@ export const routes = {
   ambassadors: "/ambassadors",
   events: "/events",
   news: "/news",
-  coOwners: "/co-owners",
   location: (city: string) => `/locations/${city}`,
   coworking: (city: string) => `/coworking/${city}`,
   cityEvents: (city: string) => `/events/${city}`,
@@ -108,8 +107,7 @@ export const siteNavigation: SiteNavigation = {
   footer: {
     main: [...primary, bookStayLink],
     extras: [
-      { status: "hidden", label: "News" },
-      { status: "hidden", label: "Become a co-owner" },
+      { status: "link", label: "News", href: routes.news },
       { status: "link", label: "Coworking Barcelona", href: routes.coworking("barcelona") },
       { status: "comingSoon", label: "Coworking Andorra", badge: "Coming soon" },
       { status: "comingSoon", label: "Spa Andorra", badge: "Coming soon" },
@@ -118,10 +116,10 @@ export const siteNavigation: SiteNavigation = {
       { status: "link", label: "Become an Ambassador", href: routes.ambassadors },
     ],
     legal: [
-      { status: "hidden", label: "Terms & Conditions" },
-      { status: "hidden", label: "Cookies Policy" },
-      { status: "hidden", label: "Legal Notice" },
-      { status: "hidden", label: "Privacy Policy" },
+      { status: "link", label: "Terms & Conditions", href: routes.legal.terms },
+      { status: "link", label: "Cookies Policy", href: routes.legal.cookies },
+      { status: "link", label: "Legal Notice", href: routes.legal.notice },
+      { status: "link", label: "Privacy Policy", href: routes.legal.privacy },
     ],
   },
 };

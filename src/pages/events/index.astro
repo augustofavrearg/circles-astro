@@ -16,5 +16,5 @@ const [settings, page, events, home] = await Promise.all([
 
 <SiteLayout settings={settings} title="Events · Circles House" description={page.subtitle}>
   <EventsListing {page} {events} />
-  <Newsletter description={home.newsletter.description} class="mt-12 lg:mt-10" />
+  <Newsletter description={home.newsletter.description} copy={settings.interfaceCopy} class="mt-12 lg:mt-10" />
 </SiteLayout>

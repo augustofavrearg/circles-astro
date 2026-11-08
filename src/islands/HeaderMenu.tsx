@@ -2,6 +2,7 @@ import { IconChevronDown, IconMenu2, IconX } from "@tabler/icons-react";
 import { useEffect, useId, useRef, useState } from "react";
 import type { HeaderNavigation, NavigationItem, NavigationLink } from "@/domain/navigation";
 import { isNavigationLink, isPathCurrent, isVisibleNavigationItem } from "@/domain/navigation";
+import { routes } from "@/config/navigation";
 
 type Props = {
   navigation: HeaderNavigation;
@@ -233,7 +234,7 @@ export function HeaderMenu({ navigation, currentPath }: Props) {
           </button>
           {desktopOpen === "locations" && (
             <DesktopDropdown
-              item={{ status: "link", label: "Circles House locations", href: "/", menuLabel: "Circles House locations", children: locations }}
+              item={{ status: "link", label: "Circles House locations", href: routes.home, menuLabel: "Circles House locations", children: locations }}
               panelId={`${idPrefix}-locations`}
               currentPath={currentPath}
               onNavigate={closeDesktop}
@@ -241,7 +242,7 @@ export function HeaderMenu({ navigation, currentPath }: Props) {
           )}
         </div>
 
-        <a href="/" aria-label="Circles House — home" className="shrink-0">
+        <a href={routes.home} aria-label="Circles House — home" className="shrink-0">
           <img src="/brand/circles-wordmark.svg" alt="Circles" width="111" height="24" />
         </a>
 

@@ -1,0 +1,21 @@
+---
+import SiteLayout from "@/layouts/SiteLayout.astro";
+import RichContentBlocks from "@/components/ui/RichContentBlocks.astro";
+import { getContentRepository } from "@/services/content/repository";
+
+const repository = await getContentRepository();
+const page = await repository.getLegalPage(Astro.params.slug ?? "");
+if (!page) return new Response("Not found", { status: 404 });
+const settings = await repository.getSiteSettings();
+---
+
+<SiteLayout settings={settings} title={page.seo.title} description={page.seo.description}>
+  <article class="px-4 py-16 lg:px-6 lg:py-24">
+    <header class="mx-auto max-w-4xl border-b border-black/12 pb-10">
+      <p class="text-detail uppercase">Legal</p>
+      <h1 class="mt-4 font-display text-h1">{page.title}</h1>
+      {(page.version || page.effectiveFrom) && <p class="mt-4 text-detail text-black/50">{[page.version, page.effectiveFrom].filter(Boolean).join(" · ")}</p>}
+    </header>
+    <div class="mx-auto mt-12 max-w-3xl"><RichContentBlocks blocks={page.body} /></div>
+  </article>
+</SiteLayout>
