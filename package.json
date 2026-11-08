@@ -7,7 +7,7 @@
     "node": ">=24.22.1"
   },
   "scripts": {
-    "dev": "ASTRO_TELEMETRY_DISABLED=1 wix dev",
+    "dev": "node scripts/print-mobile-url.mjs && ASTRO_TELEMETRY_DISABLED=1 wix dev",
     "dev:local": "ASTRO_TELEMETRY_DISABLED=1 astro dev --config astro.offline.config.mjs",
     "build": "ASTRO_TELEMETRY_DISABLED=1 wix build",
     "preview": "ASTRO_TELEMETRY_DISABLED=1 wix preview",

@@ -9,6 +9,11 @@ import wixHostingAdapter from "@wix/astro-wix-hosting-adapter";
 export default defineConfig({
   integrations: [react(), wix(), wixPages()],
 
+  server: {
+    host: true,
+    port: 4321,
+  },
+
   vite: {
     plugins: [tailwindcss()],
   },
