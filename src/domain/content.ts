@@ -191,6 +191,13 @@ export type PageIntro = {
 /** Yellow call-to-action band (Partnerships, For Investors); the body reuses the site promotion text. */
 export type CtaBand = { title: string; primaryCta?: Link; secondaryCta?: Link };
 
+export type RoomsPage = {
+  seo: { title: string; description: string };
+  intro: { eyebrow: string; title: string; body: string };
+  band: CtaBand;
+  empty: { title: string; body: string; cta: Link };
+};
+
 export type FaqSection = { eyebrow: string; title: string; items: FaqItem[] };
 
 export type AmbassadorsPage = {
@@ -422,6 +429,8 @@ export type LocationPage = {
 export interface ContentRepository {
   getSiteSettings(): Promise<SiteSettings>;
   getHomePage(): Promise<HomePage>;
+  getRoomsPage(): Promise<RoomsPage>;
+  getSearchLocations(): Promise<SearchLocation[]>;
   getAmbassadorsPage(): Promise<AmbassadorsPage>;
   getPartnershipsPage(): Promise<PartnershipsPage>;
   getForInvestorsPage(): Promise<ForInvestorsPage>;

@@ -11,6 +11,7 @@ import type {
   MembershipsPage,
   MonthPage,
   PartnershipsPage,
+  RoomsPage,
   TeamPage,
   WhatIsCirclesPage,
 } from "@/domain/content";
@@ -527,6 +528,16 @@ export const wixCmsRepository: ContentRepository = {
     return cached("document:site-settings", loadSiteSettings);
   },
   getHomePage: getCmsHomePage,
+  getRoomsPage: () => requirePage<RoomsPage>({ pageKey: "rooms" }),
+  async getSearchLocations() {
+    return (await getPublishedLocations()).map((location) => ({
+      slug: asText(location.slug),
+      name: asText(location.name),
+      city: asText(location.city) || asText(location.shortName),
+      comingSoon: asText(location.status).toLowerCase().replaceAll("-", "") === "comingsoon",
+      image: wixUrl(location.cardImage) || undefined,
+    }));
+  },
   getAmbassadorsPage: () => requirePage<AmbassadorsPage>({ pageKey: "ambassadors" }),
   async getPartnershipsPage() {
     const [page, partners] = await Promise.all([

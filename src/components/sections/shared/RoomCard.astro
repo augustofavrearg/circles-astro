@@ -4,8 +4,8 @@ import type { MediaPlaceholderTone } from "@/config/media";
 import Button from "@/components/ui/Button.astro";
 import { ManifestoGallery } from "@/islands/ManifestoGallery";
 
-type Props = { room: Room; bookingHref: string; placeholderTone?: MediaPlaceholderTone };
-const { room, bookingHref, placeholderTone = "yellow" } = Astro.props;
+type Props = { room: Room; bookingHref: string; placeholderTone?: MediaPlaceholderTone; buttonLabel?: string };
+const { room, bookingHref, placeholderTone = "yellow", buttonLabel = "Book a Stay" } = Astro.props;
 const photos = room.gallery?.length ? room.gallery : room.image ? [room.image] : [];
 const occupancyLabel = room.occupancyType === "private" ? "Private" : room.occupancyType === "shared" ? "Shared" : undefined;
 ---
@@ -69,7 +69,7 @@ const occupancyLabel = room.occupancyType === "private" ? "Private" : room.occup
       )}
       <div class="mt-3 flex gap-1 lg:mt-0">
         <!-- Availability, dates and payment stay in Cloudbeds. "Contact" appears once it has a destination. -->
-        <Button href={bookingHref} rel="external"><span class="lg:hidden">Choose dates</span><span class="hidden lg:inline">Book a Stay</span></Button>
+        <Button href={bookingHref} rel="external">{buttonLabel}</Button>
       </div>
     </div>
   </div>

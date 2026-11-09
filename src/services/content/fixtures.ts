@@ -13,6 +13,7 @@ import type {
   MonthPage,
   PartnershipsPage,
   PlaceDetails,
+  RoomsPage,
   SiteSettings,
   TeamMember,
   TeamPage,
@@ -252,6 +253,30 @@ export const homePageFixture: HomePage = {
         image: "/images/news/summer-giveaway.png",
       },
     ],
+  },
+};
+
+export const roomsPageFixture: RoomsPage = {
+  seo: {
+    title: "Rooms · Circles House Barcelona",
+    description:
+      "Explore private studios, suites and shared rooms at Circles House Barcelona, then continue to Cloudbeds to check live availability.",
+  },
+  intro: {
+    eyebrow: "Stay with us",
+    title: "A room for your needs",
+    body:
+      "Choose from private studios, comfortable suites and shared rooms designed for focused work, meaningful rest and life in community.",
+  },
+  band: {
+    title: "Stay longer and save more",
+    secondaryCta: { label: "Explore Barcelona", href: "/locations/barcelona" },
+    primaryCta: { label: "Become a member", href: "/memberships" },
+  },
+  empty: {
+    title: "No rooms are published for this location yet.",
+    body: "View every available room or choose another location.",
+    cta: { label: "View every room", href: "/rooms" },
   },
 };
 

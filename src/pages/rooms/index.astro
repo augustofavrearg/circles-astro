@@ -1,65 +1,42 @@
 ---
 import SiteLayout from "@/layouts/SiteLayout.astro";
-import Media from "@/components/ui/Media.astro";
+import RoomsIntro from "@/components/sections/rooms/RoomsIntro.astro";
+import RoomsGrid from "@/components/sections/rooms/RoomsGrid.astro";
+import MemberDiscounts from "@/components/sections/shared/MemberDiscounts.astro";
+import Newsletter from "@/components/sections/shared/Newsletter.astro";
 import { createCloudbedsProvider } from "@/services/booking/cloudbeds";
 import { getContentRepository } from "@/services/content/repository";
 
 const repository = await getContentRepository();
-const settings = await repository.getSiteSettings();
-const location = Astro.url.searchParams.get("location") ?? undefined;
-const rooms = await repository.getRooms(location);
+const requestedLocation = Astro.url.searchParams.get("location") ?? undefined;
+const dateParam = (key: string) => {
+  const value = Astro.url.searchParams.get(key) ?? "";
+  return /^\d{4}-\d{2}-\d{2}$/.test(value) ? value : undefined;
+};
+const guestParam = Astro.url.searchParams.get("guests") ?? undefined;
+const initialGuests = guestParam && ["1", "2", "3", "4"].includes(guestParam) ? guestParam : undefined;
+
+const [settings, page, locations, rooms] = await Promise.all([
+  repository.getSiteSettings(),
+  repository.getRoomsPage(),
+  repository.getSearchLocations(),
+  repository.getRooms(requestedLocation),
+]);
+const selectedLocation = locations.find((location) => location.slug === requestedLocation && !location.comingSoon);
 const booking = createCloudbedsProvider(import.meta.env.CLOUDBEDS_ALLOWED_ORIGIN);
+const roomListings = rooms.map((room) => ({ room, bookingHref: booking.getRedirect(room).toString() }));
 ---
 
-<SiteLayout
-  settings={settings}
-  title="Choose a room · Circles House"
-  description="Choose your room at Circles House, then continue securely to Cloudbeds to select dates and complete your reservation."
->
-  <section class="px-4 py-14 lg:px-6 lg:py-24">
-    <div class="grid gap-8 border-b border-black/12 pb-12 lg:grid-cols-[1fr_1.2fr]">
-      <p class="text-detail uppercase">Stay with us</p>
-      <div>
-        <h1 class="max-w-4xl font-display text-h1">Choose the room that feels like yours.</h1>
-        <p class="mt-6 max-w-xl text-body">Once you choose a room, Cloudbeds will open so you can select dates, check live availability and complete the reservation.</p>
-      </div>
-    </div>
-
-    {rooms.length ? (
-      <div class="grid gap-x-4 gap-y-16 py-14 md:grid-cols-2">
-        {rooms.map((room, index) => {
-          const redirect = booking.getRedirect(room).toString();
-          return (
-            <article class:list={["group", index % 2 === 1 && "md:mt-24"]}>
-              <div class="relative h-[58vh] min-h-[420px] max-h-[680px] overflow-hidden">
-                <Media src={room.image} alt={room.name} eager={index === 0} imageClass="transition-transform duration-700 group-hover:scale-105" />
-              </div>
-              <div class="grid gap-5 border-t border-black/12 pt-4 lg:grid-cols-[1fr_auto]">
-                <div>
-                  <p class="text-detail uppercase">{room.locationName}</p>
-                  <h2 class="mt-2 font-display text-h2">{room.name}</h2>
-                  {room.occupancyType && <p class="mt-2 text-detail uppercase text-red">{room.occupancyType}</p>}
-                  {room.description && <p class="mt-4 max-w-lg text-body text-black/60">{room.description}</p>}
-                  {(room.amenities?.length ?? 0) > 0 && <p class="mt-4 text-detail text-black/60"><span class="uppercase">Room amenities:</span> {room.amenities?.join(" · ")}</p>}
-                  {(room.locationAmenities?.length ?? 0) > 0 && <p class="mt-2 text-detail text-black/60"><span class="uppercase">House amenities:</span> {room.locationAmenities?.join(" · ")}</p>}
-                </div>
-                <a
-                  href={redirect}
-                  rel="external"
-                  class="mt-auto inline-flex h-11 items-center justify-center rounded-full bg-black px-6 text-cta text-white"
-                >
-                  Check dates in Cloudbeds ↗
-                </a>
-              </div>
-            </article>
-          );
-        })}
-      </div>
-    ) : (
-      <div class="py-24 text-center">
-        <h2 class="font-display text-h2">No rooms are published for this location yet.</h2>
-        <a href="/rooms" class="mt-6 inline-flex h-11 items-center rounded-full border border-black px-6">View every room</a>
-      </div>
-    )}
-  </section>
+<SiteLayout settings={settings} title={page.seo.title} description={page.seo.description}>
+  <RoomsIntro
+    {...page.intro}
+    {locations}
+    initialLocation={selectedLocation?.slug}
+    initialCheckIn={dateParam("checkin")}
+    initialCheckOut={dateParam("checkout")}
+    {initialGuests}
+  />
+  <RoomsGrid rooms={roomListings} locationLabel={selectedLocation?.name ?? "All Circles House rooms"} empty={page.empty} />
+  <MemberDiscounts {...page.band} text={settings.promotion} compact class="mt-0" />
+  <Newsletter newsletter={settings.newsletter} copy={settings.interfaceCopy} class="mt-12" />
 </SiteLayout>

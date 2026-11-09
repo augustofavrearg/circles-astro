@@ -13,6 +13,7 @@ import {
   monthPagesFixture,
   partnershipsPageFixture,
   roomsFixture,
+  roomsPageFixture,
   siteSettingsFixture,
   teamMembersFixture,
   teamPageFixture,
@@ -25,6 +26,12 @@ export const fixtureRepository: ContentRepository = {
   },
   async getHomePage() {
     return homePageFixture;
+  },
+  async getRoomsPage() {
+    return roomsPageFixture;
+  },
+  async getSearchLocations() {
+    return homePageFixture.searchLocations;
   },
   async getAmbassadorsPage() {
     return ambassadorsPageFixture;

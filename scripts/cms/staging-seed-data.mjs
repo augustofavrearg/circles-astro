@@ -66,7 +66,92 @@ const pageSectionOverrides = {
   "home.news": {
     eyebrow: "News",
   },
+  "rooms.intro": {
+    eyebrow: "Stay with us",
+    body:
+      "Choose from private studios, comfortable suites and shared rooms designed for focused work, meaningful rest and life in community.",
+  },
+  "rooms.band": {
+    primaryCtaLabel: "Become a member",
+    primaryRouteKey: "memberships",
+    secondaryCtaLabel: "Explore Barcelona",
+    secondaryRouteKey: "location",
+    secondaryRouteParam: "barcelona",
+  },
+  "rooms.empty": {
+    body: "View every available room or choose another location.",
+    primaryCtaLabel: "View every room",
+    primaryRouteKey: "rooms",
+  },
 };
+
+const standardRoomFeatures = ["20m2", "Bathroom", "Terrace", "Desk", "360º View", "Couple friendly"];
+const standardRoomAmenities = ["air-conditioning", "desk", "wardrobe-storage"];
+const canonicalRooms = [
+  {
+    slug: "king-studio-terrace-sea-view",
+    name: "King Studio + Terrace",
+    occupancyType: "private",
+    description: "Private studio with an ensuite bathroom and terrace, featuring a desk, wardrobe and air conditioning.",
+    features: standardRoomFeatures,
+    views: "Mountain View + Sea View",
+    amenities: [...standardRoomAmenities, "terrace"],
+  },
+  {
+    slug: "king-studio-terrace-city-view",
+    name: "King Studio + Terrace",
+    occupancyType: "private",
+    description: "Private studio with an ensuite bathroom and terrace, featuring a desk, wardrobe and air conditioning.",
+    features: standardRoomFeatures,
+    views: "Mountain View + City View",
+    amenities: [...standardRoomAmenities, "terrace"],
+  },
+  {
+    slug: "king-studio",
+    name: "King Studio",
+    occupancyType: "private",
+    description: "Private studio with an ensuite bathroom, featuring a desk, wardrobe and air conditioning.",
+    features: standardRoomFeatures,
+    views: "Mountain View",
+    amenities: standardRoomAmenities,
+  },
+  {
+    slug: "queen-suite",
+    name: "Queen Suite",
+    occupancyType: "private",
+    description: "Private suite with an ensuite bathroom, featuring a desk, wardrobe and air conditioning.",
+    features: standardRoomFeatures,
+    views: "Sea View + City View",
+    amenities: standardRoomAmenities,
+  },
+  {
+    slug: "queen-room",
+    name: "Queen Room",
+    occupancyType: "private",
+    description: "Private room with access to a shared bathroom, featuring a desk, wardrobe and air conditioning.",
+    features: ["20m2", "Shared Bathroom", "Terrace", "Desk", "360º View", "Couple friendly"],
+    views: "Mountain View",
+    amenities: standardRoomAmenities,
+  },
+  {
+    slug: "4-bed-shared-suite",
+    name: "4 Bed Shared Suite",
+    occupancyType: "shared",
+    description: "Shared suite with four beds, bathroom access, dedicated storage and air conditioning.",
+    features: standardRoomFeatures,
+    views: "Sea View + City View",
+    amenities: standardRoomAmenities,
+  },
+  {
+    slug: "6-bed-shared-suite",
+    name: "6 Bed Shared Suite",
+    occupancyType: "shared",
+    description: "Shared suite with six beds, bathroom access, dedicated storage and air conditioning.",
+    features: standardRoomFeatures,
+    views: "Sea View + City View",
+    amenities: standardRoomAmenities,
+  },
+];
 
 export const seedCollections = [
   {
@@ -152,6 +237,15 @@ export const seedCollections = [
           title: "Circles House · Coliving and coworking community",
           description:
             "Live, work and connect with entrepreneurs and innovators at Circles House.",
+        }),
+        editorialStatus: "figma",
+      },
+      {
+        key: "rooms",
+        data: page("rooms", "static", "rooms", {
+          title: "Rooms · Circles House Barcelona",
+          description:
+            "Explore private studios, suites and shared rooms at Circles House Barcelona, then continue to Cloudbeds to check live availability.",
         }),
         editorialStatus: "figma",
       },
@@ -366,6 +460,9 @@ export const seedCollections = [
       ["home.memberships", "home", "home.memberships", "Become a Member"],
       ["home.introduction", "home", "home.introduction", "ONE COMMUNITY, ONE HOME WORLDWIDE"],
       ["home.news", "home", "home.news", "Latest announcements"],
+      ["rooms.intro", "rooms", "rooms.intro", "A room for your needs"],
+      ["rooms.band", "rooms", "rooms.band", "Stay longer and save more"],
+      ["rooms.empty", "rooms", "rooms.empty", "No rooms are published for this location yet."],
       ["events.intro", "events", "events.intro", "Happening now"],
       ["team.intro", "team", "team.intro", "Meet the community team"],
       ["memberships.intro", "memberships", "memberships.intro", "Become a member"],
@@ -379,12 +476,12 @@ export const seedCollections = [
       ["june.hero", "june", "month.hero", "June at Circles House Barcelona"],
     ].map(([sectionKey, pageKey, componentKey, title], index) => ({
       key: sectionKey,
-      editorialStatus: sectionKey.startsWith("home.") ? "figma" : "provisional",
+      editorialStatus: sectionKey.startsWith("home.") || sectionKey.startsWith("rooms.") ? "figma" : "provisional",
       data: {
         sectionKey,
         page: reference("CHPages", pageKey),
         componentKey,
-        eyebrow: sectionKey.startsWith("home.") ? undefined : "Sandbox",
+        eyebrow: sectionKey.startsWith("home.") || sectionKey.startsWith("rooms.") ? undefined : "Sandbox",
         title,
         body: "This section is CMS-managed staging content.",
         ...(pageSectionOverrides[sectionKey] ?? {}),
@@ -563,50 +660,21 @@ export const seedCollections = [
   {
     collectionId: "CHRooms",
     keyField: "slug",
-    items: [
-      {
-        key: "barcelona-garden-room",
-        data: {
-          slug: "barcelona-garden-room",
-          location: reference("CHLocations", "barcelona"),
-          name: "Garden Room",
-          occupancyType: "private",
-          description: "Sandbox room connected to Barcelona and Cloudbeds.",
-          features: ["Private bathroom", "Garden view", "Desk"],
-          houseLabel: "Circles House Barcelona",
-          views: "Garden",
-          priceLabel: "Starting from",
-          priceValue: "€1,900/month",
-          bookingUrl: "https://hotels.cloudbeds.com/",
-          published: true,
-          sortOrder: 1,
-        },
-        multiReferences: {
-          amenities: ["air-conditioning", "desk", "wardrobe-storage"],
-        },
+    items: canonicalRooms.map(({ amenities, ...room }, index) => ({
+      key: room.slug,
+      editorialStatus: "figma-with-provisional-booking-url-and-price",
+      data: {
+        ...room,
+        location: reference("CHLocations", "barcelona"),
+        houseLabel: "Barcelona House",
+        priceLabel: "Starting from",
+        priceValue: "€1.900/month",
+        bookingUrl: "https://hotels.cloudbeds.com/",
+        published: true,
+        sortOrder: index + 1,
       },
-      {
-        key: "barcelona-rooftop-room",
-        data: {
-          slug: "barcelona-rooftop-room",
-          location: reference("CHLocations", "barcelona"),
-          name: "Rooftop Room",
-          occupancyType: "private",
-          description: "Sandbox room with rooftop access.",
-          features: ["Private room", "Desk", "Rooftop access"],
-          houseLabel: "Circles House Barcelona",
-          views: "Barcelona skyline",
-          priceLabel: "Starting from",
-          priceValue: "€2,100/month",
-          bookingUrl: "https://hotels.cloudbeds.com/",
-          published: true,
-          sortOrder: 2,
-        },
-        multiReferences: {
-          amenities: ["air-conditioning", "desk", "wardrobe-storage", "terrace"],
-        },
-      },
-    ],
+      multiReferences: { amenities },
+    })),
   },
   {
     collectionId: "CHEvents",

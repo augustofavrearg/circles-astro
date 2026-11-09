@@ -30,14 +30,32 @@ const nativeControl = "absolute inset-0 size-full cursor-pointer appearance-none
  * `fixedLocation`: the location pages' bar (Figma "Location - Barcelona") — dates and guests only,
  * always expanded, stretched to its container.
  */
-export function BookingSearch({ locations = [], fixedLocation, className = "" }: { locations?: SearchLocation[]; fixedLocation?: string; className?: string }) {
+type BookingSearchProps = {
+  locations?: SearchLocation[];
+  fixedLocation?: string;
+  initialLocation?: string;
+  initialCheckIn?: string;
+  initialCheckOut?: string;
+  initialGuests?: string;
+  className?: string;
+};
+
+export function BookingSearch({
+  locations = [],
+  fixedLocation,
+  initialLocation,
+  initialCheckIn = "",
+  initialCheckOut = "",
+  initialGuests = "1",
+  className = "",
+}: BookingSearchProps) {
   const available = locations.filter((location) => !location.comingSoon);
-  const [location, setLocation] = useState(fixedLocation ?? "");
-  const [checkIn, setCheckIn] = useState("");
-  const [checkOut, setCheckOut] = useState("");
-  const [guests, setGuests] = useState("1");
+  const [location, setLocation] = useState(fixedLocation ?? initialLocation ?? "");
+  const [checkIn, setCheckIn] = useState(initialCheckIn);
+  const [checkOut, setCheckOut] = useState(initialCheckOut);
+  const [guests, setGuests] = useState(GUEST_OPTIONS.includes(Number(initialGuests)) ? initialGuests : "1");
   // Figma mobile only shows a "Start your search" field; tapping it reveals the full search below lg.
-  const [expanded, setExpanded] = useState(false);
+  const [expanded, setExpanded] = useState(Boolean(initialLocation || initialCheckIn || initialCheckOut || initialGuests !== "1"));
   const locationRef = useRef<HTMLSelectElement>(null);
   const locationName = available.find((item) => item.slug === location)?.city ?? "";
 
