@@ -83,6 +83,36 @@ const pageSectionOverrides = {
     primaryCtaLabel: "View every room",
     primaryRouteKey: "rooms",
   },
+  "memberships.intro": {
+    eyebrow: "Memberships",
+    body:
+      "Join Circles Membership for exclusive access to locations, deals, events, and the Member Hub.\nIt’s where everything begins.",
+    primaryCtaLabel: "Apply",
+    primaryExternalUrl: "/api/auth/login",
+  },
+  "memberships.benefits": {
+    eyebrow: "Why join",
+  },
+  "memberships.hub": {
+    eyebrow: "What is the hub",
+    subtitle:
+      "Circles Member Hub is a place for Members to connect, share networking opportunities, and view community events",
+    body:
+      "Explore the vibrant surroundings, immerse yourself in local culture, and discover hidden gems that await you at every turn. Whether you’re seeking relaxation or adventure, Circles Spaces has something for everyone.",
+  },
+  "memberships.pricing": {
+    eyebrow: "Pricing",
+  },
+  "memberships.members": {
+    eyebrow: "Members",
+  },
+  "memberships.band": {
+    primaryCtaLabel: "Join us",
+    primaryExternalUrl: "/api/auth/login",
+  },
+  "memberships.faq": {
+    eyebrow: "FAQ",
+  },
   "coworking-barcelona.hero": {
     eyebrow: "Coworking @ Circles Barcelona",
     subtitle: "See What Makes our Inspiring Coworking Spaces Perfect for Entrepreneurs and Innovators",
@@ -283,7 +313,12 @@ export const seedCollections = [
       { key: "team", data: page("team", "static", "team") },
       {
         key: "memberships",
-        data: page("memberships", "static", "memberships"),
+        data: page("memberships", "static", "memberships", {
+          title: "Memberships · Circles House",
+          description:
+            "Join Circles Membership for access to locations, community events, partner benefits, and the Circles Member Hub.",
+        }),
+        editorialStatus: "figma-with-provisional-plan-and-application-url",
       },
       {
         key: "what-is-circles",
@@ -439,6 +474,20 @@ export const seedCollections = [
           sortOrder: 2,
         },
       },
+      {
+        key: "kimberly-defors",
+        editorialStatus: "figma-bio-expanded-awaiting-approval",
+        data: {
+          slug: "kimberly-defors",
+          personTypes: ["member"],
+          name: "Kimberly Defors",
+          role: "Member",
+          bio: "A digital nomad specializing in branding, marketing, and wellness projects.",
+          location: reference("CHLocations", "barcelona"),
+          published: true,
+          sortOrder: 3,
+        },
+      },
     ],
   },
   {
@@ -503,7 +552,13 @@ export const seedCollections = [
       ["rooms.empty", "rooms", "rooms.empty", "No rooms are published for this location yet."],
       ["events.intro", "events", "events.intro", "Happening now"],
       ["team.intro", "team", "team.intro", "Meet the community team"],
-      ["memberships.intro", "memberships", "memberships.intro", "Become a member"],
+      ["memberships.intro", "memberships", "memberships.intro", "Become a Member"],
+      ["memberships.benefits", "memberships", "memberships.benefits", "Membership Benefits"],
+      ["memberships.hub", "memberships", "memberships.hub", "Circles Member Hub"],
+      ["memberships.pricing", "memberships", "memberships.pricing", "A membership designed around how you live and work."],
+      ["memberships.members", "memberships", "memberships.members", "Meet our Members"],
+      ["memberships.band", "memberships", "memberships.band", "Stay longer and Save more"],
+      ["memberships.faq", "memberships", "memberships.faq", "What you need to know"],
       ["what-is-circles.intro", "what-is-circles", "what-is-circles.intro", "A more meaningful way to live"],
       ["life-at-circles.intro", "life-at-circles", "life-at-circles.intro", "Life at Circles"],
       ["partnerships.intro", "partnerships", "partnerships.intro", "Partner with Circles"],
@@ -521,6 +576,7 @@ export const seedCollections = [
       editorialStatus:
         sectionKey.startsWith("home.") ||
         sectionKey.startsWith("rooms.") ||
+        sectionKey.startsWith("memberships.") ||
         sectionKey.startsWith("coworking-barcelona.")
           ? "figma"
           : "provisional",
@@ -531,6 +587,7 @@ export const seedCollections = [
         eyebrow:
           sectionKey.startsWith("home.") ||
           sectionKey.startsWith("rooms.") ||
+          sectionKey.startsWith("memberships.") ||
           sectionKey.startsWith("coworking-barcelona.")
             ? undefined
             : "Sandbox",
@@ -581,6 +638,75 @@ export const seedCollections = [
           sortOrder: 3,
         },
       },
+      ...[
+        ["booking-rates", "Discounted price for every booking", "Unlock exclusive booking access to over 30 Members Only locations."],
+        ["entrepreneurs-hub", "Entrepreneur’s Hub", "Join the online community to exchange ideas, opportunities, and practical knowledge with other Circles members."],
+        ["priority-booking", "Priority in Bookings", "Get early access to selected rooms, stays, and experiences across the Circles network."],
+        ["new-locations", "Access when opening a New Location", "Be among the first members invited to discover new Circles House locations."],
+        ["partner-perks", "Partners’ perks all over the world", "Access benefits from a curated network of partners aligned with the way our community lives and works."],
+        ["member-offers", "Exclusive Members only offers", "Receive offers created for members, from extended stays to community-led experiences."],
+      ].map(([key, title, text], index) => ({
+        key: `memberships.benefits.${key}`,
+        editorialStatus: "figma-copy-refined",
+        data: {
+          itemKey: `memberships.benefits.${key}`,
+          section: reference("CHPageSections", "memberships.benefits"),
+          title,
+          text,
+          published: true,
+          sortOrder: index + 1,
+        },
+      })),
+      ...[
+        ["next-trip", "Plan your next trip to Circles Spaces"],
+        ["network", "Expand your nomadic network"],
+        ["knowledge", "Ask Questions and Share Knowledge"],
+      ].map(([key, title], index) => ({
+        key: `memberships.hub.topic.${key}`,
+        editorialStatus: "figma",
+        data: {
+          itemKey: `memberships.hub.topic.${key}`,
+          section: reference("CHPageSections", "memberships.hub"),
+          title,
+          highlighted: index === 0,
+          published: true,
+          sortOrder: index + 1,
+        },
+      })),
+      ...[
+        ["nationalities", "globe", "+40 Nationalities represented"],
+        ["average-age", "age", "36 years average age"],
+        ["average-stay", "stay", "2 weeks of average stay"],
+      ].map(([key, iconKey, label], index) => ({
+        key: `memberships.hub.stat.${key}`,
+        editorialStatus: "figma-values-awaiting-verification",
+        data: {
+          itemKey: `memberships.hub.stat.${key}`,
+          section: reference("CHPageSections", "memberships.hub"),
+          iconKey,
+          label,
+          published: true,
+          sortOrder: index + 10,
+        },
+      })),
+      ...[
+        "Members-only booking rates",
+        "Access to the Circles Member Hub",
+        "Priority booking opportunities",
+        "Invitations to community events",
+        "Partner perks and member offers",
+        "Early access to new locations",
+      ].map((title, index) => ({
+        key: `memberships.pricing.feature.${index + 1}`,
+        editorialStatus: "figma-copy-refined",
+        data: {
+          itemKey: `memberships.pricing.feature.${index + 1}`,
+          section: reference("CHPageSections", "memberships.pricing"),
+          title,
+          published: true,
+          sortOrder: index + 1,
+        },
+      })),
       {
         key: "events.intro.barcelona",
         data: {
@@ -1087,6 +1213,38 @@ export const seedCollections = [
           locations: ["barcelona"],
         },
       },
+      {
+        key: "memberships.included",
+        editorialStatus: "provisional-membership-policy",
+        data: {
+          faqKey: "memberships.included",
+          question: "What does a Circles Membership include?",
+          answer: richContent(
+            "Membership includes access to the Circles Member Hub, members-only opportunities, community events, and selected partner benefits. The final offer is being reviewed before production.",
+          ),
+          published: true,
+          sortOrder: 3,
+        },
+        multiReferences: {
+          pages: ["memberships"],
+        },
+      },
+      {
+        key: "memberships.apply",
+        editorialStatus: "provisional-application-flow",
+        data: {
+          faqKey: "memberships.apply",
+          question: "How do I apply?",
+          answer: richContent(
+            "Use the application link to tell us about yourself. The final application destination and review process must be confirmed before production.",
+          ),
+          published: true,
+          sortOrder: 4,
+        },
+        multiReferences: {
+          pages: ["memberships"],
+        },
+      },
     ],
   },
   {
@@ -1094,33 +1252,19 @@ export const seedCollections = [
     keyField: "slug",
     items: [
       {
-        key: "sandbox-community",
+        key: "yearly",
+        editorialStatus: "figma-price-awaiting-approval",
         data: {
-          slug: "sandbox-community",
-          label: "Community Membership",
-          priceValue: "€0 sandbox",
-          note: "Testing only",
-          features: ["Community access", "Events", "Member benefits"],
-          ctaLabel: "Learn more",
+          slug: "yearly",
+          label: "Yearly",
+          priceValue: "€2,350/Year",
+          note: "Cancel anytime",
+          features: ["Member Hub", "Priority booking", "Community events", "Partner benefits"],
+          ctaLabel: "Apply",
           routeKey: "memberships",
           highlighted: true,
           published: true,
           sortOrder: 1,
-        },
-      },
-      {
-        key: "sandbox-resident",
-        data: {
-          slug: "sandbox-resident",
-          label: "Resident Membership",
-          priceValue: "€0 sandbox",
-          note: "Testing only",
-          features: ["Coliving", "Coworking", "Community access"],
-          ctaLabel: "View rooms",
-          routeKey: "rooms",
-          highlighted: false,
-          published: true,
-          sortOrder: 2,
         },
       },
     ],

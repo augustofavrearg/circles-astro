@@ -2,14 +2,14 @@
 import { IconClockHour4, IconUserCircle, IconWorld } from "@tabler/icons-react";
 import type { MembershipsPage } from "@/domain/content";
 import Eyebrow from "@/components/ui/Eyebrow.astro";
+import { mediaPlaceholderClass, USE_MEDIA_PLACEHOLDERS } from "@/config/media";
 
 type Props = MembershipsPage["hub"];
 const { eyebrow, title, subtitle, topics, text, images, stats } = Astro.props;
 const icons = { globe: IconWorld, age: IconUserCircle, stay: IconClockHour4 };
 const [large, wide, small] = images;
 
-// Empty slots keep the Figma composition while the photos are pending.
-const slot = "bg-black/8 object-cover";
+const slot = "object-cover";
 ---
 
 <!--
@@ -31,10 +31,10 @@ const slot = "bg-black/8 object-cover";
     </ul>
     <p class="order-2 mt-6 text-[0.9375rem] leading-[1.4] lg:order-none lg:col-start-1 lg:row-start-1 lg:mt-0 lg:text-[0.875rem]">{text}</p>
     <div class="order-3 mt-6 aspect-[318/328] w-[318px] max-w-[85%] lg:order-none lg:col-start-1 lg:row-span-2 lg:row-start-2 lg:mt-16 lg:max-w-none lg:self-end">
-      {large ? <img src={large} alt="" loading="lazy" class={`size-full ${slot}`} /> : <div class={`size-full ${slot}`} />}
+      {!USE_MEDIA_PLACEHOLDERS && large ? <img src={large} alt="" loading="lazy" class={`size-full ${slot}`} /> : <div aria-hidden="true" class={`size-full ${mediaPlaceholderClass("yellow")}`} />}
     </div>
     <div class="order-4 mt-4 ml-auto aspect-[318/154] w-[318px] max-w-[85%] lg:order-none lg:col-start-3 lg:row-start-1 lg:mt-0 lg:max-w-none">
-      {wide ? <img src={wide} alt="" loading="lazy" class={`size-full ${slot}`} /> : <div class={`size-full ${slot}`} />}
+      {!USE_MEDIA_PLACEHOLDERS && wide ? <img src={wide} alt="" loading="lazy" class={`size-full ${slot}`} /> : <div aria-hidden="true" class={`size-full ${mediaPlaceholderClass("blue")}`} />}
     </div>
     <div class="order-5 mt-8 lg:order-none lg:col-start-3 lg:row-start-3 lg:mt-0 lg:self-end">
       <ul class="flex flex-wrap gap-x-4 gap-y-3 text-[0.8125rem]">
@@ -50,7 +50,7 @@ const slot = "bg-black/8 object-cover";
       </ul>
     </div>
     <div class="order-6 mx-auto mt-8 aspect-[115/154] w-[115px] lg:order-none lg:col-start-3 lg:row-start-2 lg:mx-0 lg:mt-24 lg:-ml-[62px]">
-      {small ? <img src={small} alt="" loading="lazy" class={`size-full ${slot}`} /> : <div class={`size-full ${slot}`} />}
+      {!USE_MEDIA_PLACEHOLDERS && small ? <img src={small} alt="" loading="lazy" class={`size-full ${slot}`} /> : <div aria-hidden="true" class={`size-full ${mediaPlaceholderClass("yellow")}`} />}
     </div>
   </div>
 </section>

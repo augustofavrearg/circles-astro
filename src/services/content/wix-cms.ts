@@ -267,6 +267,56 @@ function composeSection(section: WixRecord, sectionItems: WixRecord[]): Record<s
     return { eyebrow: asText(section.eyebrow), title: asText(section.title), items: [] };
   }
 
+  if (componentKey === "memberships.intro") {
+    return {
+      eyebrow: asText(section.eyebrow),
+      title: asText(section.title),
+      body,
+      cta: primaryCta,
+      secondaryCta,
+      image: image || undefined,
+    };
+  }
+
+  if (componentKey === "memberships.benefits") {
+    return {
+      eyebrow: asText(section.eyebrow),
+      title: asText(section.title),
+      image: image || undefined,
+      items: sectionItems.map((item) => ({ title: asText(item.title), text: asText(item.text) })),
+    };
+  }
+
+  if (componentKey === "memberships.hub") {
+    const topics = sectionItems.filter((item) => !asText(item.iconKey));
+    const stats = sectionItems.filter((item) => asText(item.iconKey));
+    return {
+      eyebrow: asText(section.eyebrow),
+      title: asText(section.title),
+      subtitle: asText(section.subtitle),
+      topics: topics.map((item) => asText(item.title)).filter(Boolean),
+      text: body,
+      images: gallery,
+      stats: stats.map((item) => ({ icon: asText(item.iconKey), label: asText(item.label) })),
+    };
+  }
+
+  if (componentKey === "memberships.pricing") {
+    return {
+      eyebrow: asText(section.eyebrow),
+      title: asText(section.title),
+      features: sectionItems.map((item) => asText(item.title)).filter(Boolean),
+      plans: [],
+      cta: primaryCta,
+      secondaryCta,
+      images: gallery,
+    };
+  }
+
+  if (componentKey === "memberships.members") {
+    return { eyebrow: asText(section.eyebrow), title: asText(section.title), items: [] };
+  }
+
   if (componentKey === "coworking.pricing") {
     return {
       eyebrow: asText(section.eyebrow),
@@ -532,6 +582,20 @@ function requireCompleteCoworkingPage(page: Partial<CoworkingPage>, city: string
   return page as CoworkingPage;
 }
 
+function requireCompleteMembershipsPage(page: Partial<MembershipsPage>): MembershipsPage {
+  const requiredSections = ["seo", "intro", "benefits", "hub", "pricing", "members", "band", "faq"] as const;
+  for (const key of requiredSections) {
+    if (!page[key] || typeof page[key] !== "object") {
+      throw new Error(`CHPages item "memberships" is missing the required "memberships.${key}" content.`);
+    }
+  }
+  if (!page.intro?.cta) throw new Error('CHPageSections item "memberships.intro" requires a primary CTA.');
+  if (!page.pricing?.plans.length) throw new Error("CHMembershipPlans requires at least one published plan.");
+  if (!page.members?.items.length) throw new Error('CHPeople requires at least one published person with personTypes including "member".');
+  if (!page.faq?.items.length) throw new Error('CHPages item "memberships" requires at least one related FAQ.');
+  return page as MembershipsPage;
+}
+
 function getCmsHomePage(): Promise<HomePage> {
   return cached("document:home", loadCmsHomePage);
 }
@@ -582,14 +646,23 @@ export const wixCmsRepository: ContentRepository = {
   getTeamPage: () => requirePage<TeamPage>({ pageKey: "team" }),
   getWhatIsCirclesPage: () => requirePage<WhatIsCirclesPage>({ pageKey: "what-is-circles" }),
   async getMembershipsPage() {
-    const [page, plans] = await Promise.all([
-      requirePage<MembershipsPage>({ pageKey: "memberships" }),
+    const [page, plans, people] = await Promise.all([
+      requirePage<Partial<MembershipsPage>>({ pageKey: "memberships" }),
       queryPublished(COLLECTIONS.membershipPlans),
+      queryPublished(COLLECTIONS.people),
     ]);
-    return {
+    return requireCompleteMembershipsPage({
       ...page,
-      pricing: { ...page.pricing, plans: plans.map(mapMembershipPlan) },
-    };
+      pricing: { ...page.pricing!, plans: plans.map(mapMembershipPlan) },
+      members: {
+        ...page.members!,
+        items: people.filter((person) => hasPersonType(person, "member")).map((person) => ({
+          name: asText(person.name),
+          bio: asText(person.bio),
+          photo: wixUrl(person.photo) || undefined,
+        })),
+      },
+    });
   },
   getLifePage: () => requirePage<LifePage>({ pageKey: "life-at-circles" }),
   async getCoworkingPage(city) {

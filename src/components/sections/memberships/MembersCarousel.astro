@@ -3,6 +3,7 @@ import type { MembershipsPage } from "@/domain/content";
 import Eyebrow from "@/components/ui/Eyebrow.astro";
 import Media from "@/components/ui/Media.astro";
 import { ScrollButtons } from "@/islands/ScrollButtons";
+import { alternatingMediaPlaceholder } from "@/config/media";
 
 type Props = MembershipsPage["members"];
 const { eyebrow, title, items } = Astro.props;
@@ -18,10 +19,10 @@ const { eyebrow, title, items } = Astro.props;
     {items.length > 1 && <ScrollButtons client:visible targetId="members-track" label="members" className="mt-3 lg:mt-0 lg:pb-2" />}
   </header>
   <div id="members-track" class="scrollbar-none mt-16 flex snap-x scroll-px-4 gap-6 overflow-x-auto px-4 lg:mt-14 lg:scroll-px-6 lg:gap-12 lg:px-6">
-    {items.map((member) => (
+    {items.map((member, index) => (
       <article class="w-[356px] max-w-[calc(100vw-4rem)] shrink-0 snap-start lg:w-[429px]">
         <div class="relative aspect-[356/378] overflow-hidden">
-          <Media src={member.photo} alt={member.name} />
+          <Media src={member.photo} alt={member.name} placeholderTone={alternatingMediaPlaceholder(index)} />
         </div>
         <h3 class="mt-2 font-display text-[2rem] leading-[1.3]">{member.name}</h3>
         <p class="mt-1 text-[0.9375rem] leading-[1.4] text-black/50">{member.bio}</p>

@@ -545,9 +545,6 @@ export const whatIsCirclesPageFixture: WhatIsCirclesPage = {
   faq: sharedFaq,
 };
 
-// Figma repeats the same text in four benefits and mentions "Outsite"; kept as designed until the copy is confirmed.
-const DEALS_BENEFIT = "Find Last Minute and Long-Term Deals for up to 40% Off Outsite Locations, and get deals and discounts from curated Partner companies.";
-
 export const membershipsPageFixture: MembershipsPage = {
   seo: {
     title: "Memberships · Circles House",
@@ -567,12 +564,12 @@ export const membershipsPageFixture: MembershipsPage = {
       { title: "Discounted price for every booking", text: "Unlock exclusive booking access to over 30 Members Only locations." },
       {
         title: "Entrepreneur’s Hub",
-        text: "Gain access to our online community and you’ll accumulate credits with each stay, that you can use towards future reservations.",
+        text: "Join the online community to exchange ideas, opportunities, and practical knowledge with other Circles members.",
       },
-      { title: "Priority in Bookings", text: DEALS_BENEFIT },
-      { title: "Access when opening a New Location", text: DEALS_BENEFIT },
-      { title: "Partners’ perks all over the world", text: DEALS_BENEFIT },
-      { title: "Exclusive Members only offers", text: DEALS_BENEFIT },
+      { title: "Priority in Bookings", text: "Get early access to selected rooms, stays, and experiences across the Circles network." },
+      { title: "Access when opening a New Location", text: "Be among the first members invited to discover new Circles House locations." },
+      { title: "Partners’ perks all over the world", text: "Access benefits from a curated network of partners aligned with the way our community lives and works." },
+      { title: "Exclusive Members only offers", text: "Receive offers created for members, from extended stays to community-led experiences." },
     ],
   },
   hub: {
@@ -591,17 +588,16 @@ export const membershipsPageFixture: MembershipsPage = {
   },
   pricing: {
     eyebrow: "Pricing",
-    // Figma copy reads like a design-agency template (senior creative, design requests, Notion); pending real membership features.
-    title: "Ideal for small brands or specific projects.",
+    title: "A membership designed around how you live and work.",
     features: [
-      "Request at a time",
-      "Dedicated senior creative",
-      "Average delivery in 2-3 days",
-      "Unlimited revisions",
-      "Unlimited design requests",
-      "Online project management via Notion",
+      "Members-only booking rates",
+      "Access to the Circles Member Hub",
+      "Priority booking opportunities",
+      "Invitations to community events",
+      "Partner perks and member offers",
+      "Early access to new locations",
     ],
-    // Figma also shows "Lifetime (Save 20%)" without a price; the toggle appears once that plan exists.
+    // The current Figma shows this yearly price. It remains provisional until the membership offer is approved.
     plans: [{ label: "Yearly", price: "€2,350/Year", note: "Cancel anytime" }],
     // "Contact" and "Subscribe" appear once they have destinations.
     images: [],

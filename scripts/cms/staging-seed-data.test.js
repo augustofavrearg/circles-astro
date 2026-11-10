@@ -41,11 +41,11 @@ function collectReferences(value, references = []) {
 }
 
 describe("Wix staging seed manifest", () => {
-  it("covers every canonical collection with 117 uniquely keyed records", () => {
+  it("covers every canonical collection with 143 uniquely keyed records", () => {
     expect(seedCollections.map(({ collectionId }) => collectionId)).toEqual(
       expectedCollections,
     );
-    expect(seedCollections.flatMap(({ items }) => items)).toHaveLength(117);
+    expect(seedCollections.flatMap(({ items }) => items)).toHaveLength(143);
 
     for (const { collectionId, keyField, items } of seedCollections) {
       const keys = items.map(({ key }) => key);
@@ -89,6 +89,17 @@ describe("Wix staging seed manifest", () => {
     );
     expect(items?.items.filter(({ key }) => key.startsWith("coworking-barcelona.pricing."))).toHaveLength(4);
     expect(spaces?.items.filter(({ data }) => data.location?.$seedReference?.key === "barcelona" && data.spaceType === "coworking")).toHaveLength(4);
+  });
+
+  it("composes Memberships from editorial sections and reusable entities", () => {
+    const sections = seedCollections.find(({ collectionId }) => collectionId === "CHPageSections");
+    const people = seedCollections.find(({ collectionId }) => collectionId === "CHPeople");
+    const plans = seedCollections.find(({ collectionId }) => collectionId === "CHMembershipPlans");
+
+    expect(sections?.items.filter(({ key }) => key.startsWith("memberships."))).toHaveLength(7);
+    expect(people?.items.some(({ data }) => data.personTypes?.includes("member"))).toBe(true);
+    expect(plans?.items).toHaveLength(1);
+    expect(JSON.stringify(plans?.items)).not.toMatch(/sandbox/i);
   });
 
   it("resolves every declared multi-reference target", () => {
