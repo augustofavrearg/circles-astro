@@ -12,6 +12,7 @@ import type {
   MonthPage,
   PartnershipsPage,
   RoomsPage,
+  SpaceAmenity,
   TeamPage,
   WhatIsCirclesPage,
 } from "@/domain/content";
@@ -317,6 +318,34 @@ function composeSection(section: WixRecord, sectionItems: WixRecord[]): Record<s
     return { eyebrow: asText(section.eyebrow), title: asText(section.title), items: [] };
   }
 
+  if (componentKey === "location.hero") {
+    const amenities = sectionItems
+      .map((item) => asText(item.iconKey))
+      .filter((amenity): amenity is SpaceAmenity => amenity === "coliving" || amenity === "coworking");
+    return {
+      eyebrow: asText(section.eyebrow),
+      title: asText(section.title),
+      image: image || undefined,
+      card: {
+        eyebrow: asText(section.lead),
+        title: asText(section.subtitle),
+        text: body,
+        cta: primaryCta,
+        amenities,
+      },
+    };
+  }
+
+  if (componentKey === "location.space") {
+    return {
+      title: asText(section.title),
+      text: body,
+      amenitiesLabel: asText(section.lead),
+      amenities: [],
+      image: image || undefined,
+    };
+  }
+
   if (componentKey === "coworking.pricing") {
     return {
       eyebrow: asText(section.eyebrow),
@@ -596,6 +625,37 @@ function requireCompleteMembershipsPage(page: Partial<MembershipsPage>): Members
   return page as MembershipsPage;
 }
 
+function requireCompleteLocationPage(page: Partial<LocationPage>, slug: string): LocationPage {
+  const requiredSections = ["seo", "hero", "space", "rooms", "band", "experiences", "location", "manager", "faq"] as const;
+  for (const key of requiredSections) {
+    if (!page[key] || typeof page[key] !== "object") {
+      throw new Error(`CHPages item "location:${slug}" is missing the required "location.${key}" content.`);
+    }
+  }
+  if (!page.hero?.card || typeof page.hero.card !== "object") {
+    throw new Error(`CHPageSections item "location-${slug}.hero" requires the location hero card content.`);
+  }
+  if (!page.hero.card.amenities.length) {
+    throw new Error(`CHPageSections item "location-${slug}.hero" requires at least one published hero amenity.`);
+  }
+  if (!page.space?.amenities.length) {
+    throw new Error(`CHLocations item "${slug}" requires at least one related amenity.`);
+  }
+  if (!page.band?.primaryCta) {
+    throw new Error(`CHPageSections item "location-${slug}.band" requires a primary CTA.`);
+  }
+  if (!page.experiences?.items.length) {
+    throw new Error(`CHPageSections item "location-${slug}.experiences" requires at least one published item.`);
+  }
+  if (!page.manager?.paragraphs.length) {
+    throw new Error(`CHPageSections item "location-${slug}.manager" requires manager copy or a related house manager.`);
+  }
+  if (!page.faq?.items.length) {
+    throw new Error(`CHPages item "location:${slug}" requires at least one related FAQ.`);
+  }
+  return page as LocationPage;
+}
+
 function getCmsHomePage(): Promise<HomePage> {
   return cached("document:home", loadCmsHomePage);
 }
@@ -698,37 +758,40 @@ export const wixCmsRepository: ContentRepository = {
   async getLocationPage(slug) {
     const composed = await composePage<Partial<LocationPage>>({ routeKey: "location", routeParam: slug }, true);
     if (!composed) return undefined;
-    const page = composed as LocationPage;
     const location = (await getPublishedLocations()).find((item) => asText(item.slug) === slug);
-    if (!location) return page;
+    if (!location) return undefined;
     const locationId = asText(location._id);
     const amenities = amenityLabels(await queryReferences(COLLECTIONS.locations, location, "amenities"));
     const managers = (await queryPublished(COLLECTIONS.people)).filter(
       (person) => referenceId(person.location) === locationId && hasPersonType(person, "house-manager"),
     );
     const manager = managers[0];
-    return {
-      ...page,
+    return requireCompleteLocationPage({
+      ...composed,
       hero: {
-        ...page.hero,
-        title: asText(location.name) || page.hero.title,
-        image: wixUrl(location.heroImage) || page.hero.image,
+        ...composed.hero!,
+        title: asText(location.name) || composed.hero?.title || "",
+        image: wixUrl(location.heroImage) || composed.hero?.image,
+        card: {
+          ...composed.hero?.card!,
+          access: asText(location.accessLabel) || composed.hero?.card?.access,
+        },
       },
-      space: { ...page.space, amenities },
+      space: { ...composed.space!, amenities },
       location: {
-        ...page.location,
-        mapImage: wixUrl(location.mapImage) || page.location.mapImage,
-        mapHref: wixUrl(location.mapUrl) || page.location.mapHref,
+        ...composed.location!,
+        mapImage: wixUrl(location.mapImage) || composed.location?.mapImage,
+        mapHref: wixUrl(location.mapUrl) || composed.location?.mapHref,
       },
       manager: manager
         ? {
-            ...page.manager,
+            ...composed.manager!,
             title: `Hi, I'm ${asText(manager.name)}, ${asText(manager.role).toLowerCase()}.`,
             paragraphs: [asText(manager.bio)].filter(Boolean),
             image: wixUrl(manager.photo) || undefined,
           }
-        : page.manager,
-    };
+        : composed.manager,
+    }, slug);
   },
   async getMonthPage(slug) {
     const identity = { routeKey: "month", routeParam: slug };

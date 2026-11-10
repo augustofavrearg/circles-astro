@@ -133,6 +133,46 @@ const pageSectionOverrides = {
   "coworking-barcelona.faq": {
     eyebrow: "FAQ",
   },
+  "location-barcelona.hero": {
+    eyebrow: "Location",
+    lead: "The space",
+    subtitle: "Your new home in Barcelona’s natural park.",
+    body:
+      "Located in a natural park and only a 5 minute walk from a metro station, our house in Vallvidrera is well-located and allows you to get anywhere quickly and easily.",
+    primaryCtaLabel: "Book",
+    primaryExternalUrl: "#rooms",
+  },
+  "location-barcelona.space": {
+    lead: "Property amenities",
+    body:
+      "Circles House is a thriving community of entrepreneurs, digital nomads, and innovators. To ensure everyone is a good fit and adds value to our unique ecosystem, we’ve designed a simple and quick application process.",
+  },
+  "location-barcelona.rooms": {
+    eyebrow: "Rooms",
+    body:
+      "Our house offers a range of thoughtfully designed rooms to suit various lifestyles, combining luxury and functionality. Whether you’re looking for a monthly stay or a flexible option, we’ve got you covered.",
+  },
+  "location-barcelona.band": {
+    primaryCtaLabel: "Join us",
+    primaryRouteKey: "memberships",
+  },
+  "location-barcelona.experiences": {
+    eyebrow: "Experience",
+    subtitle: "Take your time, get to know the city",
+  },
+  "location-barcelona.location": {
+    eyebrow: "Location",
+    body:
+      "Located in a natural park and only a 5 minute walk from a metro station, our house in Vallvidrera is well-located and allows you to get anywhere quickly and easily. Whether you want to go to the heart of Placa Catalunya, Barceloneta beach, or the mountains, the proximity of our house to the metro means all of this is possible.",
+  },
+  "location-barcelona.manager": {
+    eyebrow: "Meet your House Manager",
+    body:
+      "I’ll make sure you will enjoy your time in Circles House—whether that’s joining our events, discovering the best work spots, or connecting with like-minded members who make this place special.\n\nConnect with fellow members who share your passions and interests, you’ll find that this community is what makes Circles House a truly special place to be.",
+  },
+  "location-barcelona.faq": {
+    eyebrow: "FAQ",
+  },
 };
 
 const standardRoomFeatures = ["20m2", "Bathroom", "Terrace", "Desk", "360º View", "Couple friendly"];
@@ -344,8 +384,12 @@ export const seedCollections = [
         key: "location-barcelona",
         data: page("location-barcelona", "location", "location", {
           routeParam: "barcelona",
-          title: "Circles House Barcelona · Sandbox",
+          title: "Circles House Barcelona",
+          description:
+            "Modern private lofts and shared rooftop spaces to live, work & play, a short walk from the metro in Vallvidrera.",
         }),
+        editorialStatus: "figma",
+        reconcile: true,
       },
       {
         key: "coworking-barcelona",
@@ -565,6 +609,13 @@ export const seedCollections = [
       ["ambassadors.intro", "ambassadors", "ambassadors.intro", "Become an ambassador"],
       ["for-investors.intro", "for-investors", "for-investors.intro", "Invest in community-led living"],
       ["location-barcelona.hero", "location-barcelona", "location.hero", "Circles House Barcelona"],
+      ["location-barcelona.space", "location-barcelona", "location.space", "Modern private lofts and shared rooftop spaces to live, work & play."],
+      ["location-barcelona.rooms", "location-barcelona", "location.rooms", "A room for your needs"],
+      ["location-barcelona.band", "location-barcelona", "location.band", "Stay longer and Save more"],
+      ["location-barcelona.experiences", "location-barcelona", "location.experiences", "Travel slowly in Barcelona"],
+      ["location-barcelona.location", "location-barcelona", "location.location", "In the hills above Barcelona"],
+      ["location-barcelona.manager", "location-barcelona", "location.manager", "Hi, I'm Teagan, community manager."],
+      ["location-barcelona.faq", "location-barcelona", "location.faq", "What you need to know"],
       ["coworking-barcelona.hero", "coworking-barcelona", "coworking.hero", "Work Surrounded by Nature"],
       ["coworking-barcelona.spaces", "coworking-barcelona", "coworking.spaces", "Coworking spaces"],
       ["coworking-barcelona.pricing", "coworking-barcelona", "coworking.pricing", "Coworking Pricing Options"],
@@ -577,6 +628,7 @@ export const seedCollections = [
         sectionKey.startsWith("home.") ||
         sectionKey.startsWith("rooms.") ||
         sectionKey.startsWith("memberships.") ||
+        sectionKey.startsWith("location-barcelona.") ||
         sectionKey.startsWith("coworking-barcelona.")
           ? "figma"
           : "provisional",
@@ -588,6 +640,7 @@ export const seedCollections = [
           sectionKey.startsWith("home.") ||
           sectionKey.startsWith("rooms.") ||
           sectionKey.startsWith("memberships.") ||
+          sectionKey.startsWith("location-barcelona.") ||
           sectionKey.startsWith("coworking-barcelona.")
             ? undefined
             : "Sandbox",
@@ -597,6 +650,7 @@ export const seedCollections = [
         enabled: true,
         sortOrder: index + 1,
       },
+      reconcile: sectionKey.startsWith("location-barcelona."),
     })),
   },
   {
@@ -740,6 +794,38 @@ export const seedCollections = [
           text: coworkingPlanIncludes,
           value,
           highlighted,
+          published: true,
+          sortOrder: index + 1,
+        },
+      })),
+      ...[
+        ["coliving", "coliving"],
+        ["coworking", "coworking"],
+      ].map(([key, iconKey], index) => ({
+        key: `location-barcelona.hero.${key}`,
+        editorialStatus: "figma",
+        reconcile: true,
+        data: {
+          itemKey: `location-barcelona.hero.${key}`,
+          section: reference("CHPageSections", "location-barcelona.hero"),
+          iconKey,
+          published: true,
+          sortOrder: index + 1,
+        },
+      })),
+      ...[
+        ["explore", "Explore Barcelona", "Move easily between the city centre, the coast and the hills from Vallvidrera", false],
+        ["barceloneta", "Swim at Barceloneta", "Take the metro into the city and spend the day beside the Mediterranean", true],
+      ].map(([key, title, text, wide], index) => ({
+        key: `location-barcelona.experiences.${key}`,
+        editorialStatus: "figma-media-pending",
+        reconcile: true,
+        data: {
+          itemKey: `location-barcelona.experiences.${key}`,
+          section: reference("CHPageSections", "location-barcelona.experiences"),
+          title,
+          text,
+          wide,
           published: true,
           sortOrder: index + 1,
         },

@@ -44,7 +44,7 @@ if (!apply) {
         plannedItemCount,
         collections: planSummary,
         warning:
-          "This seed is additive: existing keys are skipped, not updated. Provisional editorial data must be reviewed before production.",
+          "This seed is additive by default. Existing keys are skipped unless the manifest marks the record for scoped reconciliation. Provisional editorial data must be reviewed before production.",
         next:
           "Create and review a live create/update plan before running `npm run cms:seed:staging`.",
       },
@@ -165,6 +165,7 @@ for (const collection of seedCollections) {
     existing.map((item) => [String(item.data?.[collection.keyField]), item]),
   );
   let created = 0;
+  let updated = 0;
   let skipped = 0;
 
   for (const item of collection.items) {
@@ -177,6 +178,17 @@ for (const collection of seedCollections) {
         );
       }
       itemIds.set(itemMapKey(collection.collectionId, item.key), existingId);
+      if (item.reconcile) {
+        await wixRequest("/wix-data/v2/items/update", {
+          method: "POST",
+          body: JSON.stringify({
+            dataCollectionId: collection.collectionId,
+            dataItem: { id: existingId, data: compact(item.data) },
+          }),
+        });
+        updated += 1;
+        continue;
+      }
       skipped += 1;
       continue;
     }
@@ -198,7 +210,7 @@ for (const collection of seedCollections) {
     itemIds.set(itemMapKey(collection.collectionId, item.key), insertedId);
     created += 1;
   }
-  results.push({ collectionId: collection.collectionId, created, skipped });
+  results.push({ collectionId: collection.collectionId, created, updated, skipped });
 }
 
 const referenceRequests = [];
@@ -299,6 +311,7 @@ console.log(
       siteId: wixConfig.siteId,
       plannedItemCount,
       createdItemCount: results.reduce((sum, result) => sum + result.created, 0),
+      updatedItemCount: results.reduce((sum, result) => sum + result.updated, 0),
       skippedItemCount: results.reduce((sum, result) => sum + result.skipped, 0),
       multiReferenceCount: referenceRequests.length,
       collections: results,

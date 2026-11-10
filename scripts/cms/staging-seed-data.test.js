@@ -41,11 +41,11 @@ function collectReferences(value, references = []) {
 }
 
 describe("Wix staging seed manifest", () => {
-  it("covers every canonical collection with 143 uniquely keyed records", () => {
+  it("covers every canonical collection with 154 uniquely keyed records", () => {
     expect(seedCollections.map(({ collectionId }) => collectionId)).toEqual(
       expectedCollections,
     );
-    expect(seedCollections.flatMap(({ items }) => items)).toHaveLength(143);
+    expect(seedCollections.flatMap(({ items }) => items)).toHaveLength(154);
 
     for (const { collectionId, keyField, items } of seedCollections) {
       const keys = items.map(({ key }) => key);
@@ -89,6 +89,38 @@ describe("Wix staging seed manifest", () => {
     );
     expect(items?.items.filter(({ key }) => key.startsWith("coworking-barcelona.pricing."))).toHaveLength(4);
     expect(spaces?.items.filter(({ data }) => data.location?.$seedReference?.key === "barcelona" && data.spaceType === "coworking")).toHaveLength(4);
+  });
+
+  it("composes the complete Barcelona location page contract", () => {
+    const pages = seedCollections.find(({ collectionId }) => collectionId === "CHPages");
+    const sections = seedCollections.find(({ collectionId }) => collectionId === "CHPageSections");
+    const items = seedCollections.find(({ collectionId }) => collectionId === "CHSectionItems");
+    const locationSectionKeys = sections?.items
+      .filter(({ key }) => key.startsWith("location-barcelona."))
+      .map(({ key }) => key);
+
+    expect(locationSectionKeys).toEqual([
+      "location-barcelona.hero",
+      "location-barcelona.space",
+      "location-barcelona.rooms",
+      "location-barcelona.band",
+      "location-barcelona.experiences",
+      "location-barcelona.location",
+      "location-barcelona.manager",
+      "location-barcelona.faq",
+    ]);
+    expect(items?.items.filter(({ key }) => key.startsWith("location-barcelona.hero."))).toHaveLength(2);
+    expect(items?.items.filter(({ key }) => key.startsWith("location-barcelona.experiences."))).toHaveLength(2);
+    expect(pages?.items.find(({ key }) => key === "location-barcelona")?.data.seoTitle).toBe("Circles House Barcelona");
+  });
+
+  it("limits seed reconciliation to the Barcelona location contract", () => {
+    const reconciled = seedCollections.flatMap(({ collectionId, items }) =>
+      items.filter(({ reconcile }) => reconcile).map(({ key }) => `${collectionId}:${key}`),
+    );
+
+    expect(reconciled).toHaveLength(13);
+    expect(reconciled.every((key) => key.includes("location-barcelona"))).toBe(true);
   });
 
   it("composes Memberships from editorial sections and reusable entities", () => {
