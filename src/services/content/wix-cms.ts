@@ -267,6 +267,22 @@ function composeSection(section: WixRecord, sectionItems: WixRecord[]): Record<s
     return { eyebrow: asText(section.eyebrow), title: asText(section.title), items: [] };
   }
 
+  if (componentKey === "coworking.pricing") {
+    return {
+      eyebrow: asText(section.eyebrow),
+      title: asText(section.title),
+      includesLabel: asText(section.lead) || "Includes access to:",
+      plans: sectionItems.map((item) => ({
+        title: asText(item.title),
+        subtitle: asText(item.subtitle),
+        includes: splitParagraphs(asText(item.text)),
+        price: asText(item.value),
+        highlighted: asBoolean(item.highlighted),
+        cta: mapCmsLink(item),
+      })),
+    };
+  }
+
   if (name === "faq") {
     result.items = mappedItems.map((item) => ({
       question: item.title,
@@ -503,6 +519,19 @@ function requireCompleteHomePage(page: Partial<HomePage>): HomePage {
   return page as HomePage;
 }
 
+function requireCompleteCoworkingPage(page: Partial<CoworkingPage>, city: string): CoworkingPage {
+  const requiredSections = ["seo", "hero", "spaces", "pricing", "band", "faq"] as const;
+  for (const key of requiredSections) {
+    if (!page[key] || typeof page[key] !== "object") {
+      throw new Error(`CHPages item "coworking:${city}" is missing the required "coworking.${key}" content.`);
+    }
+  }
+  if (!page.spaces?.items.length) throw new Error(`CHSpaces does not contain a published coworking space for "${city}".`);
+  if (!page.pricing?.plans.length) throw new Error(`CHPageSections item "coworking-${city}.pricing" requires published plans.`);
+  if (!page.faq?.items.length) throw new Error(`CHPages item "coworking:${city}" requires at least one related FAQ.`);
+  return page as CoworkingPage;
+}
+
 function getCmsHomePage(): Promise<HomePage> {
   return cached("document:home", loadCmsHomePage);
 }
@@ -566,20 +595,21 @@ export const wixCmsRepository: ContentRepository = {
   async getCoworkingPage(city) {
     const composed = await composePage<Partial<CoworkingPage>>({ routeKey: "coworking", routeParam: city }, true);
     if (!composed) return undefined;
-    const page = composed as CoworkingPage;
     const locations = await getPublishedLocations();
     const location = locations.find((item) => asText(item.slug) === city);
-    if (!location) return page;
+    if (!location) return undefined;
     const spaces = (await queryPublished(COLLECTIONS.spaces)).filter(
       (space) =>
         referenceId(space.location) === asText(location._id) &&
+        asText(space.spaceType).toLowerCase() === "coworking" &&
         asText(space.status).toLowerCase() !== "hidden",
     );
     const amenities = (await Promise.all(spaces.map((space) => queryReferences(COLLECTIONS.spaces, space, "amenities")))).flat();
-    return {
-      ...page,
+    return requireCompleteCoworkingPage({
+      ...composed,
       spaces: {
-        ...page.spaces,
+        eyebrow: composed.spaces?.eyebrow ?? "",
+        cta: composed.spaces?.cta,
         items: spaces.map((space) => ({
           title: asText(space.title),
           text: asText(space.description),
@@ -590,7 +620,7 @@ export const wixCmsRepository: ContentRepository = {
           label: asText(amenity.label),
         })),
       },
-    };
+    }, city);
   },
   async getLocationPage(slug) {
     const composed = await composePage<Partial<LocationPage>>({ routeKey: "location", routeParam: slug }, true);

@@ -83,10 +83,40 @@ const pageSectionOverrides = {
     primaryCtaLabel: "View every room",
     primaryRouteKey: "rooms",
   },
+  "coworking-barcelona.hero": {
+    eyebrow: "Coworking @ Circles Barcelona",
+    subtitle: "See What Makes our Inspiring Coworking Spaces Perfect for Entrepreneurs and Innovators",
+  },
+  "coworking-barcelona.spaces": {
+    eyebrow: "Coworking spaces",
+  },
+  "coworking-barcelona.pricing": {
+    eyebrow: "Why join",
+    lead: "Includes access to:",
+  },
+  "coworking-barcelona.band": {
+    primaryCtaLabel: "Join us",
+    primaryRouteKey: "memberships",
+    secondaryCtaLabel: "Book a Stay",
+    secondaryRouteKey: "rooms",
+  },
+  "coworking-barcelona.faq": {
+    eyebrow: "FAQ",
+  },
 };
 
 const standardRoomFeatures = ["20m2", "Bathroom", "Terrace", "Desk", "360º View", "Couple friendly"];
 const standardRoomAmenities = ["air-conditioning", "desk", "wardrobe-storage"];
+const coworkingPlanIncludes = [
+  "Coworking",
+  "Social club",
+  "Gym and Shower",
+  "Meeting Rooms",
+  "Booths",
+  "Bar and free coffee",
+  "Gardens",
+  "Rooftop",
+].join("\n\n");
 const canonicalRooms = [
   {
     slug: "king-studio-terrace-sea-view",
@@ -286,8 +316,11 @@ export const seedCollections = [
         key: "coworking-barcelona",
         data: page("coworking-barcelona", "coworking", "coworking", {
           routeParam: "barcelona",
-          title: "Coworking Barcelona · Sandbox",
+          title: "Coworking in Barcelona · Circles House",
+          description:
+            "Hot desks, cabins, gyms and booths surrounded by nature, with day, 10-day and monthly passes.",
         }),
+        editorialStatus: "figma",
       },
       {
         key: "june",
@@ -310,6 +343,11 @@ export const seedCollections = [
       ["desk", "Desk", "desk", "work", ["room"]],
       ["wardrobe-storage", "Wardrobe / storage", "wardrobe", "storage", ["room"]],
       ["terrace", "Terrace", "terrace", "outdoor", ["room"]],
+      ["booths", "Booths", "phone-booth", "work", ["space"]],
+      ["meeting-room", "Meeting room", "meeting-room", "work", ["space"]],
+      ["printing-area", "Printing area", "printing", "work", ["space"]],
+      ["gym-and-shower", "Gym and shower", "gym", "wellness", ["space"]],
+      ["event-room", "Event room", "events", "community", ["space"]],
     ].map(([amenityKey, label, iconKey, category, applicableTo], index) => ({
       key: amenityKey,
       data: {
@@ -472,16 +510,30 @@ export const seedCollections = [
       ["ambassadors.intro", "ambassadors", "ambassadors.intro", "Become an ambassador"],
       ["for-investors.intro", "for-investors", "for-investors.intro", "Invest in community-led living"],
       ["location-barcelona.hero", "location-barcelona", "location.hero", "Circles House Barcelona"],
-      ["coworking-barcelona.hero", "coworking-barcelona", "coworking.hero", "Coworking Barcelona"],
+      ["coworking-barcelona.hero", "coworking-barcelona", "coworking.hero", "Work Surrounded by Nature"],
+      ["coworking-barcelona.spaces", "coworking-barcelona", "coworking.spaces", "Coworking spaces"],
+      ["coworking-barcelona.pricing", "coworking-barcelona", "coworking.pricing", "Coworking Pricing Options"],
+      ["coworking-barcelona.band", "coworking-barcelona", "coworking.band", "Stay longer and Save more"],
+      ["coworking-barcelona.faq", "coworking-barcelona", "coworking.faq", "What you need to know"],
       ["june.hero", "june", "month.hero", "June at Circles House Barcelona"],
     ].map(([sectionKey, pageKey, componentKey, title], index) => ({
       key: sectionKey,
-      editorialStatus: sectionKey.startsWith("home.") || sectionKey.startsWith("rooms.") ? "figma" : "provisional",
+      editorialStatus:
+        sectionKey.startsWith("home.") ||
+        sectionKey.startsWith("rooms.") ||
+        sectionKey.startsWith("coworking-barcelona.")
+          ? "figma"
+          : "provisional",
       data: {
         sectionKey,
         page: reference("CHPages", pageKey),
         componentKey,
-        eyebrow: sectionKey.startsWith("home.") || sectionKey.startsWith("rooms.") ? undefined : "Sandbox",
+        eyebrow:
+          sectionKey.startsWith("home.") ||
+          sectionKey.startsWith("rooms.") ||
+          sectionKey.startsWith("coworking-barcelona.")
+            ? undefined
+            : "Sandbox",
         title,
         body: "This section is CMS-managed staging content.",
         ...(pageSectionOverrides[sectionKey] ?? {}),
@@ -546,6 +598,26 @@ export const seedCollections = [
           sortOrder: 1,
         },
       },
+      ...[
+        ["day-pass", "Day pass", "Use it in a period of 30 days", "15€ +VAT", false],
+        ["ten-day-pass", "10 days pass", "Use it in a period of 30 days", "120€ +VAT", false],
+        ["monthly-pass", "Monthly pass", "30 days access", "150€ +VAT", true],
+        ["monthly-fixed-desk", "Monthly pass", "+ FIXED DESK", "180€ +VAT", false],
+      ].map(([key, title, subtitle, value, highlighted], index) => ({
+        key: `coworking-barcelona.pricing.${key}`,
+        editorialStatus: "figma",
+        data: {
+          itemKey: `coworking-barcelona.pricing.${key}`,
+          section: reference("CHPageSections", "coworking-barcelona.pricing"),
+          title,
+          subtitle,
+          text: coworkingPlanIncludes,
+          value,
+          highlighted,
+          published: true,
+          sortOrder: index + 1,
+        },
+      })),
     ],
   },
   {
@@ -574,14 +646,15 @@ export const seedCollections = [
     keyField: "slug",
     items: [
       {
-        key: "barcelona-coworking",
+        key: "barcelona-hot-desks",
         data: {
-          slug: "barcelona-coworking",
+          slug: "barcelona-hot-desks",
           location: reference("CHLocations", "barcelona"),
           spaceType: "coworking",
           categoryLabel: "Coworking space",
-          title: "Circles House Barcelona Coworking",
-          description: "A home in the hills where focused work and honest community coexist.",
+          title: "Hot desks",
+          description:
+            "Our hot desks are situated in a vibrant co-working space, just a short stroll from public transport. They offer a flexible and convenient option for those looking to work in a dynamic environment.",
           accessLabel: "Members only",
           status: "active",
           featuredHome: true,
@@ -592,7 +665,67 @@ export const seedCollections = [
         },
         editorialStatus: "figma",
         multiReferences: {
-          amenities: ["coworking", "high-speed-wifi", "rooftop"],
+          amenities: ["coworking", "high-speed-wifi", "meeting-room", "printing-area", "event-room", "rooftop"],
+        },
+      },
+      {
+        key: "barcelona-cabins",
+        data: {
+          slug: "barcelona-cabins",
+          location: reference("CHLocations", "barcelona"),
+          spaceType: "coworking",
+          categoryLabel: "Coworking space",
+          title: "Cabins",
+          description: "Private cabins for focused calls and individual work within the shared coworking space.",
+          accessLabel: "Members only",
+          status: "active",
+          featuredHome: false,
+          published: true,
+          sortOrder: 2,
+        },
+        editorialStatus: "figma-with-provisional-description",
+        multiReferences: {
+          amenities: ["high-speed-wifi", "booths"],
+        },
+      },
+      {
+        key: "barcelona-gym",
+        data: {
+          slug: "barcelona-gym",
+          location: reference("CHLocations", "barcelona"),
+          spaceType: "coworking",
+          categoryLabel: "Health",
+          title: "Gyms",
+          description: "A gym and shower area available alongside the coworking facilities.",
+          accessLabel: "Members only",
+          status: "active",
+          featuredHome: false,
+          published: true,
+          sortOrder: 3,
+        },
+        editorialStatus: "figma-with-provisional-description",
+        multiReferences: {
+          amenities: ["gym-and-shower"],
+        },
+      },
+      {
+        key: "barcelona-booths",
+        data: {
+          slug: "barcelona-booths",
+          location: reference("CHLocations", "barcelona"),
+          spaceType: "coworking",
+          categoryLabel: "Coworking space",
+          title: "Booths",
+          description: "Enclosed booths for calls, online meetings and focused conversations.",
+          accessLabel: "Members only",
+          status: "active",
+          featuredHome: false,
+          published: true,
+          sortOrder: 4,
+        },
+        editorialStatus: "figma-with-provisional-description",
+        multiReferences: {
+          amenities: ["high-speed-wifi", "booths"],
         },
       },
       {
@@ -934,7 +1067,7 @@ export const seedCollections = [
           sortOrder: 1,
         },
         multiReferences: {
-          pages: ["what-is-circles", "location-barcelona"],
+          pages: ["what-is-circles", "location-barcelona", "coworking-barcelona"],
           locations: ["barcelona"],
         },
       },
@@ -950,7 +1083,7 @@ export const seedCollections = [
           sortOrder: 2,
         },
         multiReferences: {
-          pages: ["location-barcelona", "june"],
+          pages: ["location-barcelona", "coworking-barcelona", "june"],
           locations: ["barcelona"],
         },
       },

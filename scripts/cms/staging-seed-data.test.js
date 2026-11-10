@@ -41,11 +41,11 @@ function collectReferences(value, references = []) {
 }
 
 describe("Wix staging seed manifest", () => {
-  it("covers every canonical collection with 101 uniquely keyed records", () => {
+  it("covers every canonical collection with 117 uniquely keyed records", () => {
     expect(seedCollections.map(({ collectionId }) => collectionId)).toEqual(
       expectedCollections,
     );
-    expect(seedCollections.flatMap(({ items }) => items)).toHaveLength(101);
+    expect(seedCollections.flatMap(({ items }) => items)).toHaveLength(117);
 
     for (const { collectionId, keyField, items } of seedCollections) {
       const keys = items.map(({ key }) => key);
@@ -71,6 +71,24 @@ describe("Wix staging seed manifest", () => {
       }
       items.forEach(({ key }) => available.add(`${collectionId}:${key}`));
     }
+  });
+
+  it("composes the Barcelona coworking page from page sections, plans and reusable spaces", () => {
+    const sections = seedCollections.find(({ collectionId }) => collectionId === "CHPageSections");
+    const items = seedCollections.find(({ collectionId }) => collectionId === "CHSectionItems");
+    const spaces = seedCollections.find(({ collectionId }) => collectionId === "CHSpaces");
+
+    expect(sections?.items.map(({ key }) => key)).toEqual(
+      expect.arrayContaining([
+        "coworking-barcelona.hero",
+        "coworking-barcelona.spaces",
+        "coworking-barcelona.pricing",
+        "coworking-barcelona.band",
+        "coworking-barcelona.faq",
+      ]),
+    );
+    expect(items?.items.filter(({ key }) => key.startsWith("coworking-barcelona.pricing."))).toHaveLength(4);
+    expect(spaces?.items.filter(({ data }) => data.location?.$seedReference?.key === "barcelona" && data.spaceType === "coworking")).toHaveLength(4);
   });
 
   it("resolves every declared multi-reference target", () => {

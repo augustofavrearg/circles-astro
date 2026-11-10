@@ -693,16 +693,16 @@ const coworkingIncludes = ["Coworking", "Social club", "Gym and Shower", "Meetin
 // Shared by the Barcelona coworking page and Life @ Circles.
 const barcelonaCoworkingSpaces: CoworkingPage["spaces"] = {
   eyebrow: "Coworking spaces",
-  // Figma only shows the Hot desks text; the other descriptions and every photo are pending.
+  // Figma only exposes the Hot desks copy. The remaining descriptions are provisional and the photos are pending.
   items: [
     {
       title: "Hot desks",
       text: "Our hot desks are situated in a vibrant co-working space, just a short stroll from public transport. They offer a flexible and convenient option for those looking to work in a dynamic environment.",
       images: [],
     },
-    { title: "Cabins", text: "", images: [] },
-    { title: "Gyms", text: "", images: [] },
-    { title: "Booths", text: "", images: [] },
+    { title: "Cabins", text: "Private cabins for focused calls and individual work within the shared coworking space.", images: [] },
+    { title: "Gyms", text: "A gym and shower area available alongside the coworking facilities.", images: [] },
+    { title: "Booths", text: "Enclosed booths for calls, online meetings and focused conversations.", images: [] },
   ],
   amenities: [
     { icon: "wifi", label: "High speed Wi-fi" },
@@ -741,7 +741,11 @@ export const coworkingPagesFixture: CoworkingPage[] = [
         { title: "Monthly pass", subtitle: "+ FIXED DESK", includes: coworkingIncludes, price: "180€ +VAT" },
       ],
     },
-    band: { title: "Stay longer and Save more", primaryCta: { label: "Join us", href: "/api/auth/login" } },
+    band: {
+      title: "Stay longer and Save more",
+      secondaryCta: { label: "Book a Stay", href: "/rooms" },
+      primaryCta: { label: "Join us", href: "/memberships" },
+    },
     faq: sharedFaq,
   },
 ];

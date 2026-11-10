@@ -9,6 +9,7 @@ import {
 } from "@tabler/icons-react";
 import { useState } from "react";
 import type { CoworkingAmenity, CoworkingPage } from "@/domain/content";
+import { alternatingMediaPlaceholder, mediaPlaceholderClass, USE_MEDIA_PLACEHOLDERS } from "@/config/media";
 
 const ICONS: Record<CoworkingAmenity, typeof IconWifi> = {
   wifi: IconWifi,
@@ -29,6 +30,7 @@ export function CoworkingSpaces({ eyebrow, items, amenities, cta }: CoworkingPag
   const [photo, setPhoto] = useState(0);
   const space = items[selected];
   const images = space?.images ?? [];
+  const showPlaceholder = USE_MEDIA_PLACEHOLDERS || !images[photo];
 
   function choose(index: number) {
     setSelected(index);
@@ -78,9 +80,13 @@ export function CoworkingSpaces({ eyebrow, items, amenities, cta }: CoworkingPag
         </div>
       </div>
 
-      <div className="relative order-1 mt-6 aspect-[408/360] bg-black/8 lg:order-none lg:mt-0 lg:aspect-[536/600]">
-        {images[photo] && <img src={images[photo]} alt={space?.title ?? ""} loading="lazy" className="size-full object-cover" />}
-        {images.length > 1 && (
+      <div className="relative order-1 mt-6 aspect-[408/360] overflow-hidden bg-black/8 lg:order-none lg:mt-0 lg:aspect-[536/600]">
+        {showPlaceholder ? (
+          <div aria-hidden className={`size-full ${mediaPlaceholderClass(alternatingMediaPlaceholder(selected))}`} />
+        ) : (
+          <img src={images[photo]} alt={space?.title ?? ""} loading="lazy" className="size-full object-cover" />
+        )}
+        {!USE_MEDIA_PLACEHOLDERS && images.length > 1 && (
           <div className="absolute bottom-4 left-4 flex gap-2" role="group" aria-label={`${space?.title} photos`}>
             {images.map((src, index) => (
               <button
