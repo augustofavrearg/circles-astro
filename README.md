@@ -193,11 +193,16 @@ If an SEO or deployment problem appears, immediately set
 `SEO_ALLOW_INDEXING=false`, release the safe configuration, and restore the
 previous production version from the Wix dashboard if necessary.
 
-## Contributing patches
+## Development workflow
 
-Keep one logical change per commit and generate exchange patches from that
-commit. See the [patch workflow](docs/patch-workflow.md) for the shared message
-template, export commands, review steps, and repository policy.
+Keep one logical change per commit and use the Git commit history as the
+canonical record of development. Patch files are no longer part of the active
+contribution workflow.
+
+Before committing, run the checks appropriate to the change. Record the commit
+hash, validation evidence, remaining findings, and resulting task status in the
+Kanban. Publish commits through the agreed Git remote or pull-request workflow
+when the change is ready to be shared.
 
 Before approving a technical task, follow the
 [technical review playbook](docs/technical-review-playbook.md). It explains the
