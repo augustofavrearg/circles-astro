@@ -199,6 +199,12 @@ Keep one logical change per commit and generate exchange patches from that
 commit. See the [patch workflow](docs/patch-workflow.md) for the shared message
 template, export commands, review steps, and repository policy.
 
+Before approving a technical task, follow the
+[technical review playbook](docs/technical-review-playbook.md). It explains the
+per-commit diff audit, visual comparison with Figma, responsive and functional
+checks, CMS validation, automated commands, review decisions, and the evidence
+recorded in the task tracker.
+
 ## Content architecture
 
 Pages only use the `ContentRepository` interface in `src/domain/content.ts`.
