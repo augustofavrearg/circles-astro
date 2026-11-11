@@ -6,6 +6,7 @@ dist/
 wix-error.log
 /patchs/
 /analisis/
+.codex/
 .env
 .env.*
 !.env.example

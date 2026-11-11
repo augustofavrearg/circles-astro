@@ -16,6 +16,19 @@ for (const registryFile of registryFiles) {
   const registryPath = join(registryDirectory, registryFile);
   const registry = JSON.parse(await readFile(registryPath, "utf8"));
 
+  if (!registry.figmaFileKey) {
+    errors.push(`${registryFile}: figmaFileKey is required`);
+  }
+  if (!registry.screen?.name || !registry.screen?.nodeId) {
+    errors.push(`${registryFile}: screen name and nodeId are required`);
+  }
+  if (!registry.screen?.route?.startsWith("/")) {
+    errors.push(`${registryFile}: screen route must be an absolute application route`);
+  }
+  if (registry.screen?.route === "/") {
+    errors.push(`${registryFile}: root redirects to /home and cannot be a design registry route`);
+  }
+
   for (const asset of registry.assets ?? []) {
     assetCount += 1;
     const publicPath = join(

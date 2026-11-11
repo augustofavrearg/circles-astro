@@ -40,14 +40,6 @@
   font-display: swap;
 }
 
-@font-face {
-  font-family: "PP Fragment Sans";
-  src: url("/fonts/PPFragment-SansRegular.woff2") format("woff2");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
 @theme {
   --color-black: #090909;
   --color-white: #ffffff;
@@ -58,7 +50,7 @@
   --color-red: #db4f3c;
   --color-cream: #c37254;
   --font-display: "Clash Display", "Helvetica Neue", Arial, sans-serif;
-  --font-sans: "PP Fragment Sans", "Avenir Next", "Segoe UI", sans-serif;
+  --font-sans: "Avenir Next", "Segoe UI", sans-serif;
   --text-h1: clamp(2.125rem, 4.7vw, 4rem);
   --text-h1--line-height: 1.05;
   --text-h2: clamp(2.125rem, 4.7vw, 4rem);

@@ -3,7 +3,7 @@
   "screen": {
     "name": "Home",
     "nodeId": "868:4509",
-    "route": "/"
+    "route": "/home"
   },
   "recoveredAt": "2026-10-30",
   "assets": [

@@ -9,6 +9,13 @@ Parallel migration of the Circles House frontend. The existing `../circles-web` 
 - npm
 - A Wix account when linking or releasing the project
 
+This repository pins Node in `.nvmrc` and rejects dependency installation on
+older Node versions. With nvm, select it before installing or running commands:
+
+```bash
+nvm use
+```
+
 ## Local development
 
 Install dependencies and create a local environment file once:
@@ -100,9 +107,15 @@ npm test
 npm run check
 npm run build
 npm run assets:check
+npm run docs:check
 npm run cms:audit
 git status --short
 ```
+
+`cms:audit` is the pass/fail health check used by the gate. For diagnostics,
+`npm run cms:audit:summary` prints collection details and
+`npm run cms:audit:dump` prints the complete raw audit. These commands are
+read-only; seeds remain separate and require explicit authorization.
 
 Do not preview or release with failing checks, unexpected Git changes, or a
 failed CMS audit.
@@ -209,6 +222,12 @@ Before approving a technical task, follow the
 per-commit diff audit, visual comparison with Figma, responsive and functional
 checks, CMS validation, automated commands, review decisions, and the evidence
 recorded in the task tracker.
+
+The canonical task transitions, Definition of Ready/Done, responsibilities,
+and evidence templates are in the
+[Website Delivery workflow](docs/workflow/website-delivery.md). The
+[documentation index](docs/README.md) defines which questions are owned by
+ClickUp, Figma, Wix, and Git.
 
 ## Content architecture
 

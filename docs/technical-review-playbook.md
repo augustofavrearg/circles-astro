@@ -74,6 +74,8 @@ Si dos fuentes se contradicen, no resolver la contradicción por memoria ni asum
 
 Este playbook explica **cómo auditar**. No inventa requisitos ni reemplaza los criterios de aceptación.
 
+El workflow activo es [`docs/workflow/website-delivery.md`](workflow/website-delivery.md).
+
 ## 5. Niveles de auditoría
 
 ### Nivel A: cambio técnico
@@ -442,6 +444,7 @@ Para reservas, formularios, autenticación, analytics u otros proveedores:
 | `npm run check` | todo cambio de Astro, TypeScript, contenido tipado o configuración |
 | `npm run build` | páginas, rutas, layouts, middleware, Wix, renderizado, hosting o gate de preview/release |
 | `npm run assets:check` | cambios en assets o gate de preview/release |
+| `npm run docs:check` | cambios documentales o gate de preview/release |
 | `npm run cms:audit` | cambios CMS/Wix o gate de preview/release |
 
 Para un cambio exclusivamente documental, normalmente basta con revisar enlaces, comandos, coherencia y ejecutar `git diff --check`. Registrar por qué los controles de aplicación no aplican.
@@ -462,6 +465,7 @@ npm test
 npm run check
 npm run build
 npm run assets:check
+npm run docs:check
 npm run cms:audit
 git status --short
 ```
