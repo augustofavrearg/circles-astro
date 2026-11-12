@@ -1,4 +1,4 @@
-export const USE_MEDIA_PLACEHOLDERS = true;
+export const USE_MEDIA_PLACEHOLDERS = false;
 
 export type MediaPlaceholderTone = "yellow" | "blue";
 
