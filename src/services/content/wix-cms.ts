@@ -38,6 +38,7 @@ import {
   mapTeamMember,
   referenceId,
   resolveCmsHref,
+  validateEventProgramReference,
   wixGallery,
   wixUrl,
   type LocationLookup,
@@ -71,6 +72,9 @@ export const COLLECTIONS = {
 } as const;
 
 type PageIdentity = { pageKey?: string; routeKey?: string; routeParam?: string };
+type EventsPageDocument = Partial<EventsPage> & {
+  intro?: { title?: string; subtitle?: string };
+};
 
 const CMS_CACHE_TTL_MS = 30_000;
 const cmsCache = new Map<string, { expiresAt: number; value: Promise<unknown> }>();
@@ -818,17 +822,29 @@ export const wixCmsRepository: ContentRepository = {
     return (result.items as WixRecord[]).filter((item) => hasPersonType(item, "team")).map(mapTeamMember);
   },
   async getEventsPage() {
-    const [page, locations] = await Promise.all([requirePage<EventsPage>({ pageKey: "events" }), getPublishedLocations()]);
+    const [document, locations] = await Promise.all([
+      requirePage<EventsPageDocument>({ pageKey: "events" }),
+      getPublishedLocations(),
+    ]);
     const cities = locations.map((location) => ({ slug: asText(location.slug), name: asText(location.shortName) || asText(location.city) }));
+    const title = asText(document.intro?.title) || asText(document.title);
+    if (!title) throw new Error('CHPageSections item "events.intro" requires a title.');
     return {
-      ...page,
+      title,
+      subtitle: asText(document.intro?.subtitle) || asText(document.subtitle),
       cities,
-      eyebrows: page.eyebrows ?? Object.fromEntries([["all", "Happening now"], ...cities.map((city) => [city.slug, `Happening now in ${city.name}`])]),
+      eyebrows:
+        document.eyebrows ??
+        Object.fromEntries([["all", "Happening now"], ...cities.map((city) => [city.slug, `Happening now in ${city.name}`])]),
     };
   },
   async getEvents(city) {
-    const locations = await getPublishedLocations();
+    const [locations, programs] = await Promise.all([
+      getPublishedLocations(),
+      queryPublished(COLLECTIONS.programs),
+    ]);
     const lookup = buildLocationLookup(locations);
+    const programsById = new Map(programs.map((program) => [asText(program._id), program]));
     let query = items.query(COLLECTIONS.events).eq("published", true).ascending("sortOrder").limit(100);
     if (city) {
       const location = locations.find((item) => asText(item.slug) === city);
@@ -836,7 +852,9 @@ export const wixCmsRepository: ContentRepository = {
       query = query.eq("location", asText(location._id));
     }
     const result = await query.find({ consistentRead: true });
-    return (result.items as WixRecord[])
+    const eventRecords = result.items as WixRecord[];
+    eventRecords.forEach((event) => validateEventProgramReference(event, programsById));
+    return eventRecords
       .filter((item) => isCurrentOrUpcomingEvent(item))
       .map((item) => mapEvent(item, lookup));
   },

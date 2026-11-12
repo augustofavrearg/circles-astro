@@ -245,8 +245,34 @@ export function mapDeal(item: WixRecord): Deal {
 }
 
 function asDate(value: unknown): Date | undefined {
-  const date = value instanceof Date ? value : typeof value === "string" || typeof value === "number" ? new Date(value) : undefined;
+  const serialized = value && typeof value === "object" ? (value as WixRecord).$date : undefined;
+  const source = serialized ?? value;
+  const date = source instanceof Date ? source : typeof source === "string" || typeof source === "number" ? new Date(source) : undefined;
   return date && !Number.isNaN(date.valueOf()) ? date : undefined;
+}
+
+function isValidTimeZone(value: string): boolean {
+  try {
+    new Intl.DateTimeFormat("en", { timeZone: value }).format();
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+export function validateEventProgramReference(item: WixRecord, programs: Map<string, WixRecord>): void {
+  const programId = referenceId(item.program);
+  if (!programId) return;
+
+  const slug = asText(item.slug) || asText(item._id) || "unknown";
+  const program = programs.get(programId);
+  if (!program) throw new Error(`CHEvents item "${slug}" references a missing or unpublished CHPrograms item.`);
+
+  const eventLocationId = referenceId(item.location);
+  const programLocationId = referenceId(program.location);
+  if (!programLocationId || eventLocationId !== programLocationId) {
+    throw new Error(`CHEvents item "${slug}" must use the same CHLocations reference as its CHPrograms item.`);
+  }
 }
 
 /**
@@ -274,7 +300,10 @@ export function mapEvent(item: WixRecord, locations: LocationLookup): EventSumma
     throw new Error(`CHEvents item "${slug || "unknown"}" is missing slug, title, startsAt or a valid CHLocations reference.`);
   }
   const endsAt = asDate(item.endsAt);
-  const timeZone = asText(item.timezone) || location.timezone || "UTC";
+  const timeZone = asText(item.timezone) || location.timezone;
+  if (!timeZone || !isValidTimeZone(timeZone)) {
+    throw new Error(`CHEvents item "${slug}" is missing a valid timezone.`);
+  }
   const month = new Intl.DateTimeFormat("en", { month: "short", timeZone }).format(startsAt);
   const day = new Intl.DateTimeFormat("en", { day: "numeric", timeZone }).format(startsAt);
   const dateLabel = new Intl.DateTimeFormat("en", { weekday: "long", month: "long", day: "numeric", timeZone }).format(startsAt);

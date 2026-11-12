@@ -83,6 +83,13 @@ const pageSectionOverrides = {
     primaryCtaLabel: "View every room",
     primaryRouteKey: "rooms",
   },
+  "events.intro": {
+    eyebrow: "Happening now",
+    title: "Live Surrounded by Nature",
+    subtitle:
+      "See What Makes our Inspiring Coworking Spaces Perfect for Entrepreneurs and Innovators",
+    body: undefined,
+  },
   "memberships.intro": {
     eyebrow: "Memberships",
     body:

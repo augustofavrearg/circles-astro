@@ -14,6 +14,7 @@ type Props = {
   class?: string;
   imageClass?: string;
   placeholderTone?: MediaPlaceholderTone;
+  forceImage?: boolean;
 };
 
 const {
@@ -24,8 +25,9 @@ const {
   class: className,
   imageClass,
   placeholderTone = "yellow",
+  forceImage = false,
 } = Astro.props;
-const showPlaceholder = USE_MEDIA_PLACEHOLDERS || !src;
+const showPlaceholder = !src || (USE_MEDIA_PLACEHOLDERS && !forceImage);
 ---
 
 <div class={cn("absolute inset-0 overflow-hidden bg-black/8", className)}>

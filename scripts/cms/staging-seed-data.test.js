@@ -91,6 +91,19 @@ describe("Wix staging seed manifest", () => {
     expect(spaces?.items.filter(({ data }) => data.location?.$seedReference?.key === "barcelona" && data.spaceType === "coworking")).toHaveLength(4);
   });
 
+  it("keeps the events intro aligned with the approved design copy", () => {
+    const sections = seedCollections.find(({ collectionId }) => collectionId === "CHPageSections");
+    const intro = sections?.items.find(({ key }) => key === "events.intro")?.data;
+
+    expect(intro).toMatchObject({
+      eyebrow: "Happening now",
+      title: "Live Surrounded by Nature",
+      subtitle:
+        "See What Makes our Inspiring Coworking Spaces Perfect for Entrepreneurs and Innovators",
+    });
+    expect(intro?.body).toBeUndefined();
+  });
+
   it("composes the complete Barcelona location page contract", () => {
     const pages = seedCollections.find(({ collectionId }) => collectionId === "CHPages");
     const sections = seedCollections.find(({ collectionId }) => collectionId === "CHPageSections");

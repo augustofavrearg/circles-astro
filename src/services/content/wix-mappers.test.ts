@@ -11,6 +11,7 @@ import {
   isCurrentOrUpcomingEvent,
   resolveCmsHref,
   richContentBlocks,
+  validateEventProgramReference,
   wixUrl,
   type LocationLookup,
 } from "./wix-mappers";
@@ -98,6 +99,52 @@ describe("Wix CMS canonical mappers", () => {
     );
     expect(event).toMatchObject({ slug: "movie-night", city: "barcelona", month: "Aug", day: "18" });
     expect(event.dateLabel).toContain("August 18");
+  });
+
+  it("accepts Wix extended-date payloads and rejects invalid timezones", () => {
+    const event = mapEvent(
+      {
+        slug: "christmas-innovation-jam",
+        title: "Christmas Innovation Jam",
+        location: "location-id",
+        startsAt: { $date: "2026-12-25T03:00:00.000Z" },
+        endsAt: { $date: "2026-12-25T20:00:00.000Z" },
+        timezone: "Europe/Madrid",
+      },
+      locations,
+    );
+
+    expect(event).toMatchObject({ month: "Dec", day: "25" });
+    expect(() =>
+      mapEvent(
+        {
+          slug: "invalid-timezone",
+          title: "Invalid timezone",
+          location: "location-id",
+          startsAt: "2026-12-25T03:00:00.000Z",
+          timezone: "Europe/Barcelona",
+        },
+        locations,
+      ),
+    ).toThrow('CHEvents item "invalid-timezone" is missing a valid timezone.');
+  });
+
+  it("validates optional CHPrograms references and their location", () => {
+    const programs = new Map([
+      ["program-id", { _id: "program-id", location: "location-id" }],
+      ["andorra-program", { _id: "andorra-program", location: "andorra-id" }],
+    ]);
+
+    expect(() => validateEventProgramReference({ slug: "standalone" }, programs)).not.toThrow();
+    expect(() =>
+      validateEventProgramReference({ slug: "linked", location: "location-id", program: "program-id" }, programs),
+    ).not.toThrow();
+    expect(() =>
+      validateEventProgramReference({ slug: "missing", location: "location-id", program: "missing-id" }, programs),
+    ).toThrow('CHEvents item "missing" references a missing or unpublished CHPrograms item.');
+    expect(() =>
+      validateEventProgramReference({ slug: "wrong-location", location: "location-id", program: "andorra-program" }, programs),
+    ).toThrow('CHEvents item "wrong-location" must use the same CHLocations reference as its CHPrograms item.');
   });
 
   it("keeps only events with valid current or future date windows", () => {

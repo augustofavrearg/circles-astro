@@ -200,7 +200,7 @@ export function HeaderMenu({ navigation, currentPath }: Props) {
 
   return (
     <header ref={headerRef} className="sticky top-0 z-50 border-b border-black/12 bg-background">
-      <div className="flex h-18 items-center gap-4 px-4 lg:px-6">
+      <div className="flex h-18 min-w-0 items-center gap-3 px-4 sm:gap-4 lg:px-6">
         <button
           ref={mobileButtonRef}
           type="button"
@@ -297,7 +297,7 @@ export function HeaderMenu({ navigation, currentPath }: Props) {
           <a
             href={book.href}
             aria-current={isPathCurrent(currentPath, book.href) ? "page" : undefined}
-            className="ml-auto inline-flex h-10 min-w-37 items-center justify-center rounded-full bg-black px-5 text-sm text-white xl:ml-1"
+            className="ml-auto inline-flex h-10 min-w-0 shrink-0 items-center justify-center rounded-full bg-black px-3 text-sm text-white sm:min-w-37 sm:px-5 xl:ml-1"
           >
             {book.label}
           </a>
