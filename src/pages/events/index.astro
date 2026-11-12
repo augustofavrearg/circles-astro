@@ -1,20 +1,27 @@
 ---
 import SiteLayout from "@/layouts/SiteLayout.astro";
 import EventsListing from "@/components/sections/events/EventsListing.astro";
-import HappeningNavigation from "@/components/sections/events/HappeningNavigation.astro";
+import EventExplorerFilters from "@/components/sections/events/EventExplorerFilters.astro";
 import Newsletter from "@/components/sections/shared/Newsletter.astro";
 import { getContentRepository } from "@/services/content/repository";
 
 const repository = await getContentRepository();
-const [settings, page, events] = await Promise.all([
+const month = Astro.url.searchParams.get("month") ?? undefined;
+const filters = {
+  locations: Astro.url.searchParams.getAll("location").filter(Boolean),
+  programs: Astro.url.searchParams.getAll("program").filter(Boolean),
+  month: month && /^\d{4}-(0[1-9]|1[0-2])$/.test(month) ? month : undefined,
+};
+const [settings, page, events, programs] = await Promise.all([
   repository.getSiteSettings(),
   repository.getEventsPage(),
-  repository.getEvents(),
+  repository.getEvents(filters),
+  repository.getPrograms(),
 ]);
 ---
 
 <SiteLayout settings={settings} title="Events · Circles House" description={page.subtitle}>
-  <HappeningNavigation navigation={settings.navigation?.header} cities={page.cities} currentPath={Astro.url.pathname} kind="events" />
+  <EventExplorerFilters locations={page.cities} {programs} {filters} />
   <EventsListing {page} {events} />
   <Newsletter newsletter={settings.newsletter} copy={settings.interfaceCopy} class="mt-12 lg:mt-10" />
 </SiteLayout>

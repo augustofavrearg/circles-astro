@@ -240,6 +240,12 @@ export type Deal = {
 export type EventSummary = {
   slug: string;
   city: string;
+  locationName?: string;
+  startsAt?: string;
+  endsAt?: string;
+  /** Calendar month at the event location, formatted as YYYY-MM. */
+  monthKey?: string;
+  program?: { slug: string; name: string };
   title: string;
   subtitle?: string;
   month: string;
@@ -248,6 +254,22 @@ export type EventSummary = {
   timeLabel: string;
   image?: string;
   href?: string;
+};
+
+export type EventFilters = {
+  /** Location slugs. Values inside this dimension use OR semantics. */
+  locations?: string[];
+  /** Program slugs. Values inside this dimension use OR semantics. */
+  programs?: string[];
+  /** Calendar month at each event's location, formatted as YYYY-MM. */
+  month?: string;
+};
+
+export type ProgramSummary = {
+  slug: string;
+  name: string;
+  locations: { slug: string; name: string }[];
+  locationScope: "selected" | "all";
 };
 
 export type EventsPage = {
@@ -263,8 +285,8 @@ export type ProgramPage = {
   slug: string;
   name: string;
   theme: string;
-  city: string;
-  locationName: string;
+  locations: { slug: string; name: string }[];
+  locationScope: "selected" | "all";
   startsOn?: string;
   endsOn?: string;
   registrationEnabled: boolean;
@@ -375,6 +397,15 @@ export type MonthPage = {
   faq: FaqSection;
 };
 
+export type StayCampaign = {
+  campaignKey: string;
+  name: string;
+  period: string;
+  legacyRouteParam?: string;
+  location: { slug: string; name: string };
+  page: MonthPage;
+};
+
 export type CoworkingAmenity = "wifi" | "booths" | "meeting" | "printing" | "gym" | "events" | "rooftop";
 
 export type CoworkingPlan = {
@@ -453,13 +484,17 @@ export interface ContentRepository {
   getWhatIsCirclesPage(): Promise<WhatIsCirclesPage>;
   getMembershipsPage(): Promise<MembershipsPage>;
   getMonthPage(slug: string): Promise<MonthPage | undefined>;
+  getStayCampaign(location: string, period: string): Promise<StayCampaign | undefined>;
+  getStayCampaignByLegacySlug(slug: string): Promise<StayCampaign | undefined>;
   getProgramPage(slug: string): Promise<ProgramPage | undefined>;
+  getPrograms(): Promise<ProgramSummary[]>;
   getCoworkingPage(city: string): Promise<CoworkingPage | undefined>;
   getLifePage(): Promise<LifePage>;
   getLocationPage(slug: string): Promise<LocationPage | undefined>;
   getDeals(): Promise<Deal[]>;
   getEventsPage(): Promise<EventsPage>;
-  getEvents(city?: string): Promise<EventSummary[]>;
+  getEvents(filters?: EventFilters): Promise<EventSummary[]>;
+  getEvent(slug: string): Promise<EventSummary | undefined>;
   getRooms(location?: string): Promise<import("./booking").Room[]>;
   getNewsArticles(): Promise<NewsArticle[]>;
   getNewsArticle(slug: string): Promise<NewsArticle | undefined>;

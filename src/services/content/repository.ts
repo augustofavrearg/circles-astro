@@ -13,9 +13,11 @@ import {
   monthPagesFixture,
   partnershipsPageFixture,
   programPagesFixture,
+  programsFixture,
   roomsFixture,
   roomsPageFixture,
   siteSettingsFixture,
+  stayCampaignsFixture,
   teamMembersFixture,
   teamPageFixture,
   whatIsCirclesPageFixture,
@@ -67,8 +69,17 @@ export const fixtureRepository: ContentRepository = {
   async getMonthPage(slug: string) {
     return monthPagesFixture.find((page) => page.slug === slug);
   },
+  async getStayCampaign(location: string, period: string) {
+    return stayCampaignsFixture.find((campaign) => campaign.location.slug === location && campaign.period === period);
+  },
+  async getStayCampaignByLegacySlug(slug: string) {
+    return stayCampaignsFixture.find((campaign) => campaign.legacyRouteParam === slug);
+  },
   async getProgramPage(slug: string) {
     return programPagesFixture.find((page) => page.slug === slug);
+  },
+  async getPrograms() {
+    return programsFixture;
   },
   async getDeals() {
     return dealsFixture;
@@ -76,8 +87,18 @@ export const fixtureRepository: ContentRepository = {
   async getEventsPage() {
     return eventsPageFixture;
   },
-  async getEvents(city?: string) {
-    return city ? eventsFixture.filter((event) => event.city === city) : eventsFixture;
+  async getEvents(filters = {}) {
+    const programEvents = programPagesFixture.flatMap((program) => program.events);
+    const events = [...new Map([...eventsFixture, ...programEvents].map((event) => [event.slug, event])).values()];
+    return events.filter((event) => {
+      if (filters.locations?.length && !filters.locations.includes(event.city)) return false;
+      if (filters.programs?.length && (!event.program || !filters.programs.includes(event.program.slug))) return false;
+      if (filters.month && event.monthKey !== filters.month) return false;
+      return true;
+    });
+  },
+  async getEvent(slug: string) {
+    return (await this.getEvents()).find((event) => event.slug === slug);
   },
   async getRooms(location?: string) {
     return location ? roomsFixture.filter((room) => room.locationId === location) : roomsFixture;

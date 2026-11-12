@@ -1,12 +1,12 @@
 # Content model and routing baseline
 
-- Status: accepted
+- Status: superseded in part by ADR 0002
 - Date: 2026-11-08
 - Scope: CMS content sourcing and public route identifiers
 
 ## Decision
 
-The current CH v1.1 model is closed as the implementation baseline: 21 Wix
+The CH v1.1 model was closed as the implementation baseline: 21 Wix
 collections and 267 fields. It is intentionally frozen for the current delivery
 phase; changing it requires an explicit project decision rather than an
 incidental code change.
@@ -16,8 +16,8 @@ Fixtures remain available only as an explicit offline development source. When
 required CMS content must fail visibly and must never be completed with fixture
 data. An indexable production build must use `CONTENT_SOURCE=wix`.
 
-The canonical monthly page route is `/months/june`. Its `june` route parameter
-identifies a calendar/editorial page, not a program.
+The original canonical monthly page route was `/months/june`. ADR 0002 replaces
+this route with a location- and period-specific stay campaign route.
 
 `CHPrograms.slug = founders-month` identifies a reusable event program.
 Individual `CHEvents` may reference that program, while other June events may

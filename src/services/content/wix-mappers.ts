@@ -281,10 +281,18 @@ export function validateEventProgramReference(item: WixRecord, programs: Map<str
   const program = programs.get(programId);
   if (!program) throw new Error(`CHEvents item "${slug}" references a missing or unpublished CHPrograms item.`);
 
+  if (asText(program.locationScope) === "all") return;
+
   const eventLocationId = referenceId(item.location);
-  const programLocationId = referenceId(program.location);
-  if (!programLocationId || eventLocationId !== programLocationId) {
-    throw new Error(`CHEvents item "${slug}" must use the same CHLocations reference as its CHPrograms item.`);
+  const selectedLocations = Array.isArray(program.locations)
+    ? program.locations.map(referenceId).filter(Boolean)
+    : [];
+  const legacyLocationId = referenceId(program.location);
+  const allowedLocations = selectedLocations.length > 0
+    ? selectedLocations
+    : [legacyLocationId].filter(Boolean);
+  if (!eventLocationId || !allowedLocations.includes(eventLocationId)) {
+    throw new Error(`CHEvents item "${slug}" must use a location selected by its CHPrograms item.`);
   }
 }
 
@@ -304,7 +312,7 @@ export function isCurrentOrUpcomingEvent(item: WixRecord, now = new Date()): boo
   return (endsAt ?? startsAt) >= now;
 }
 
-export function mapEvent(item: WixRecord, locations: LocationLookup): EventSummary {
+export function mapEvent(item: WixRecord, locations: LocationLookup, programs = new Map<string, WixRecord>()): EventSummary {
   const slug = asText(item.slug) || asText(item._id);
   const title = asText(item.title);
   const location = locations.get(referenceId(item.location));
@@ -318,13 +326,23 @@ export function mapEvent(item: WixRecord, locations: LocationLookup): EventSumma
     throw new Error(`CHEvents item "${slug}" is missing a valid timezone.`);
   }
   const month = new Intl.DateTimeFormat("en", { month: "short", timeZone }).format(startsAt);
+  const monthParts = new Intl.DateTimeFormat("en", { year: "numeric", month: "2-digit", timeZone }).formatToParts(startsAt);
+  const monthKey = `${monthParts.find((part) => part.type === "year")?.value}-${monthParts.find((part) => part.type === "month")?.value}`;
   const day = new Intl.DateTimeFormat("en", { day: "numeric", timeZone }).format(startsAt);
   const dateLabel = new Intl.DateTimeFormat("en", { weekday: "long", month: "long", day: "numeric", timeZone }).format(startsAt);
   const startTime = new Intl.DateTimeFormat("en", { hour: "numeric", minute: "2-digit", timeZone, timeZoneName: endsAt ? undefined : "short" }).format(startsAt);
   const endTime = endsAt ? new Intl.DateTimeFormat("en", { hour: "numeric", minute: "2-digit", timeZone, timeZoneName: "short" }).format(endsAt) : "";
+  const program = programs.get(referenceId(item.program));
+  const programSlug = asText(program?.slug);
+  const programName = asText(program?.name);
   return {
     slug,
     city: location.slug,
+    locationName: location.name,
+    startsAt: startsAt.toISOString(),
+    endsAt: endsAt?.toISOString(),
+    monthKey,
+    program: programSlug && programName ? { slug: programSlug, name: programName } : undefined,
     title,
     subtitle: asText(item.subtitle) || undefined,
     month,
@@ -332,7 +350,7 @@ export function mapEvent(item: WixRecord, locations: LocationLookup): EventSumma
     dateLabel,
     timeLabel: endTime ? `${startTime} - ${endTime}` : startTime,
     image: wixUrl(item.image) || undefined,
-    href: wixUrl(item.externalUrl) || undefined,
+    href: routes.event(slug),
   };
 }
 

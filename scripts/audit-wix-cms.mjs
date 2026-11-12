@@ -118,6 +118,7 @@ const audit = [];
 for (const collection of collections) {
   const collectionId = collection.id;
   const encodedId = encodeURIComponent(collectionId);
+  const includeHealthItems = process.env.CMS_AUDIT_HEALTH === "1" && collectionId === "CHStayCampaigns";
   const [permissions, indexes, itemQuery] = await Promise.all([
     optionalRequest(
       `https://www.wixapis.com/wix-data/v1/permissions?data_collection_id=${encodedId}`,
@@ -129,7 +130,7 @@ for (const collection of collections) {
       method: "POST",
       body: JSON.stringify({
         dataCollectionId: collectionId,
-        query: { paging: { limit: includeItems ? 100 : 1, offset: 0 } },
+        query: { paging: { limit: includeItems || includeHealthItems ? 100 : 1, offset: 0 } },
         includeReferencedItems: includedReferenceFields,
         returnTotalCount: true,
       }),
@@ -157,7 +158,7 @@ for (const collection of collections) {
       itemData?.pagingMetadata?.count ??
       itemData?.totalCount ??
       null,
-    items: includeItems
+    items: includeItems || includeHealthItems
       ? (itemData?.dataItems ?? []).map((item) => item.data ?? item)
       : undefined,
     itemQueryError: itemQuery.ok ? undefined : itemQuery,
@@ -216,9 +217,10 @@ if (process.env.CMS_AUDIT_HEALTH === "1") {
     CHInterfaceCopy: [4, "copyKey"],
     CHPages: [9, "pageKey"],
     CHAmenities: [7, "amenityKey"],
-    CHLocations: [20, "name"],
+    CHLocations: [21, "name"],
     CHPeople: [10, "name"],
-    CHPrograms: [10, "name"],
+    CHPrograms: [12, "name"],
+    CHStayCampaigns: [8, "name"],
     CHPageSections: [25, "sectionKey"],
     CHSectionItems: [20, "itemKey"],
     CHSocialLinks: [6, "label"],
@@ -249,6 +251,23 @@ if (process.env.CMS_AUDIT_HEALTH === "1") {
   let userIndexCount = 0;
   let itemCount = 0;
   const nonEmptyCollections = [];
+
+  const stayCampaignItems = byId.get("CHStayCampaigns")?.items ?? [];
+  const stayCampaignPairs = stayCampaignItems.map((item) => `${item.location ?? ""}:${item.period ?? ""}`);
+  if (new Set(stayCampaignPairs).size !== stayCampaignPairs.length) {
+    issues.push({ collectionId: "CHStayCampaigns", issue: "duplicate-location-period" });
+  }
+  const campaignKeys = stayCampaignItems.map((item) => item.campaignKey);
+  if (new Set(campaignKeys).size !== campaignKeys.length) {
+    issues.push({ collectionId: "CHStayCampaigns", issue: "duplicate-campaign-key" });
+  }
+  const legacyRouteParams = stayCampaignItems.map((item) => item.legacyRouteParam).filter(Boolean);
+  if (new Set(legacyRouteParams).size !== legacyRouteParams.length) {
+    issues.push({ collectionId: "CHStayCampaigns", issue: "duplicate-legacy-route-param" });
+  }
+  if (stayCampaignItems.some((item) => !/^\d{4}-(0[1-9]|1[0-2])$/.test(item.period ?? ""))) {
+    issues.push({ collectionId: "CHStayCampaigns", issue: "invalid-period" });
+  }
 
   for (const [id, [expectedFieldCount, expectedDisplayField]] of Object.entries(
     expectedCollections,
@@ -286,11 +305,12 @@ if (process.env.CMS_AUDIT_HEALTH === "1") {
       });
     }
     const permissions = collection.permissions;
+    const expectedRemovePermission = id === "CHStayCampaigns" ? "CMS_EDITOR" : "PRIVILEGED";
     if (
       permissions?.itemRead !== "ANYONE" ||
       permissions?.itemInsert !== "CMS_EDITOR" ||
       permissions?.itemUpdate !== "CMS_EDITOR" ||
-      permissions?.itemRemove !== "PRIVILEGED"
+      permissions?.itemRemove !== expectedRemovePermission
     ) {
       issues.push({ collectionId: id, issue: "permissions", actual: permissions });
     }
@@ -305,11 +325,12 @@ if (process.env.CMS_AUDIT_HEALTH === "1") {
       issues.push({ collectionId: id, issue: "inactive-indexes", inactiveIndexes });
     }
     const uniqueIndexes = userIndexes.filter((index) => index.unique);
-    if (uniqueIndexes.length !== 1) {
+    const expectedUniqueIndexes = id === "CHStayCampaigns" ? 0 : 1;
+    if (uniqueIndexes.length !== expectedUniqueIndexes) {
       issues.push({
         collectionId: id,
         issue: "unique-index-count",
-        expected: 1,
+        expected: expectedUniqueIndexes,
         actual: uniqueIndexes.length,
       });
     }
@@ -321,7 +342,7 @@ if (process.env.CMS_AUDIT_HEALTH === "1") {
         auditedAt: new Date().toISOString(),
         expectedCollectionCount: expectedIds.size,
         actualCustomCollectionCount: customCollections.length,
-        expectedManualFieldCount: 267,
+        expectedManualFieldCount: 278,
         actualManualFieldCount: manualFieldCount,
         userIndexCount,
         itemCount,
@@ -334,7 +355,7 @@ if (process.env.CMS_AUDIT_HEALTH === "1") {
           missingCollections.length === 0 &&
           unexpectedCollections.length === 0 &&
           issues.length === 0 &&
-          manualFieldCount === 267,
+          manualFieldCount === 278,
       },
       null,
       2,

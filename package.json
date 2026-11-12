@@ -27,6 +27,7 @@
     "cms:migrate:founders": "node scripts/cms/migrate-founders-program.mjs",
     "cms:migrate:june": "node scripts/cms/migrate-june-page.mjs",
     "cms:migrate:navigation": "node scripts/cms/restructure-happening-navigation.mjs",
+    "cms:migrate:event-architecture": "node scripts/cms/migrate-event-architecture.mjs",
     "pretest": "node scripts/check-node-version.mjs",
     "test": "vitest run",
     "astro": "astro",

@@ -48,7 +48,7 @@ After reading the relevant parts of this guide, a Marketing user should be able 
 
 ### How to use this guide
 
-You do not need to memorize all 21 collections before using the CMS.
+You do not need to memorize all 22 collections before using the CMS.
 
 For your first task:
 
@@ -64,7 +64,7 @@ This document explains the approved model; the ClickUp task defines the authoriz
 
 ## 2. Which Wix Collections Belong to This Website
 
-The Circles House model contains **21 custom collections**. Their IDs all begin with `CH`.
+The Circles House model contains **22 custom collections**. Their IDs all begin with `CH`.
 
 Wix currently also displays application collections such as `Locations/Locations` and `Members/...`. Those are Wix application collections, not part of the Circles House content model.
 
@@ -83,7 +83,7 @@ The categories are a learning and ownership system. They explain the responsibil
 | Global | Information used across the whole website. | `CHSiteSettings`, `CHInterfaceCopy`, `CHSocialLinks`, `CHNavigationItems` |
 | Reusable entities | Real concepts that can exist independently and be referenced from several places. | `CHAmenities`, `CHLocations`, `CHPeople`, `CHPrograms` |
 | Offerings | Products, access, or services offered by Circles House. | `CHSpaces`, `CHRooms`, `CHMembershipPlans` |
-| Editorial and operational content | Publishable information that changes over time or communicates a specific subject. | `CHEvents`, `CHNewsArticles`, `CHDeals`, `CHTestimonials`, `CHPartners`, `CHFaqs`, `CHLegalPages` |
+| Editorial and operational content | Publishable information that changes over time or communicates a specific subject. | `CHEvents`, `CHStayCampaigns`, `CHNewsArticles`, `CHDeals`, `CHTestimonials`, `CHPartners`, `CHFaqs`, `CHLegalPages` |
 | Page composition | Records that assemble editorial page experiences. | `CHPages`, `CHPageSections`, `CHSectionItems` |
 
 These five categories prevent two common problems:
@@ -239,7 +239,9 @@ Why it is reusable: a program groups or contextualizes several events and may co
 Important fields:
 
 - `name`, `slug`, `theme`: program identity.
-- `location`: reference to `CHLocations`.
+- `locationScope`: `selected` or `all`.
+- `locations`: multi-reference to the locations where a selected program may run.
+- `location`: legacy single-location reference retained only during migration.
 - `startsOn`, `endsOn`: program period.
 - `page`: optional reference to `CHPages`.
 - `registrationEnabled`: registration state.
@@ -247,9 +249,10 @@ Important fields:
 
 Important distinction:
 
-- `founders-month` may identify a program.
-- `/months/june` identifies the June page.
+- `founders-month` identifies a program; the word `month` has no routing meaning.
+- `/locations/barcelona/stays/2027-06` identifies a commercial June stay campaign.
 - An event may reference the program, but an event can also exist without a program.
+- Every event connected to a selected-location program must use one of the program's selected locations.
 
 ## 6. Offering Collections
 
@@ -323,6 +326,22 @@ Important fields:
 - `published`, `sortOrder`: visibility and general order.
 
 An event does not require a program. Do not create a program merely because an event exists.
+
+### CHStayCampaigns — Stay campaigns
+
+`CHStayCampaigns` connects a commercial monthly page to exactly one location and
+one calendar period. It must not be used to group events like a program.
+
+Important fields:
+
+- `campaignKey`, `name`: stable editorial identity.
+- `location`: required reference to `CHLocations`.
+- `period`: required `YYYY-MM` calendar period.
+- `page`: required reference to the composed `CHPages` content.
+- `legacyRouteParam`: optional redirect key for an old `/months/:slug` URL.
+- `published`, `sortOrder`: visibility and order.
+
+The combination of `location` and `period` must be unique.
 
 ### CHNewsArticles — News Articles
 
@@ -512,10 +531,11 @@ CHAmenities ←── CHLocations
       └──────── CHRooms
 
 CHLocations ←── CHPeople
-      ↑         CHPrograms ←── optional CHEvents.program
+      ↑         CHPrograms.locations ←── optional CHEvents.program
       ├──────── CHSpaces
       ├──────── CHRooms
       ├──────── CHEvents
+      ├──────── CHStayCampaigns
       └──────── CHTestimonials
 
 CHPeople ←───── CHNewsArticles.author
@@ -523,6 +543,7 @@ CHPeople ←───── CHNewsArticles.author
 CHPages ←────── CHPageSections ←────── CHSectionItems
    ↑
    ├─────────── CHPrograms.page
+   ├─────────── CHStayCampaigns.page
    └─────────── CHFaqs.pages
 
 CHLocations ←─ CHFaqs.locations
@@ -553,8 +574,9 @@ The `CHLocations.slug` is the shared city identifier. For example, `madrid` can 
 
 - `/locations/madrid`
 - `/coworking/madrid`
-- `/events/madrid`
-- `/rooms?location=madrid`
+- `/events?location=madrid`
+- `/rooms/madrid`
+- `/locations/madrid/stays/2027-06`
 
 These destinations are supported by the model, but publishing `CHLocations` alone does not guarantee that every page has complete content. The required page composition and related offerings must also exist for the experiences being launched.
 

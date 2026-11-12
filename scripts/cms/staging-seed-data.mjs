@@ -620,7 +620,7 @@ export const seedCollections = [
         itemKey,
         area,
         label,
-        status: "active",
+        status: itemKey === "header.month.june" ? "hidden" : "active",
         routeKey,
         routeParam,
         parentKey,
@@ -922,12 +922,33 @@ export const seedCollections = [
         data: {
           slug: "founders-month",
           location: reference("CHLocations", "barcelona"),
+          locationScope: "selected",
           page: reference("CHPages", "june"),
           name: "Founders Month",
           theme: "Build with community",
           startsOn: "2027-06-01",
           endsOn: "2027-06-30",
           registrationEnabled: true,
+          published: true,
+          sortOrder: 1,
+        },
+        multiReferences: { locations: ["barcelona"] },
+      },
+    ],
+  },
+  {
+    collectionId: "CHStayCampaigns",
+    keyField: "campaignKey",
+    items: [
+      {
+        key: "barcelona-2027-06",
+        data: {
+          campaignKey: "barcelona-2027-06",
+          name: "June at Circles House Barcelona",
+          period: "2027-06",
+          legacyRouteParam: "june",
+          location: reference("CHLocations", "barcelona"),
+          page: reference("CHPages", "june"),
           published: true,
           sortOrder: 1,
         },
@@ -1469,6 +1490,7 @@ export const seedCollections = [
 
 export const multiReferenceTargets = {
   CHLocations: { amenities: { collectionId: "CHAmenities", keyField: "amenityKey" } },
+  CHPrograms: { locations: { collectionId: "CHLocations", keyField: "slug" } },
   CHSpaces: { amenities: { collectionId: "CHAmenities", keyField: "amenityKey" } },
   CHRooms: { amenities: { collectionId: "CHAmenities", keyField: "amenityKey" } },
   CHFaqs: {

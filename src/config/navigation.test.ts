@@ -14,8 +14,10 @@ describe("site navigation", () => {
     expect(links.find((item) => item.label === "Events")?.href).toBe(routes.events);
     expect(siteNavigation.header.primary
       .flatMap((item) => "children" in item ? item.children ?? [] : [])
-      .find((item) => item.label === "June"))
-      .toEqual(expect.objectContaining({ status: "link", href: routes.month("june") }));
+      .some((item) => item.status === "link" && item.href.startsWith("/months/")))
+      .toBe(false);
+    expect(routes.cityEvents("barcelona")).toBe("/events?location=barcelona");
+    expect(routes.stayCampaign("barcelona", "2027-06")).toBe("/locations/barcelona/stays/2027-06");
     expect(routes.cityRooms("barcelona")).toBe("/rooms/barcelona");
   });
 

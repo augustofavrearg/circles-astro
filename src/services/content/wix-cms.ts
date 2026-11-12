@@ -12,8 +12,10 @@ import type {
   MonthPage,
   PartnershipsPage,
   ProgramPage,
+  ProgramSummary,
   RoomsPage,
   SpaceAmenity,
+  StayCampaign,
   TeamPage,
   WhatIsCirclesPage,
 } from "@/domain/content";
@@ -57,6 +59,7 @@ export const COLLECTIONS = {
   locations: "CHLocations",
   people: "CHPeople",
   programs: "CHPrograms",
+  stayCampaigns: "CHStayCampaigns",
   pageSections: "CHPageSections",
   sectionItems: "CHSectionItems",
   socialLinks: "CHSocialLinks",
@@ -149,6 +152,23 @@ function buildLocationLookup(locations: WixRecord[]): LocationLookup {
       return [[id, { slug, name: asText(location.name) || asText(location.shortName) || slug, timezone: asText(location.timezone) }]];
     }),
   );
+}
+
+async function hydrateProgramLocations(programs: WixRecord[]): Promise<WixRecord[]> {
+  return Promise.all(programs.map(async (program) => ({
+    ...program,
+    locations: await queryReferences(COLLECTIONS.programs, program, "locations"),
+  })));
+}
+
+function programLocationRecords(program: WixRecord, locations: WixRecord[]): WixRecord[] {
+  if (asText(program.locationScope) === "all") return locations;
+  const selectedIds = Array.isArray(program.locations)
+    ? program.locations.map(referenceId).filter(Boolean)
+    : [];
+  const legacyId = referenceId(program.location);
+  const ids = selectedIds.length > 0 ? selectedIds : [legacyId].filter(Boolean);
+  return locations.filter((location) => ids.includes(asText(location._id)));
 }
 
 function sectionName(section: WixRecord): string {
@@ -711,6 +731,54 @@ function requireCompleteMonthPage(page: Partial<MonthPage>, slug: string): Month
   return page as MonthPage;
 }
 
+async function composeStayCampaign(record: WixRecord): Promise<StayCampaign> {
+  const campaignKey = asText(record.campaignKey);
+  const period = asText(record.period);
+  const locationId = referenceId(record.location);
+  const pageId = referenceId(record.page);
+  if (!campaignKey || !/^\d{4}-(0[1-9]|1[0-2])$/.test(period) || !locationId || !pageId) {
+    throw new Error(`CHStayCampaigns item "${campaignKey || asText(record._id) || "unknown"}" is incomplete.`);
+  }
+
+  const [locations, pageRecord] = await Promise.all([
+    getPublishedLocations(),
+    findOne(COLLECTIONS.pages, "_id", pageId),
+  ]);
+  const location = locations.find((candidate) => asText(candidate._id) === locationId);
+  if (!location || !pageRecord || !asBoolean(pageRecord.published)) {
+    throw new Error(`CHStayCampaigns item "${campaignKey}" references an unpublished or missing location/page.`);
+  }
+  const pageKey = asText(pageRecord.pageKey);
+  const composed = pageKey ? await composePage<Partial<MonthPage>>({ pageKey }, true) : undefined;
+  if (!composed) throw new Error(`CHStayCampaigns item "${campaignKey}" references a page that cannot be composed.`);
+
+  const locationIdValue = asText(location._id);
+  const spaces = (await queryPublished(COLLECTIONS.spaces))
+    .filter((space) => referenceId(space.location) === locationIdValue && asText(space.status).toLowerCase() !== "hidden")
+    .slice(0, 3)
+    .map((space, index) => ({
+      ...mapSpace(space, location),
+      size: (["large", "medium", "small"] as const)[index] ?? "small",
+    }));
+  const locationSlug = asText(location.slug);
+  return {
+    campaignKey,
+    name: asText(record.name) || campaignKey,
+    period,
+    legacyRouteParam: asText(record.legacyRouteParam) || undefined,
+    location: {
+      slug: locationSlug,
+      name: asText(location.name) || asText(location.shortName) || locationSlug,
+    },
+    page: requireCompleteMonthPage({
+      ...composed,
+      slug: asText(record.legacyRouteParam) || period,
+      city: locationSlug,
+      space: { ...composed.space!, spaces },
+    }, campaignKey),
+  };
+}
+
 function getCmsHomePage(): Promise<HomePage> {
   return cached("document:home", loadCmsHomePage);
 }
@@ -849,49 +917,37 @@ export const wixCmsRepository: ContentRepository = {
     }, slug);
   },
   async getMonthPage(slug) {
-    const identity = { routeKey: "month", routeParam: slug };
-    const [composed, pageRecord] = await Promise.all([
-      composePage<Partial<MonthPage>>(identity, true),
-      getPageRecord(identity),
-    ]);
-    if (!composed || !pageRecord) return undefined;
-    const page = composed as MonthPage;
-    const pageId = asText(pageRecord._id);
-    if (!pageId) throw new Error(`CHPages item "${slug}" has no _id.`);
-
-    // A monthly page and an event program have independent identities. The
-    // optional page reference connects them without requiring matching slugs.
-    const program = await findOne(COLLECTIONS.programs, "page", pageId);
-    if (!program) throw new Error(`Monthly page "${slug}" is not connected to a CHPrograms item with a location.`);
+    return (await this.getStayCampaignByLegacySlug(slug))?.page;
+  },
+  async getStayCampaign(location, period) {
+    if (!/^\d{4}-(0[1-9]|1[0-2])$/.test(period)) return undefined;
+    const campaigns = await queryPublished(COLLECTIONS.stayCampaigns);
     const locations = await getPublishedLocations();
-    const location = locations.find((item) => asText(item._id) === referenceId(program.location));
-    if (!location) throw new Error(`CHPrograms item "${asText(program.slug)}" has no valid CHLocations reference.`);
-    const locationId = asText(location._id);
-    const spaces = (await queryPublished(COLLECTIONS.spaces))
-      .filter((space) => referenceId(space.location) === locationId && asText(space.status).toLowerCase() !== "hidden")
-      .slice(0, 3)
-      .map((space, index) => ({
-        ...mapSpace(space, location),
-        size: (["large", "medium", "small"] as const)[index] ?? "small",
-      }));
-    return requireCompleteMonthPage({
-      ...page,
-      city: asText(location.slug),
-      space: { ...page.space!, spaces },
-    }, slug);
+    const locationRecord = locations.find((candidate) => asText(candidate.slug) === location);
+    if (!locationRecord) return undefined;
+    const matches = campaigns.filter((campaign) =>
+      asText(campaign.period) === period && referenceId(campaign.location) === asText(locationRecord._id));
+    if (matches.length > 1) throw new Error(`CHStayCampaigns has duplicate records for ${location}:${period}.`);
+    return matches[0] ? composeStayCampaign(matches[0]) : undefined;
+  },
+  async getStayCampaignByLegacySlug(slug) {
+    const matches = (await queryPublished(COLLECTIONS.stayCampaigns))
+      .filter((campaign) => asText(campaign.legacyRouteParam) === slug);
+    if (matches.length > 1) throw new Error(`CHStayCampaigns has duplicate legacyRouteParam records for "${slug}".`);
+    return matches[0] ? composeStayCampaign(matches[0]) : undefined;
   },
   async getProgramPage(slug) {
-    const program = await findOne(COLLECTIONS.programs, "slug", slug);
+    const rawProgram = await findOne(COLLECTIONS.programs, "slug", slug);
+    const program = rawProgram ? (await hydrateProgramLocations([rawProgram]))[0] : undefined;
     if (!program || !asBoolean(program.published)) return undefined;
 
     const locations = await getPublishedLocations();
     const lookup = buildLocationLookup(locations);
-    const locationId = referenceId(program.location);
-    const location = locations.find((item) => asText(item._id) === locationId);
+    const selectedLocations = programLocationRecords(program, locations);
     const programId = asText(program._id);
     const name = asText(program.name);
-    if (!programId || !name || !location) {
-      throw new Error(`CHPrograms item "${slug}" is missing _id, name or a valid CHLocations reference.`);
+    if (!programId || !name || selectedLocations.length === 0) {
+      throw new Error(`CHPrograms item "${slug}" is missing _id, name or valid CHLocations references.`);
     }
 
     const result = await items
@@ -903,9 +959,12 @@ export const wixCmsRepository: ContentRepository = {
       .find({ consistentRead: true });
     const events = (result.items as WixRecord[]).map((event) => {
       validateEventProgramReference(event, new Map([[programId, program]]));
-      return mapEvent(event, lookup);
+      return mapEvent(event, lookup, new Map([[programId, program]]));
     });
-    const locationName = asText(location.name) || asText(location.shortName) || asText(location.city);
+    const programLocations = selectedLocations.map((location) => ({
+      slug: asText(location.slug),
+      name: asText(location.name) || asText(location.shortName) || asText(location.city),
+    }));
     const theme = asText(program.theme);
     const startsOn = asDateOnly(program.startsOn);
     const endsOn = asDateOnly(program.endsOn);
@@ -913,17 +972,32 @@ export const wixCmsRepository: ContentRepository = {
       slug,
       name,
       theme,
-      city: asText(location.slug),
-      locationName,
+      locations: programLocations,
+      locationScope: asText(program.locationScope) === "all" ? "all" : "selected",
       startsOn,
       endsOn,
       registrationEnabled: asBoolean(program.registrationEnabled),
       seo: {
-        title: `${name} · ${locationName}`,
-        description: theme || `Explore the events connected to ${name} at ${locationName}.`,
+        title: `${name} · Circles House`,
+        description: theme || `Explore the events connected to ${name}.`,
       },
       events,
     } satisfies ProgramPage;
+  },
+  async getPrograms() {
+    const [programs, locations] = await Promise.all([
+      queryPublished(COLLECTIONS.programs).then(hydrateProgramLocations),
+      getPublishedLocations(),
+    ]);
+    return programs.map((program) => ({
+      slug: asText(program.slug),
+      name: asText(program.name),
+      locations: programLocationRecords(program, locations).map((location) => ({
+        slug: asText(location.slug),
+        name: asText(location.name) || asText(location.shortName) || asText(location.city),
+      })),
+      locationScope: asText(program.locationScope) === "all" ? "all" : "selected",
+    } satisfies ProgramSummary));
   },
   async getTeamMembers() {
     const result = await items.query(COLLECTIONS.people).eq("published", true).ascending("sortOrder").limit(100).find({ consistentRead: true });
@@ -946,25 +1020,36 @@ export const wixCmsRepository: ContentRepository = {
         Object.fromEntries([["all", "Happening now"], ...cities.map((city) => [city.slug, `Happening now in ${city.name}`])]),
     };
   },
-  async getEvents(city) {
+  async getEvents(filters = {}) {
     const [locations, programs] = await Promise.all([
       getPublishedLocations(),
-      queryPublished(COLLECTIONS.programs),
+      queryPublished(COLLECTIONS.programs).then(hydrateProgramLocations),
     ]);
     const lookup = buildLocationLookup(locations);
     const programsById = new Map(programs.map((program) => [asText(program._id), program]));
-    let query = items.query(COLLECTIONS.events).eq("published", true).ascending("sortOrder").limit(100);
-    if (city) {
-      const location = locations.find((item) => asText(item.slug) === city);
-      if (!location) return [];
-      query = query.eq("location", asText(location._id));
-    }
-    const result = await query.find({ consistentRead: true });
+    const result = await items.query(COLLECTIONS.events).eq("published", true).ascending("sortOrder").limit(100).find({ consistentRead: true });
     const eventRecords = result.items as WixRecord[];
     eventRecords.forEach((event) => validateEventProgramReference(event, programsById));
     return eventRecords
       .filter((item) => isCurrentOrUpcomingEvent(item))
-      .map((item) => mapEvent(item, lookup));
+      .map((item) => mapEvent(item, lookup, programsById))
+      .filter((event) => {
+        if (filters.locations?.length && !filters.locations.includes(event.city)) return false;
+        if (filters.programs?.length && (!event.program || !filters.programs.includes(event.program.slug))) return false;
+        if (filters.month && event.monthKey !== filters.month) return false;
+        return true;
+      });
+  },
+  async getEvent(slug) {
+    const event = await findOne(COLLECTIONS.events, "slug", slug);
+    if (!event || !asBoolean(event.published)) return undefined;
+    const [locations, programs] = await Promise.all([
+      getPublishedLocations(),
+      queryPublished(COLLECTIONS.programs).then(hydrateProgramLocations),
+    ]);
+    const programsById = new Map(programs.map((program) => [asText(program._id), program]));
+    validateEventProgramReference(event, programsById);
+    return mapEvent(event, buildLocationLookup(locations), programsById);
   },
   async getDeals() {
     const result = await items.query(COLLECTIONS.deals).eq("published", true).ascending("sortOrder").limit(50).find({ consistentRead: true });

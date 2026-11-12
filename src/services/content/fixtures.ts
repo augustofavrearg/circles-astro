@@ -14,8 +14,10 @@ import type {
   PartnershipsPage,
   PlaceDetails,
   ProgramPage,
+  ProgramSummary,
   RoomsPage,
   SiteSettings,
+  StayCampaign,
   TeamMember,
   TeamPage,
   WhatIsCirclesPage,
@@ -867,7 +869,16 @@ export const eventsPageFixture: EventsPage = {
   ],
 };
 
-const augustEvening = { month: "Aug", day: 18, dateLabel: "Monday, August 18", timeLabel: "9:00 PM - 11:30 PM GMT+2" };
+const augustEvening = {
+  month: "Aug",
+  day: 18,
+  dateLabel: "Monday, August 18",
+  timeLabel: "9:00 PM - 11:30 PM GMT+2",
+  startsAt: "2027-08-18T19:00:00.000Z",
+  endsAt: "2027-08-18T21:30:00.000Z",
+  monthKey: "2027-08",
+  locationName: "Circles House Barcelona",
+};
 
 // Figma "Events - Barcelona". Thumbnails and detail links are pending; rows render without them.
 export const eventsFixture: EventSummary[] = [
@@ -890,6 +901,11 @@ const foundersMonthEventsFixture: EventSummary[] = [
     day: 4,
     dateLabel: "Friday, June 4",
     timeLabel: "8:00 PM - 11:00 PM GMT+2",
+    startsAt: "2027-06-04T18:00:00.000Z",
+    endsAt: "2027-06-04T21:00:00.000Z",
+    monthKey: "2027-06",
+    locationName: "Circles House Barcelona",
+    program: { slug: "founders-month", name: "Founders Month" },
   },
   {
     slug: "hiit-workout-2027-06",
@@ -900,6 +916,11 @@ const foundersMonthEventsFixture: EventSummary[] = [
     day: 7,
     dateLabel: "Monday, June 7",
     timeLabel: "9:00 AM - 10:00 AM GMT+2",
+    startsAt: "2027-06-07T07:00:00.000Z",
+    endsAt: "2027-06-07T08:00:00.000Z",
+    monthKey: "2027-06",
+    locationName: "Circles House Barcelona",
+    program: { slug: "founders-month", name: "Founders Month" },
   },
   {
     slug: "spanish-conversation-club-2027-06",
@@ -910,6 +931,11 @@ const foundersMonthEventsFixture: EventSummary[] = [
     day: 10,
     dateLabel: "Thursday, June 10",
     timeLabel: "7:00 PM - 8:30 PM GMT+2",
+    startsAt: "2027-06-10T17:00:00.000Z",
+    endsAt: "2027-06-10T18:30:00.000Z",
+    monthKey: "2027-06",
+    locationName: "Circles House Barcelona",
+    program: { slug: "founders-month", name: "Founders Month" },
   },
 ];
 
@@ -918,8 +944,8 @@ export const programPagesFixture: ProgramPage[] = [
     slug: "founders-month",
     name: "Founders Month",
     theme: "Build with community",
-    city: "barcelona",
-    locationName: "Circles House Barcelona",
+    locations: [{ slug: "barcelona", name: "Circles House Barcelona" }],
+    locationScope: "selected",
     startsOn: "2027-06-01",
     endsOn: "2027-06-30",
     registrationEnabled: true,
@@ -928,6 +954,24 @@ export const programPagesFixture: ProgramPage[] = [
       description: "Explore the events connected to Founders Month at Circles House Barcelona.",
     },
     events: foundersMonthEventsFixture,
+  },
+];
+
+export const programsFixture: ProgramSummary[] = programPagesFixture.map((program) => ({
+  slug: program.slug,
+  name: program.name,
+  locations: program.locations,
+  locationScope: program.locationScope,
+}));
+
+export const stayCampaignsFixture: StayCampaign[] = [
+  {
+    campaignKey: "barcelona-2027-06",
+    name: "June at Circles House Barcelona",
+    period: "2027-06",
+    legacyRouteParam: "june",
+    location: { slug: "barcelona", name: "Circles House Barcelona" },
+    page: monthPagesFixture[0],
   },
 ];
 

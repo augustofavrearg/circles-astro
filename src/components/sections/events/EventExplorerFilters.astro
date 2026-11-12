@@ -1,0 +1,55 @@
+---
+import type { EventFilters, ProgramSummary } from "@/domain/content";
+
+type Props = {
+  locations: { slug: string; name: string }[];
+  programs: ProgramSummary[];
+  filters: EventFilters;
+};
+
+const { locations, programs, filters } = Astro.props;
+const activeCount = (filters.locations?.length ?? 0) + (filters.programs?.length ?? 0) + (filters.month ? 1 : 0);
+---
+
+<section aria-labelledby="event-filters-title" class="border-b border-black/15 bg-white px-4 py-6 lg:px-6 lg:py-8">
+  <div class="flex min-w-0 flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+    <div class="min-w-0">
+      <p class="text-detail uppercase tracking-[0.08em] text-black/50">Explore events</p>
+      <h2 id="event-filters-title" class="mt-2 break-words font-display text-[1.75rem] leading-[1.05] sm:text-[2rem]">Choose when, where and why</h2>
+    </div>
+    {activeCount > 0 && <a href="/events" class="text-[0.875rem] underline underline-offset-4">Clear {activeCount} filter{activeCount === 1 ? "" : "s"}</a>}
+  </div>
+
+  <form action="/events" method="get" class="mt-7 grid min-w-0 gap-6 border-t border-black/12 pt-6 lg:grid-cols-[minmax(180px,0.7fr)_1fr_1fr_auto] lg:items-end">
+    <label class="flex min-w-0 flex-col gap-2 text-[0.75rem] uppercase tracking-[0.08em] text-black/55">
+      Month
+      <input type="month" name="month" value={filters.month} class="h-11 min-w-0 w-full border border-black/25 bg-transparent px-3 text-[0.9375rem] normal-case tracking-normal text-black" />
+    </label>
+
+    <fieldset class="min-w-0 border-0 p-0">
+      <legend class="text-[0.75rem] uppercase tracking-[0.08em] text-black/55">Locations</legend>
+      <div class="mt-2 flex flex-wrap gap-2">
+        {locations.map((location) => (
+          <label class:list={["cursor-pointer rounded-full border px-4 py-2 text-[0.875rem] transition-colors", filters.locations?.includes(location.slug) ? "border-black bg-black text-white" : "border-black/25 hover:border-black"]}>
+            <input class="sr-only" type="checkbox" name="location" value={location.slug} checked={filters.locations?.includes(location.slug)} />
+            {location.name}
+          </label>
+        ))}
+      </div>
+    </fieldset>
+
+    <fieldset class="min-w-0 border-0 p-0">
+      <legend class="text-[0.75rem] uppercase tracking-[0.08em] text-black/55">Programs</legend>
+      <div class="mt-2 flex flex-wrap gap-2">
+        {programs.map((program) => (
+          <label class:list={["cursor-pointer rounded-full border px-4 py-2 text-[0.875rem] transition-colors", filters.programs?.includes(program.slug) ? "border-black bg-black text-white" : "border-black/25 hover:border-black"]}>
+            <input class="sr-only" type="checkbox" name="program" value={program.slug} checked={filters.programs?.includes(program.slug)} />
+            {program.name}
+          </label>
+        ))}
+      </div>
+    </fieldset>
+
+    <button type="submit" class="h-11 rounded-full bg-red px-7 text-[0.875rem] transition-opacity hover:opacity-75">Show events</button>
+  </form>
+</section>

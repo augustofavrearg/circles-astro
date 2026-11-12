@@ -23,7 +23,6 @@ function visibleChildren(item: NavigationLink) {
 function happeningGroups(children: NavigationItem[]) {
   return [
     { label: "Events", items: children.filter((child) => isNavigationLink(child) && child.href.startsWith("/events")) },
-    { label: "Months", items: children.filter((child) => isNavigationLink(child) && child.href.startsWith("/months/")) },
     { label: "Programs", items: children.filter((child) => isNavigationLink(child) && child.href.startsWith("/programs/")) },
   ].filter((group) => group.items.length > 0);
 }

@@ -11,6 +11,10 @@ const page = await repository.getProgramPage(Astro.params.slug ?? "");
 if (!page) return new Response("Not found", { status: 404 });
 
 const [settings, eventsPage] = await Promise.all([repository.getSiteSettings(), repository.getEventsPage()]);
+const selectedLocations = Astro.url.searchParams.getAll("location").filter((slug) => page.locations.some((location) => location.slug === slug));
+const events = selectedLocations.length > 0
+  ? page.events.filter((event) => selectedLocations.includes(event.city))
+  : page.events;
 const formatDate = (value?: string) => value
   ? new Intl.DateTimeFormat("en", { month: "long", day: "numeric", year: "numeric", timeZone: "UTC" }).format(new Date(`${value}T00:00:00Z`))
   : undefined;
@@ -24,7 +28,7 @@ const period = startsOn && endsOn ? `${startsOn} — ${endsOn}` : startsOn ?? en
   <main>
     <header class="grid min-h-[420px] grid-cols-[minmax(0,1fr)] bg-surface px-4 pb-14 pt-20 lg:grid-cols-[minmax(0,1fr)_minmax(300px,0.42fr)] lg:px-6 lg:pb-20 lg:pt-32">
       <div class="min-w-0 self-end">
-        <Eyebrow>Program @ {page.locationName}</Eyebrow>
+        <Eyebrow>{page.locationScope === "all" ? "Program · All locations" : `Program · ${page.locations.map((location) => location.name).join(" + ")}`}</Eyebrow>
         <h1 class="mt-4 max-w-[920px] font-display text-[3.75rem] leading-[0.95] lg:text-[7.5rem]">{page.name}</h1>
         {page.theme && <p class="mt-7 max-w-[620px] text-[1.125rem] leading-[1.45] lg:text-[1.375rem]">{page.theme}</p>}
       </div>
@@ -37,7 +41,7 @@ const period = startsOn && endsOn ? `${startsOn} — ${endsOn}` : startsOn ?? en
         )}
         <div class="grid grid-cols-[6rem_1fr] gap-4 py-2">
           <dt class="text-detail uppercase text-black/50">Location</dt>
-          <dd class="text-[0.9375rem]">{page.locationName}</dd>
+          <dd class="text-[0.9375rem]">{page.locationScope === "all" ? "All Circles locations" : page.locations.map((location) => location.name).join(", ")}</dd>
         </div>
         <div class="grid grid-cols-[6rem_1fr] gap-4 py-2">
           <dt class="text-detail uppercase text-black/50">Status</dt>
@@ -55,9 +59,17 @@ const period = startsOn && endsOn ? `${startsOn} — ${endsOn}` : startsOn ?? en
             Discover the gatherings, workshops and shared experiences that are part of {page.name}.
           </p>
         </div>
-        {page.events.length > 0 ? (
+        {page.locations.length > 1 && (
+          <nav aria-label="Filter program events by location" class="mb-6 flex flex-wrap gap-2 lg:col-start-2">
+            <a href={`/programs/${page.slug}`} class:list={["rounded-full border px-4 py-2 text-[0.875rem]", selectedLocations.length === 0 ? "border-black bg-black text-white" : "border-black/25"]}>All locations</a>
+            {page.locations.map((location) => (
+              <a href={`/programs/${page.slug}?location=${encodeURIComponent(location.slug)}`} class:list={["rounded-full border px-4 py-2 text-[0.875rem]", selectedLocations.includes(location.slug) ? "border-black bg-black text-white" : "border-black/25"]}>{location.name}</a>
+            ))}
+          </nav>
+        )}
+        {events.length > 0 ? (
           <div class="flex flex-col gap-2">
-            {page.events.map((event) => <EventRow event={event} />)}
+            {events.map((event) => <EventRow event={event} />)}
           </div>
         ) : (
           <p class="bg-surface p-6 text-body">No events are connected to this program yet.</p>

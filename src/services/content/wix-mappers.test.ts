@@ -40,7 +40,7 @@ describe("Wix CMS canonical mappers", () => {
   it("resolves internal route keys without storing internal URLs in Wix", () => {
     expect(resolveCmsHref("home")).toBe("/home");
     expect(resolveCmsHref("location", "barcelona", "rooms")).toBe("/locations/barcelona#rooms");
-    expect(resolveCmsHref("events", "barcelona")).toBe("/events/barcelona");
+    expect(resolveCmsHref("events", "barcelona")).toBe("/events?location=barcelona");
     expect(resolveCmsHref("memberships")).toBe("/memberships");
     expect(resolveCmsHref("month", "june")).toBe("/months/june");
     expect(resolveCmsHref("program", "founders-month")).toBe("/programs/founders-month");
@@ -152,7 +152,14 @@ describe("Wix CMS canonical mappers", () => {
     ).toThrow('CHEvents item "missing" references a missing or unpublished CHPrograms item.');
     expect(() =>
       validateEventProgramReference({ slug: "wrong-location", location: "location-id", program: "andorra-program" }, programs),
-    ).toThrow('CHEvents item "wrong-location" must use the same CHLocations reference as its CHPrograms item.');
+    ).toThrow('CHEvents item "wrong-location" must use a location selected by its CHPrograms item.');
+
+    const multiLocationPrograms = new Map([
+      ["multi", { _id: "multi", locationScope: "selected", locations: ["location-id", "andorra-id"] }],
+      ["global", { _id: "global", locationScope: "all" }],
+    ]);
+    expect(() => validateEventProgramReference({ slug: "multi", location: "andorra-id", program: "multi" }, multiLocationPrograms)).not.toThrow();
+    expect(() => validateEventProgramReference({ slug: "global", location: "third-id", program: "global" }, multiLocationPrograms)).not.toThrow();
   });
 
   it("keeps only events with valid current or future date windows", () => {

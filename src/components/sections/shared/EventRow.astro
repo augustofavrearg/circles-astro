@@ -1,9 +1,11 @@
 ---
 import { IconArrowNarrowRight } from "@tabler/icons-react";
 import type { EventSummary } from "@/domain/content";
+import { routes } from "@/config/navigation";
 
 type Props = { event: EventSummary };
 const { event } = Astro.props;
+const href = event.href ?? routes.event(event.slug);
 ---
 
 <!--
@@ -14,7 +16,7 @@ const { event } = Astro.props;
   {event.image && <img src={event.image} alt="" loading="lazy" class="size-[135px] shrink-0 object-cover" />}
   <div class:list={["min-w-0 lg:flex-1", event.image ? "mt-10 lg:mt-0" : ""]}>
     <h2 class="break-words font-display text-[2.125rem] leading-[1.2]">
-      {event.href ? <a href={event.href} class="after:absolute after:inset-0 hover:underline">{event.title}</a> : event.title}
+      <a href={href} class="after:absolute after:inset-0 hover:underline">{event.title}</a>
     </h2>
     {event.subtitle && <p class="mt-1 text-[0.9375rem] lg:text-[0.875rem]">{event.subtitle}</p>}
   </div>
@@ -28,7 +30,7 @@ const { event } = Astro.props;
       <p class="text-detail text-black/50">{event.timeLabel}</p>
     </div>
   </div>
-  {event.href && (
+  {href && (
     <span aria-hidden="true" class="hidden h-7 w-12 shrink-0 items-center justify-center rounded-full bg-black text-white lg:flex">
       <IconArrowNarrowRight size={16} stroke={1.5} />
     </span>

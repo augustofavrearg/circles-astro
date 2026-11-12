@@ -15,9 +15,11 @@ export const routes = {
   news: "/news",
   location: (city: string) => `/locations/${city}`,
   coworking: (city: string) => `/coworking/${city}`,
-  cityEvents: (city: string) => `/events/${city}`,
+  cityEvents: (city: string) => `/events?location=${encodeURIComponent(city)}`,
+  event: (slug: string) => `/events/${slug}`,
   cityRooms: (city: string) => `/rooms/${city}`,
   month: (slug: string) => `/months/${slug}`,
+  stayCampaign: (city: string, period: string) => `/locations/${city}/stays/${period}`,
   program: (slug: string) => `/programs/${slug}`,
   legal: {
     terms: "/legal/terms",
@@ -67,8 +69,7 @@ const happeningNow: NavigationItem = {
   href: routes.events,
   children: [
     { status: "link", label: "All events", href: routes.events },
-    { status: "link", label: "Barcelona", href: routes.cityEvents("barcelona") },
-    { status: "link", label: "June", href: routes.month("june") },
+    { status: "link", label: "Barcelona events", href: routes.cityEvents("barcelona") },
     { status: "link", label: "Founders Month", href: routes.program("founders-month") },
   ],
 };

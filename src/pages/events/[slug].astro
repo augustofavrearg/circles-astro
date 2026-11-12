@@ -1,0 +1,35 @@
+---
+import SiteLayout from "@/layouts/SiteLayout.astro";
+import Newsletter from "@/components/sections/shared/Newsletter.astro";
+import Eyebrow from "@/components/ui/Eyebrow.astro";
+import { routes } from "@/config/navigation";
+import { getContentRepository } from "@/services/content/repository";
+
+const repository = await getContentRepository();
+const slug = Astro.params.slug ?? "";
+const eventsPage = await repository.getEventsPage();
+const legacyLocation = eventsPage.cities.find((location) => location.slug === slug);
+if (legacyLocation) return Astro.redirect(routes.cityEvents(legacyLocation.slug), 301);
+
+const event = await repository.getEvent(slug);
+if (!event) return new Response("Not found", { status: 404 });
+const settings = await repository.getSiteSettings();
+---
+
+<SiteLayout settings={settings} title={`${event.title} · Circles House`} description={event.subtitle ?? `${event.title} at ${event.locationName ?? event.city}.`}>
+  <article class="grid min-h-[70vh] bg-surface lg:grid-cols-[minmax(0,1.35fr)_minmax(340px,0.65fr)]">
+    <div class="flex min-w-0 flex-col justify-end px-4 py-20 lg:px-6 lg:py-28">
+      <Eyebrow>{event.program ? `${event.program.name} · ` : ""}{event.locationName ?? event.city}</Eyebrow>
+      <h1 class="mt-5 max-w-[1050px] font-display text-[3.75rem] leading-[0.95] lg:text-[7rem]">{event.title}</h1>
+      {event.subtitle && <p class="mt-8 max-w-[680px] text-[1.125rem] leading-[1.45] lg:text-[1.375rem]">{event.subtitle}</p>}
+    </div>
+    <aside class="flex flex-col justify-end bg-black p-6 text-white lg:p-10">
+      {event.image && <img src={event.image} alt="" class="mb-auto aspect-[4/3] w-full object-cover" />}
+      <p class="mt-12 text-detail uppercase text-white/50">Date</p>
+      <p class="mt-2 font-display text-[2.25rem] leading-tight">{event.dateLabel}</p>
+      <p class="mt-2 text-[0.9375rem] text-white/70">{event.timeLabel}</p>
+      <a href={routes.cityEvents(event.city)} class="mt-10 w-fit rounded-full border border-white/50 px-5 py-2 text-[0.875rem] hover:bg-white hover:text-black">More events at this location</a>
+    </aside>
+  </article>
+  <Newsletter newsletter={settings.newsletter} copy={settings.interfaceCopy} />
+</SiteLayout>
