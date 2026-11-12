@@ -601,7 +601,10 @@ export const seedCollections = [
       ["header.locations", "header", "Locations", "location", "barcelona"],
       ["header.rooms", "header", "Rooms", "rooms"],
       ["header.events", "header", "Events", "events"],
-      ["header.founders-month", "header", "Founders Month", "program", "founders-month"],
+      ["header.events.all", "header", "All events", "events", undefined, "header.events"],
+      ["header.events.barcelona", "header", "Barcelona", "events", "barcelona", "header.events"],
+      ["header.month.june", "header", "June", "month", "june", "header.events"],
+      ["header.founders-month", "header", "Founders Month", "program", "founders-month", "header.events"],
       ["header.memberships", "header", "Memberships", "memberships"],
       ["footer.team", "footer", "Team", "team"],
       ["footer.partnerships", "footer", "Partnerships", "partnerships"],
@@ -611,7 +614,7 @@ export const seedCollections = [
       ["footer.cookies", "footerLegal", "Cookies Policy", "cookies"],
       ["footer.notice", "footerLegal", "Legal Notice", "notice"],
       ["footer.privacy", "footerLegal", "Privacy Policy", "privacy"],
-    ].map(([itemKey, area, label, routeKey, routeParam], index) => ({
+    ].map(([itemKey, area, label, routeKey, routeParam, parentKey], index) => ({
       key: itemKey,
       data: {
         itemKey,
@@ -620,6 +623,7 @@ export const seedCollections = [
         status: "active",
         routeKey,
         routeParam,
+        parentKey,
         location:
           routeKey === "location"
             ? reference("CHLocations", "barcelona")

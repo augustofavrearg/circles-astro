@@ -26,6 +26,7 @@
     "cms:seed:staging": "node scripts/seed-wix-cms.mjs --apply",
     "cms:migrate:founders": "node scripts/cms/migrate-founders-program.mjs",
     "cms:migrate:june": "node scripts/cms/migrate-june-page.mjs",
+    "cms:migrate:navigation": "node scripts/cms/restructure-happening-navigation.mjs",
     "pretest": "node scripts/check-node-version.mjs",
     "test": "vitest run",
     "astro": "astro",

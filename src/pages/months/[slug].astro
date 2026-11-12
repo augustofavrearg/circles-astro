@@ -1,6 +1,7 @@
 ---
 import SiteLayout from "@/layouts/SiteLayout.astro";
 import MonthHero from "@/components/sections/months/MonthHero.astro";
+import HappeningNavigation from "@/components/sections/events/HappeningNavigation.astro";
 import StayApplicationForm from "@/components/sections/months/StayApplicationForm.astro";
 import ExternalEventsCarousel from "@/components/sections/months/ExternalEventsCarousel.astro";
 import RoomCard from "@/components/sections/shared/RoomCard.astro";
@@ -19,10 +20,11 @@ const repository = await getContentRepository();
 const page = await repository.getMonthPage(Astro.params.slug ?? "");
 if (!page) return new Response("Not found", { status: 404 });
 
-const [settings, rooms, cityEvents] = await Promise.all([
+const [settings, rooms, cityEvents, eventsPage] = await Promise.all([
   repository.getSiteSettings(),
   repository.getRooms(page.city),
   repository.getEvents(page.city),
+  repository.getEventsPage(),
 ]);
 const monthAbbreviations: Record<string, string> = {
   january: "jan",
@@ -47,6 +49,7 @@ const roomTypes = rooms.map((room) => room.name);
 ---
 
 <SiteLayout settings={settings} title={page.seo.title} description={page.seo.description}>
+  <HappeningNavigation navigation={settings.navigation?.header} cities={eventsPage.cities} currentPath={Astro.url.pathname} kind="months" />
   <MonthHero {...page.hero} />
   <StayApplicationForm id="apply" {...page.form} {roomTypes} />
 

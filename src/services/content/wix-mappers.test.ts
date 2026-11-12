@@ -212,6 +212,14 @@ describe("Wix CMS canonical mappers", () => {
       badge: "Coming soon",
       image: undefined,
     });
+    expect(mapNavigationItem({ label: "Barcelona rooms", status: "link", routeKey: "rooms", routeParam: "barcelona" })).toEqual({
+      status: "link",
+      label: "Barcelona rooms",
+      href: "/rooms/barcelona",
+      image: undefined,
+      menuLabel: undefined,
+      children: undefined,
+    });
   });
 
   it("normalizes CMS amenity icon aliases and safely handles unknown values", () => {

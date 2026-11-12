@@ -62,7 +62,7 @@ const barcelonaDetails: PlaceDetails = {
   price: { label: "Starting from", value: "$1.900€/month" },
   amenities: ["coliving", "coworking"],
   directions: "20 minutes from Gràcia by public transport.",
-  cta: { label: "Book Now", href: "/rooms?location=barcelona" },
+  cta: { label: "Book Now", href: "/rooms/barcelona" },
   page: { label: "Learn more", href: "/locations/barcelona" },
 };
 
@@ -85,7 +85,7 @@ export const homePageFixture: HomePage = {
     {
       name: "Circles House Barcelona",
       address: "Cami de Vallvidrera al Tibidabo 5, Barcelona, Spain",
-      href: "/rooms?location=barcelona",
+      href: "/rooms/barcelona",
       image: "/images/locations/barcelona/house-exterior.png",
       access: "Members only",
       details: barcelonaDetails,
@@ -93,7 +93,7 @@ export const homePageFixture: HomePage = {
     {
       name: "Circles House Andorra",
       address: "Andorra la Vella, Andorra",
-      href: "/rooms?location=andorra",
+      href: "/rooms/andorra",
       image: "/images/locations/andorra/landscape.png",
     },
   ],

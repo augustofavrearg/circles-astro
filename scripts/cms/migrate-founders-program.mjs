@@ -110,6 +110,7 @@ const navigationData = {
   status: "active",
   routeKey: "program",
   routeParam: "founders-month",
+  parentKey: "header.events",
   published: true,
   sortOrder: existingNavigation?.data?.sortOrder ?? Math.max(0, ...headerSortOrders) + 1,
 };
@@ -126,6 +127,7 @@ const plan = {
     itemKey: navigationKey,
     action: existingNavigation ? "reconcile" : "insert",
     destination: "/programs/founders-month",
+    parentKey: "header.events",
   },
 };
 console.log(JSON.stringify(plan, null, 2));
@@ -178,13 +180,14 @@ const navVerification = verifiedNavigation.find((item) => item.data?.itemKey ===
 const passed = eventVerification.every((event) => event.linked) &&
   navVerification?.routeKey === "program" &&
   navVerification?.routeParam === "founders-month" &&
+  navVerification?.parentKey === "header.events" &&
   navVerification?.published === true;
 
 console.log(JSON.stringify({
   verification: passed ? "passed" : "failed",
   events: eventVerification,
   navigation: navVerification
-    ? { itemKey: navVerification.itemKey, routeKey: navVerification.routeKey, routeParam: navVerification.routeParam, published: navVerification.published }
+    ? { itemKey: navVerification.itemKey, routeKey: navVerification.routeKey, routeParam: navVerification.routeParam, parentKey: navVerification.parentKey, published: navVerification.published }
     : null,
 }, null, 2));
 if (!passed) throw new Error("Post-migration verification failed.");

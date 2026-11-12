@@ -1,19 +1,42 @@
 ---
 import type { Room } from "@/domain/booking";
-import type { RoomsPage } from "@/domain/content";
+import type { RoomsPage, SearchLocation } from "@/domain/content";
 import Button from "@/components/ui/Button.astro";
 import RoomCard from "@/components/sections/shared/RoomCard.astro";
+import { routes } from "@/config/navigation";
 
 type Props = {
   rooms: { room: Room; bookingHref: string }[];
   locationLabel: string;
+  locations: SearchLocation[];
+  selectedLocation: string;
   empty: RoomsPage["empty"];
 };
 
-const { rooms, locationLabel, empty } = Astro.props;
+const { rooms, locationLabel, locations, selectedLocation, empty } = Astro.props;
 ---
 
 <section aria-labelledby="rooms-heading" class="px-4 pb-24 lg:px-6 lg:pb-36">
+  <nav aria-label="Select a Circles House location" class="mb-8 inline-flex max-w-full flex-wrap rounded-lg bg-black/8 p-0.5 lg:mb-12">
+    {locations.map((location) => location.comingSoon ? (
+      <span aria-disabled="true" class="flex h-8 min-w-28 items-center justify-center gap-2 rounded-md px-4 text-detail text-black/35">
+        {location.city}
+        <span class="text-[0.625rem] uppercase">Soon</span>
+      </span>
+    ) : (
+      <a
+        href={routes.cityRooms(location.slug)}
+        aria-current={location.slug === selectedLocation ? "page" : undefined}
+        class:list={[
+          "flex h-8 min-w-28 items-center justify-center rounded-md px-4 text-detail transition-colors",
+          location.slug === selectedLocation ? "bg-black text-white" : "text-black/45 hover:text-black",
+        ]}
+      >
+        {location.city}
+      </a>
+    ))}
+  </nav>
+
   <header class="flex items-end justify-between gap-6 border-b border-black/12 pb-4">
     <div>
       <p class="text-detail uppercase text-black/50">Available rooms</p>

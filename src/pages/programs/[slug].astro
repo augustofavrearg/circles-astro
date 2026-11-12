@@ -1,6 +1,7 @@
 ---
 import SiteLayout from "@/layouts/SiteLayout.astro";
 import EventRow from "@/components/sections/shared/EventRow.astro";
+import HappeningNavigation from "@/components/sections/events/HappeningNavigation.astro";
 import Newsletter from "@/components/sections/shared/Newsletter.astro";
 import Eyebrow from "@/components/ui/Eyebrow.astro";
 import { getContentRepository } from "@/services/content/repository";
@@ -9,7 +10,7 @@ const repository = await getContentRepository();
 const page = await repository.getProgramPage(Astro.params.slug ?? "");
 if (!page) return new Response("Not found", { status: 404 });
 
-const settings = await repository.getSiteSettings();
+const [settings, eventsPage] = await Promise.all([repository.getSiteSettings(), repository.getEventsPage()]);
 const formatDate = (value?: string) => value
   ? new Intl.DateTimeFormat("en", { month: "long", day: "numeric", year: "numeric", timeZone: "UTC" }).format(new Date(`${value}T00:00:00Z`))
   : undefined;
@@ -19,6 +20,7 @@ const period = startsOn && endsOn ? `${startsOn} — ${endsOn}` : startsOn ?? en
 ---
 
 <SiteLayout settings={settings} title={page.seo.title} description={page.seo.description}>
+  <HappeningNavigation navigation={settings.navigation?.header} cities={eventsPage.cities} currentPath={Astro.url.pathname} kind="programs" />
   <main>
     <header class="grid min-h-[420px] grid-cols-[minmax(0,1fr)] bg-surface px-4 pb-14 pt-20 lg:grid-cols-[minmax(0,1fr)_minmax(300px,0.42fr)] lg:px-6 lg:pb-20 lg:pt-32">
       <div class="min-w-0 self-end">

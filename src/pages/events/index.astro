@@ -1,6 +1,7 @@
 ---
 import SiteLayout from "@/layouts/SiteLayout.astro";
 import EventsListing from "@/components/sections/events/EventsListing.astro";
+import HappeningNavigation from "@/components/sections/events/HappeningNavigation.astro";
 import Newsletter from "@/components/sections/shared/Newsletter.astro";
 import { getContentRepository } from "@/services/content/repository";
 
@@ -13,6 +14,7 @@ const [settings, page, events] = await Promise.all([
 ---
 
 <SiteLayout settings={settings} title="Events · Circles House" description={page.subtitle}>
+  <HappeningNavigation navigation={settings.navigation?.header} cities={page.cities} currentPath={Astro.url.pathname} kind="events" />
   <EventsListing {page} {events} />
   <Newsletter newsletter={settings.newsletter} copy={settings.interfaceCopy} class="mt-12 lg:mt-10" />
 </SiteLayout>

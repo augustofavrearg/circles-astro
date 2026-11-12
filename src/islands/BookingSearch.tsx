@@ -1,6 +1,7 @@
 import { IconChevronDown, IconSearch } from "@tabler/icons-react";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import type { SearchLocation } from "@/domain/content";
+import { routes } from "@/config/navigation";
 
 const GUEST_OPTIONS = [1, 2, 3, 4];
 
@@ -61,13 +62,13 @@ export function BookingSearch({
 
   function submit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    // Circles only hands the search over to /rooms; availability and booking stay in Cloudbeds.
+    // Circles only hands the search over to the selected house; availability and booking stay in Cloudbeds.
     const params = new URLSearchParams();
-    if (location) params.set("location", location);
     if (checkIn) params.set("checkin", checkIn);
     if (checkOut) params.set("checkout", checkOut);
     if (guests) params.set("guests", guests);
-    window.location.assign(`/rooms${params.size ? `?${params}` : ""}`);
+    const destination = location ? routes.cityRooms(location) : routes.rooms;
+    window.location.assign(`${destination}${params.size ? `?${params}` : ""}`);
   }
 
   useEffect(() => {
@@ -112,8 +113,8 @@ export function BookingSearch({
     >
       {!fixedLocation && (
         <Segment label="Location" value={locationName} placeholder="Anywhere" className="col-span-2 rounded-lg xl:w-[269px] xl:shrink-0">
-          <select ref={locationRef} value={location} onChange={(event) => setLocation(event.target.value)} className={nativeControl}>
-            <option value="">Anywhere</option>
+          <select ref={locationRef} value={location} onChange={(event) => setLocation(event.target.value)} className={nativeControl} required>
+            <option value="" disabled>Choose a house</option>
             {available.map((item) => (
               <option key={item.slug} value={item.slug}>
                 {item.city}

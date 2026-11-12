@@ -20,6 +20,14 @@ function visibleChildren(item: NavigationLink) {
   return item.children?.filter(isVisibleNavigationItem) ?? [];
 }
 
+function happeningGroups(children: NavigationItem[]) {
+  return [
+    { label: "Events", items: children.filter((child) => isNavigationLink(child) && child.href.startsWith("/events")) },
+    { label: "Months", items: children.filter((child) => isNavigationLink(child) && child.href.startsWith("/months/")) },
+    { label: "Programs", items: children.filter((child) => isNavigationLink(child) && child.href.startsWith("/programs/")) },
+  ].filter((group) => group.items.length > 0);
+}
+
 function MenuItem({ item, currentPath, onNavigate }: { item: NavigationItem; currentPath: string; onNavigate: () => void }) {
   if (item.status === "hidden") return null;
 
@@ -85,13 +93,14 @@ function DesktopDropdown({ item, panelId, currentPath, onNavigate }: { item: Nav
   const children = visibleChildren(item);
   if (children.length === 0) return null;
   const locations = children.some((child) => child.image);
+  const happening = item.href === routes.events;
 
   return (
     <div
       id={panelId}
       role="group"
       aria-label={`${item.label} submenu`}
-      className={`absolute left-0 top-[calc(100%+16px)] z-20 rounded-lg bg-white p-4 shadow-[0_16px_45px_rgba(0,0,0,0.12)] before:absolute before:-top-4 before:left-0 before:h-4 before:w-full before:content-[''] ${locations ? "w-[428px]" : "w-max min-w-[186px] pr-12"}`}
+      className={`absolute left-0 top-[calc(100%+16px)] z-20 rounded-lg bg-white p-4 shadow-[0_16px_45px_rgba(0,0,0,0.12)] before:absolute before:-top-4 before:left-0 before:h-4 before:w-full before:content-[''] ${locations ? "w-[428px]" : happening ? "w-max min-w-[410px]" : "w-max min-w-[186px] pr-12"}`}
     >
       {locations ? (
         <>
@@ -100,6 +109,17 @@ function DesktopDropdown({ item, panelId, currentPath, onNavigate }: { item: Nav
             {children.map((child) => <LocationMenuItem key={child.label} item={child} currentPath={currentPath} onNavigate={onNavigate} />)}
           </div>
         </>
+      ) : happening ? (
+        <div className="grid grid-cols-3 gap-8 whitespace-nowrap">
+          {happeningGroups(children).map((group) => (
+            <div key={group.label}>
+              <p className="mb-4 text-xs leading-none text-black/45">{group.label}</p>
+              <div className="flex flex-col gap-4 font-display text-lg leading-[1.22]">
+                {group.items.map((child) => <MenuItem key={child.label} item={child} currentPath={currentPath} onNavigate={onNavigate} />)}
+              </div>
+            </div>
+          ))}
+        </div>
       ) : (
         <div className="flex flex-col gap-4 whitespace-nowrap font-display text-lg leading-[1.22]">
           {children.map((child) => <MenuItem key={child.label} item={child} currentPath={currentPath} onNavigate={onNavigate} />)}
@@ -337,9 +357,22 @@ export function HeaderMenu({ navigation, currentPath }: Props) {
                 )}
 
                 {children.length > 0 && isExpanded && (
-                  <div id={sectionId} className="mt-5 flex flex-col gap-4 border-l border-black/15 pl-4 font-display text-lg leading-[1.2]">
-                    {children.map((child) => <MenuItem key={child.label} item={child} currentPath={currentPath} onNavigate={closeMobile} />)}
-                  </div>
+                  item.href === routes.events ? (
+                    <div id={sectionId} className="mt-6 grid gap-6 border-l border-black/15 pl-4">
+                      {happeningGroups(children).map((group) => (
+                        <div key={group.label}>
+                          <p className="mb-3 text-xs uppercase tracking-[0.04em] text-black/45">{group.label}</p>
+                          <div className="flex flex-col gap-3 font-display text-lg leading-[1.2]">
+                            {group.items.map((child) => <MenuItem key={child.label} item={child} currentPath={currentPath} onNavigate={closeMobile} />)}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div id={sectionId} className="mt-5 flex flex-col gap-4 border-l border-black/15 pl-4 font-display text-lg leading-[1.2]">
+                      {children.map((child) => <MenuItem key={child.label} item={child} currentPath={currentPath} onNavigate={closeMobile} />)}
+                    </div>
+                  )
                 )}
               </div>
             );

@@ -140,7 +140,7 @@ export function resolveCmsHref(routeKey: unknown, routeParam?: unknown, anchor?:
   if (key) {
     switch (key) {
       case "home": href = routes.home; break;
-      case "rooms": href = routes.rooms; break;
+      case "rooms": href = parameter ? routes.cityRooms(parameter) : routes.rooms; break;
       case "deals": href = routes.deals; break;
       case "memberships": href = routes.memberships; break;
       case "life-at-circles":

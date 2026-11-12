@@ -1,42 +1,16 @@
 ---
-import SiteLayout from "@/layouts/SiteLayout.astro";
-import RoomsIntro from "@/components/sections/rooms/RoomsIntro.astro";
-import RoomsGrid from "@/components/sections/rooms/RoomsGrid.astro";
-import MemberDiscounts from "@/components/sections/shared/MemberDiscounts.astro";
-import Newsletter from "@/components/sections/shared/Newsletter.astro";
-import { createCloudbedsProvider } from "@/services/booking/cloudbeds";
+import { routes } from "@/config/navigation";
 import { getContentRepository } from "@/services/content/repository";
 
 const repository = await getContentRepository();
-const requestedLocation = Astro.url.searchParams.get("location") ?? undefined;
-const dateParam = (key: string) => {
-  const value = Astro.url.searchParams.get(key) ?? "";
-  return /^\d{4}-\d{2}-\d{2}$/.test(value) ? value : undefined;
-};
-const guestParam = Astro.url.searchParams.get("guests") ?? undefined;
-const initialGuests = guestParam && ["1", "2", "3", "4"].includes(guestParam) ? guestParam : undefined;
+const locations = await repository.getSearchLocations();
+const requestedLocation = Astro.url.searchParams.get("location");
+const selectedLocation = locations.find((location) => location.slug === requestedLocation && !location.comingSoon)
+  ?? locations.find((location) => !location.comingSoon);
+if (!selectedLocation) return new Response("No Circles House locations are available.", { status: 503 });
 
-const [settings, page, locations, rooms] = await Promise.all([
-  repository.getSiteSettings(),
-  repository.getRoomsPage(),
-  repository.getSearchLocations(),
-  repository.getRooms(requestedLocation),
-]);
-const selectedLocation = locations.find((location) => location.slug === requestedLocation && !location.comingSoon);
-const booking = createCloudbedsProvider(import.meta.env.CLOUDBEDS_ALLOWED_ORIGIN);
-const roomListings = rooms.map((room) => ({ room, bookingHref: booking.getRedirect(room).toString() }));
+const params = new URLSearchParams(Astro.url.searchParams);
+params.delete("location");
+const destination = `${routes.cityRooms(selectedLocation.slug)}${params.size ? `?${params}` : ""}`;
+return Astro.redirect(destination, 302);
 ---
-
-<SiteLayout settings={settings} title={page.seo.title} description={page.seo.description}>
-  <RoomsIntro
-    {...page.intro}
-    {locations}
-    initialLocation={selectedLocation?.slug}
-    initialCheckIn={dateParam("checkin")}
-    initialCheckOut={dateParam("checkout")}
-    {initialGuests}
-  />
-  <RoomsGrid rooms={roomListings} locationLabel={selectedLocation?.name ?? "All Circles House rooms"} empty={page.empty} />
-  <MemberDiscounts {...page.band} text={settings.promotion} compact class="mt-0" />
-  <Newsletter newsletter={settings.newsletter} copy={settings.interfaceCopy} class="mt-12" />
-</SiteLayout>

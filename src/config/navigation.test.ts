@@ -11,11 +11,12 @@ describe("site navigation", () => {
     const links = siteNavigation.header.primary.filter((item) => item.status === "link");
     expect(links.every((item) => !item.href.includes("#"))).toBe(true);
     expect(links.find((item) => item.label === "Coliving")?.href).toBe(routes.location("barcelona"));
-    expect(links.find((item) => item.label === "Happening Now")?.href).toBe(routes.events);
+    expect(links.find((item) => item.label === "Events")?.href).toBe(routes.events);
     expect(siteNavigation.header.primary
       .flatMap((item) => "children" in item ? item.children ?? [] : [])
-      .find((item) => item.label === "June@Circles House Barcelona"))
+      .find((item) => item.label === "June"))
       .toEqual(expect.objectContaining({ status: "link", href: routes.month("june") }));
+    expect(routes.cityRooms("barcelona")).toBe("/rooms/barcelona");
   });
 
   it("models unavailable Andorra services as coming soon without links", () => {
