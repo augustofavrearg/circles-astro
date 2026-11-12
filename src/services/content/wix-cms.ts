@@ -11,6 +11,7 @@ import type {
   MembershipsPage,
   MonthPage,
   PartnershipsPage,
+  ProgramPage,
   RoomsPage,
   SpaceAmenity,
   TeamPage,
@@ -18,6 +19,7 @@ import type {
 } from "@/domain/content";
 import {
   asBoolean,
+  asDateOnly,
   asText,
   hasPersonType,
   isCurrentOrUpcomingEvent,
@@ -366,6 +368,40 @@ function composeSection(section: WixRecord, sectionItems: WixRecord[]): Record<s
     };
   }
 
+  if (componentKey === "month.hero") {
+    return {
+      eyebrow: asText(section.eyebrow),
+      title: asText(section.title),
+      body,
+      cta: primaryCta,
+      image: image || undefined,
+    };
+  }
+
+  if (componentKey === "month.form") {
+    return {
+      eyebrow: asText(section.eyebrow),
+      title: asText(section.title),
+      subtitle: asText(section.subtitle),
+      image: image || undefined,
+    };
+  }
+
+  if (componentKey === "month.external" || componentKey === "month.seasonal") {
+    return {
+      eyebrow: asText(section.eyebrow),
+      title: asText(section.title),
+      items: sectionItems.map((item) => ({
+        title: asText(item.title),
+        venue: asText(item.text),
+        dateLabel: asText(item.label),
+        timeLabel: asText(item.value),
+        image: wixUrl(item.image) || undefined,
+        href: resolveCmsHref(item.routeKey, item.routeParam, item.anchor, item.externalUrl) || undefined,
+      })),
+    };
+  }
+
   if (name === "faq") {
     result.items = mappedItems.map((item) => ({
       question: item.title,
@@ -660,6 +696,21 @@ function requireCompleteLocationPage(page: Partial<LocationPage>, slug: string):
   return page as LocationPage;
 }
 
+function requireCompleteMonthPage(page: Partial<MonthPage>, slug: string): MonthPage {
+  const requiredSections = ["seo", "hero", "form", "space", "rooms", "band", "events", "external", "seasonal", "faq"] as const;
+  for (const key of requiredSections) {
+    if (!page[key] || typeof page[key] !== "object") {
+      throw new Error(`CHPages item "month:${slug}" is missing the required "month.${key}" content.`);
+    }
+  }
+  if (!page.hero?.cta) throw new Error(`CHPageSections item "${slug}.hero" requires a primary CTA.`);
+  if (!page.space?.spaces.length) throw new Error(`CHPages item "month:${slug}" requires at least one published space.`);
+  if (!page.external?.items.length) throw new Error(`CHPageSections item "${slug}.external" requires at least one published item.`);
+  if (!page.seasonal?.items.length) throw new Error(`CHPageSections item "${slug}.seasonal" requires at least one published item.`);
+  if (!page.faq?.items.length) throw new Error(`CHPages item "month:${slug}" requires at least one related FAQ.`);
+  return page as MonthPage;
+}
+
 function getCmsHomePage(): Promise<HomePage> {
   return cached("document:home", loadCmsHomePage);
 }
@@ -815,7 +866,64 @@ export const wixCmsRepository: ContentRepository = {
     const locations = await getPublishedLocations();
     const location = locations.find((item) => asText(item._id) === referenceId(program.location));
     if (!location) throw new Error(`CHPrograms item "${asText(program.slug)}" has no valid CHLocations reference.`);
-    return { ...page, city: asText(location.slug) };
+    const locationId = asText(location._id);
+    const spaces = (await queryPublished(COLLECTIONS.spaces))
+      .filter((space) => referenceId(space.location) === locationId && asText(space.status).toLowerCase() !== "hidden")
+      .slice(0, 3)
+      .map((space, index) => ({
+        ...mapSpace(space, location),
+        size: (["large", "medium", "small"] as const)[index] ?? "small",
+      }));
+    return requireCompleteMonthPage({
+      ...page,
+      city: asText(location.slug),
+      space: { ...page.space!, spaces },
+    }, slug);
+  },
+  async getProgramPage(slug) {
+    const program = await findOne(COLLECTIONS.programs, "slug", slug);
+    if (!program || !asBoolean(program.published)) return undefined;
+
+    const locations = await getPublishedLocations();
+    const lookup = buildLocationLookup(locations);
+    const locationId = referenceId(program.location);
+    const location = locations.find((item) => asText(item._id) === locationId);
+    const programId = asText(program._id);
+    const name = asText(program.name);
+    if (!programId || !name || !location) {
+      throw new Error(`CHPrograms item "${slug}" is missing _id, name or a valid CHLocations reference.`);
+    }
+
+    const result = await items
+      .query(COLLECTIONS.events)
+      .eq("published", true)
+      .eq("program", programId)
+      .ascending("sortOrder")
+      .limit(100)
+      .find({ consistentRead: true });
+    const events = (result.items as WixRecord[]).map((event) => {
+      validateEventProgramReference(event, new Map([[programId, program]]));
+      return mapEvent(event, lookup);
+    });
+    const locationName = asText(location.name) || asText(location.shortName) || asText(location.city);
+    const theme = asText(program.theme);
+    const startsOn = asDateOnly(program.startsOn);
+    const endsOn = asDateOnly(program.endsOn);
+    return {
+      slug,
+      name,
+      theme,
+      city: asText(location.slug),
+      locationName,
+      startsOn,
+      endsOn,
+      registrationEnabled: asBoolean(program.registrationEnabled),
+      seo: {
+        title: `${name} · ${locationName}`,
+        description: theme || `Explore the events connected to ${name} at ${locationName}.`,
+      },
+      events,
+    } satisfies ProgramPage;
   },
   async getTeamMembers() {
     const result = await items.query(COLLECTIONS.people).eq("published", true).ascending("sortOrder").limit(100).find({ consistentRead: true });

@@ -12,6 +12,7 @@ import {
   membershipsPageFixture,
   monthPagesFixture,
   partnershipsPageFixture,
+  programPagesFixture,
   roomsFixture,
   roomsPageFixture,
   siteSettingsFixture,
@@ -65,6 +66,9 @@ export const fixtureRepository: ContentRepository = {
   },
   async getMonthPage(slug: string) {
     return monthPagesFixture.find((page) => page.slug === slug);
+  },
+  async getProgramPage(slug: string) {
+    return programPagesFixture.find((page) => page.slug === slug);
   },
   async getDeals() {
     return dealsFixture;

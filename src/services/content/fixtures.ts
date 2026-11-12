@@ -13,6 +13,7 @@ import type {
   MonthPage,
   PartnershipsPage,
   PlaceDetails,
+  ProgramPage,
   RoomsPage,
   SiteSettings,
   TeamMember,
@@ -877,6 +878,57 @@ export const eventsFixture: EventSummary[] = [
   { slug: "twilight-tech-challenge", city: "barcelona", title: "Twilight Tech Challenge", subtitle: "A 4-Hour Synergy Session", ...augustEvening },
   { slug: "evening-code-fest", city: "barcelona", title: "Evening Code Fest", subtitle: "A 4-Hour Team Building Event", ...augustEvening },
   { slug: "nocturnal-development-workshop", city: "barcelona", title: "Nocturnal Development Workshop", subtitle: "A 4-Hour Collaborative Hack Session", ...augustEvening },
+];
+
+const foundersMonthEventsFixture: EventSummary[] = [
+  {
+    slug: "movie-night-2027-06",
+    city: "barcelona",
+    title: "Movie Night",
+    subtitle: "Rooftop cinema, snacks and good company",
+    month: "Jun",
+    day: 4,
+    dateLabel: "Friday, June 4",
+    timeLabel: "8:00 PM - 11:00 PM GMT+2",
+  },
+  {
+    slug: "hiit-workout-2027-06",
+    city: "barcelona",
+    title: "HIIT Workout",
+    subtitle: "A high-energy community training session",
+    month: "Jun",
+    day: 7,
+    dateLabel: "Monday, June 7",
+    timeLabel: "9:00 AM - 10:00 AM GMT+2",
+  },
+  {
+    slug: "spanish-conversation-club-2027-06",
+    city: "barcelona",
+    title: "Spanish Conversation Club",
+    subtitle: "Practice Spanish with an international community",
+    month: "Jun",
+    day: 10,
+    dateLabel: "Thursday, June 10",
+    timeLabel: "7:00 PM - 8:30 PM GMT+2",
+  },
+];
+
+export const programPagesFixture: ProgramPage[] = [
+  {
+    slug: "founders-month",
+    name: "Founders Month",
+    theme: "Build with community",
+    city: "barcelona",
+    locationName: "Circles House Barcelona",
+    startsOn: "2027-06-01",
+    endsOn: "2027-06-30",
+    registrationEnabled: true,
+    seo: {
+      title: "Founders Month · Circles House Barcelona",
+      description: "Explore the events connected to Founders Month at Circles House Barcelona.",
+    },
+    events: foundersMonthEventsFixture,
+  },
 ];
 
 const barcelonaHouseAmenities = ["Community kitchen", "Coworking", "High-speed Wi-Fi", "360º Rooftop", "Gym and shower"];

@@ -35,6 +35,18 @@ export function asNumber(value: unknown): number | undefined {
   return typeof value === "number" && Number.isFinite(value) ? value : undefined;
 }
 
+/** Normalizes Wix date fields, including SDK Date objects and REST `$date` payloads. */
+export function asDateOnly(value: unknown): string | undefined {
+  const serialized = value && typeof value === "object" ? (value as WixRecord).$date : undefined;
+  const source = serialized ?? value;
+  const date = source instanceof Date
+    ? source
+    : typeof source === "string" || typeof source === "number"
+      ? new Date(source)
+      : undefined;
+  return date && !Number.isNaN(date.valueOf()) ? date.toISOString().slice(0, 10) : undefined;
+}
+
 export function asTextList(value: unknown): string[] {
   return Array.isArray(value) ? value.map(asText).filter(Boolean) : [];
 }
@@ -145,7 +157,8 @@ export function resolveCmsHref(routeKey: unknown, routeParam?: unknown, anchor?:
       case "location": href = routes.location(requireRouteParam(key, parameter)); break;
       case "coworking": href = routes.coworking(requireRouteParam(key, parameter)); break;
       case "month":
-      case "program": href = routes.month(requireRouteParam(key, parameter)); break;
+        href = routes.month(requireRouteParam(key, parameter)); break;
+      case "program": href = routes.program(requireRouteParam(key, parameter)); break;
       case "terms": href = routes.legal.terms; break;
       case "cookies": href = routes.legal.cookies; break;
       case "notice": href = routes.legal.notice; break;

@@ -258,6 +258,20 @@ export type EventsPage = {
   cities: { slug: string; name: string }[];
 };
 
+/** A reusable event series exposed independently from calendar month pages. */
+export type ProgramPage = {
+  slug: string;
+  name: string;
+  theme: string;
+  city: string;
+  locationName: string;
+  startsOn?: string;
+  endsOn?: string;
+  registrationEnabled: boolean;
+  seo: { title: string; description: string };
+  events: EventSummary[];
+};
+
 export type InvestorBenefit = { label: string; title: string; text: string; image?: string };
 
 export type InvestorFeature = { title: string; text: string; cta?: Link; image?: string };
@@ -439,6 +453,7 @@ export interface ContentRepository {
   getWhatIsCirclesPage(): Promise<WhatIsCirclesPage>;
   getMembershipsPage(): Promise<MembershipsPage>;
   getMonthPage(slug: string): Promise<MonthPage | undefined>;
+  getProgramPage(slug: string): Promise<ProgramPage | undefined>;
   getCoworkingPage(city: string): Promise<CoworkingPage | undefined>;
   getLifePage(): Promise<LifePage>;
   getLocationPage(slug: string): Promise<LocationPage | undefined>;

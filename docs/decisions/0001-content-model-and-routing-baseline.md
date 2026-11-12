@@ -24,6 +24,12 @@ Individual `CHEvents` may reference that program, while other June events may
 exist without it. A program-to-page reference is a connection between distinct
 records; it does not make `founders-month` the page slug.
 
+Programs have their own canonical route at `/programs/:slug`. Consequently,
+`founders-month` resolves to `/programs/founders-month`; the word `month` in the
+slug is part of the program name and has no routing semantics. Program pages
+list events by the `CHEvents.program` reference, while month pages select events
+by calendar period.
+
 The `/co-owners` route is not part of the product and is removed from route
 resolution and navigation.
 

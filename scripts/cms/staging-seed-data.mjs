@@ -180,6 +180,44 @@ const pageSectionOverrides = {
   "location-barcelona.faq": {
     eyebrow: "FAQ",
   },
+  "june.hero": {
+    eyebrow: "June @ Circles House Barcelona",
+    title: "Say yes to a Month of New Experiences",
+    body:
+      "This June, we invite you to say yes to a summer full of possibility. New Beginnings is a month-long celebration of curiosity, creativity, and the courage to start again.\n\nAll of this is included with your stay at Circles between June 1 and June 30.",
+    primaryCtaLabel: "Reserve now",
+    primaryExternalUrl: "#rooms",
+  },
+  "june.form": {
+    eyebrow: "Join us",
+    title: "Start your stay here",
+    subtitle: "Complete the form to apply for your stay.",
+  },
+  "june.space": {
+    eyebrow: "The space",
+    title: "Modern private lofts and shared rooftop spaces to live, work & play.",
+  },
+  "june.rooms": {
+    eyebrow: "Why join",
+    body:
+      "Our house offers a range of thoughtfully designed rooms to suit different lifestyles, combining comfort and functionality.",
+  },
+  "june.band": {
+    primaryCtaLabel: "View rooms",
+    primaryRouteKey: "rooms",
+  },
+  "june.events": {
+    eyebrow: "Included this month",
+  },
+  "june.external": {
+    eyebrow: "External events",
+  },
+  "june.seasonal": {
+    eyebrow: "Seasonal events",
+  },
+  "june.faq": {
+    eyebrow: "FAQ",
+  },
 };
 
 const standardRoomFeatures = ["20m2", "Bathroom", "Terrace", "Desk", "360º View", "Couple friendly"];
@@ -412,7 +450,9 @@ export const seedCollections = [
         key: "june",
         data: page("june", "month", "month", {
           routeParam: "june",
-          title: "June at Circles House Barcelona · Sandbox",
+          title: "June at Circles House Barcelona · Circles House",
+          description:
+            "Explore rooms, spaces and community events at Circles House Barcelona throughout June.",
         }),
       },
     ],
@@ -561,6 +601,7 @@ export const seedCollections = [
       ["header.locations", "header", "Locations", "location", "barcelona"],
       ["header.rooms", "header", "Rooms", "rooms"],
       ["header.events", "header", "Events", "events"],
+      ["header.founders-month", "header", "Founders Month", "program", "founders-month"],
       ["header.memberships", "header", "Memberships", "memberships"],
       ["footer.team", "footer", "Team", "team"],
       ["footer.partnerships", "footer", "Partnerships", "partnerships"],
@@ -629,6 +670,14 @@ export const seedCollections = [
       ["coworking-barcelona.band", "coworking-barcelona", "coworking.band", "Stay longer and Save more"],
       ["coworking-barcelona.faq", "coworking-barcelona", "coworking.faq", "What you need to know"],
       ["june.hero", "june", "month.hero", "June at Circles House Barcelona"],
+      ["june.form", "june", "month.form", "Start your stay here"],
+      ["june.space", "june", "month.space", "Modern private lofts and shared rooftop spaces to live, work & play."],
+      ["june.rooms", "june", "month.rooms", "A room for your needs"],
+      ["june.band", "june", "month.band", "Stay longer and save more"],
+      ["june.events", "june", "month.events", "What you will say yes to"],
+      ["june.external", "june", "month.external", "What else is happening in the city this month"],
+      ["june.seasonal", "june", "month.seasonal", "Summer @ Circles"],
+      ["june.faq", "june", "month.faq", "What you need to know"],
     ].map(([sectionKey, pageKey, componentKey, title], index) => ({
       key: sectionKey,
       editorialStatus:
@@ -837,6 +886,27 @@ export const seedCollections = [
           sortOrder: index + 1,
         },
       })),
+      ...[
+        ["june.external.sonar", "Sónar Barcelona", "Fira Montjuïc and Fira Gran Via", "Thursday, June 17", "4:00 PM"],
+        ["june.external.design-week", "Barcelona Design Week", "Venues across Barcelona", "Monday, June 21", "10:00 AM"],
+        ["june.external.grec", "Grec Festival", "Montjuïc and venues across Barcelona", "Friday, June 25", "8:00 PM"],
+        ["june.seasonal.rooftop", "Rooftop Community Dinner", "Circles House Barcelona", "Friday, June 11", "8:00 PM"],
+        ["june.seasonal.founders", "Founders Roundtable", "Circles House Barcelona", "Wednesday, June 16", "6:30 PM"],
+        ["june.seasonal.midsummer", "Midsummer Gathering", "Circles House Barcelona", "Wednesday, June 23", "7:30 PM"],
+      ].map(([itemKey, title, text, label, value], index) => ({
+        key: itemKey,
+        editorialStatus: "provisional-editable",
+        data: {
+          itemKey,
+          section: reference("CHPageSections", itemKey.startsWith("june.external.") ? "june.external" : "june.seasonal"),
+          title,
+          text,
+          label,
+          value,
+          published: true,
+          sortOrder: (index % 3) + 1,
+        },
+      })),
     ],
   },
   {
@@ -1037,6 +1107,7 @@ export const seedCollections = [
         data: {
           slug: "movie-night-2027-06",
           location: reference("CHLocations", "barcelona"),
+          program: reference("CHPrograms", "founders-month"),
           eventType: "circles",
           title: "Movie Night",
           subtitle: "Rooftop cinema, snacks and good company",
@@ -1060,6 +1131,7 @@ export const seedCollections = [
         data: {
           slug: "hiit-workout-2027-06",
           location: reference("CHLocations", "barcelona"),
+          program: reference("CHPrograms", "founders-month"),
           eventType: "circles",
           title: "HIIT Workout",
           subtitle: "A high-energy community training session",
@@ -1082,6 +1154,7 @@ export const seedCollections = [
         data: {
           slug: "spanish-conversation-club-2027-06",
           location: reference("CHLocations", "barcelona"),
+          program: reference("CHPrograms", "founders-month"),
           eventType: "circles",
           title: "Spanish Conversation Club",
           subtitle: "Practice Spanish with an international community",

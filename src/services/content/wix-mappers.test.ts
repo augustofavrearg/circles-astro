@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  asDateOnly,
   mapCoworkingAmenityIcon,
   mapDeal,
   mapEvent,
@@ -42,7 +43,14 @@ describe("Wix CMS canonical mappers", () => {
     expect(resolveCmsHref("events", "barcelona")).toBe("/events/barcelona");
     expect(resolveCmsHref("memberships")).toBe("/memberships");
     expect(resolveCmsHref("month", "june")).toBe("/months/june");
+    expect(resolveCmsHref("program", "founders-month")).toBe("/programs/founders-month");
     expect(() => resolveCmsHref("co-owners")).toThrow(/Unknown Wix CMS routeKey/);
+  });
+
+  it("normalizes Wix program dates", () => {
+    expect(asDateOnly("2027-06-01")).toBe("2027-06-01");
+    expect(asDateOnly({ $date: "2027-06-30T00:00:00.000Z" })).toBe("2027-06-30");
+    expect(asDateOnly("not-a-date")).toBeUndefined();
   });
 
   it("normalizes Wix image fields", () => {

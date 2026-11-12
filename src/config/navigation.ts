@@ -17,6 +17,7 @@ export const routes = {
   coworking: (city: string) => `/coworking/${city}`,
   cityEvents: (city: string) => `/events/${city}`,
   month: (slug: string) => `/months/${slug}`,
+  program: (slug: string) => `/programs/${slug}`,
   legal: {
     terms: "/legal/terms",
     cookies: "/legal/cookies",
@@ -66,6 +67,7 @@ const happeningNow: NavigationItem = {
   children: [
     { status: "link", label: "All events", href: routes.events },
     { status: "link", label: "June@Circles House Barcelona", href: routes.month("june") },
+    { status: "link", label: "Founders Month", href: routes.program("founders-month") },
     { status: "link", label: "Events Circles House Barcelona", href: routes.cityEvents("barcelona") },
     { status: "hidden", label: "Events Circles House Andorra" },
   ],

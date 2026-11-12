@@ -24,6 +24,8 @@
     "cms:audit:dump": "node scripts/audit-wix-cms.mjs",
     "cms:seed": "node scripts/seed-wix-cms.mjs",
     "cms:seed:staging": "node scripts/seed-wix-cms.mjs --apply",
+    "cms:migrate:founders": "node scripts/cms/migrate-founders-program.mjs",
+    "cms:migrate:june": "node scripts/cms/migrate-june-page.mjs",
     "pretest": "node scripts/check-node-version.mjs",
     "test": "vitest run",
     "astro": "astro",

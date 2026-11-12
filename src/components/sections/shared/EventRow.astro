@@ -10,10 +10,10 @@ const { event } = Astro.props;
   Figma desktop: one row — optional thumbnail, title + subtitle, date, arrow.
   Figma mobile: a stacked card — thumbnail, title, subtitle, date. The whole card links when `href` exists.
 -->
-<article class="relative bg-surface p-6 lg:flex lg:min-h-[188px] lg:items-center lg:gap-6">
+<article class="relative min-w-0 bg-surface p-6 lg:flex lg:min-h-[188px] lg:items-center lg:gap-6">
   {event.image && <img src={event.image} alt="" loading="lazy" class="size-[135px] shrink-0 object-cover" />}
   <div class:list={["min-w-0 lg:flex-1", event.image ? "mt-10 lg:mt-0" : ""]}>
-    <h2 class="font-display text-[2.125rem] leading-[1.2]">
+    <h2 class="break-words font-display text-[2.125rem] leading-[1.2]">
       {event.href ? <a href={event.href} class="after:absolute after:inset-0 hover:underline">{event.title}</a> : event.title}
     </h2>
     {event.subtitle && <p class="mt-1 text-[0.9375rem] lg:text-[0.875rem]">{event.subtitle}</p>}

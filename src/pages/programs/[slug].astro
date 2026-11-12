@@ -1,0 +1,67 @@
+---
+import SiteLayout from "@/layouts/SiteLayout.astro";
+import EventRow from "@/components/sections/shared/EventRow.astro";
+import Newsletter from "@/components/sections/shared/Newsletter.astro";
+import Eyebrow from "@/components/ui/Eyebrow.astro";
+import { getContentRepository } from "@/services/content/repository";
+
+const repository = await getContentRepository();
+const page = await repository.getProgramPage(Astro.params.slug ?? "");
+if (!page) return new Response("Not found", { status: 404 });
+
+const settings = await repository.getSiteSettings();
+const formatDate = (value?: string) => value
+  ? new Intl.DateTimeFormat("en", { month: "long", day: "numeric", year: "numeric", timeZone: "UTC" }).format(new Date(`${value}T00:00:00Z`))
+  : undefined;
+const startsOn = formatDate(page.startsOn);
+const endsOn = formatDate(page.endsOn);
+const period = startsOn && endsOn ? `${startsOn} — ${endsOn}` : startsOn ?? endsOn;
+---
+
+<SiteLayout settings={settings} title={page.seo.title} description={page.seo.description}>
+  <main>
+    <header class="grid min-h-[420px] grid-cols-[minmax(0,1fr)] bg-surface px-4 pb-14 pt-20 lg:grid-cols-[minmax(0,1fr)_minmax(300px,0.42fr)] lg:px-6 lg:pb-20 lg:pt-32">
+      <div class="min-w-0 self-end">
+        <Eyebrow>Program @ {page.locationName}</Eyebrow>
+        <h1 class="mt-4 max-w-[920px] font-display text-[3.75rem] leading-[0.95] lg:text-[7.5rem]">{page.name}</h1>
+        {page.theme && <p class="mt-7 max-w-[620px] text-[1.125rem] leading-[1.45] lg:text-[1.375rem]">{page.theme}</p>}
+      </div>
+      <dl class="mt-14 min-w-0 self-end border-t border-black/20 pt-5 lg:mt-0">
+        {period && (
+          <div class="grid grid-cols-[6rem_1fr] gap-4 py-2">
+            <dt class="text-detail uppercase text-black/50">Dates</dt>
+            <dd class="min-w-0 text-[0.9375rem]">{period}</dd>
+          </div>
+        )}
+        <div class="grid grid-cols-[6rem_1fr] gap-4 py-2">
+          <dt class="text-detail uppercase text-black/50">Location</dt>
+          <dd class="text-[0.9375rem]">{page.locationName}</dd>
+        </div>
+        <div class="grid grid-cols-[6rem_1fr] gap-4 py-2">
+          <dt class="text-detail uppercase text-black/50">Status</dt>
+          <dd class="text-[0.9375rem]">{page.registrationEnabled ? "Registration open" : "Registration closed"}</dd>
+        </div>
+      </dl>
+    </header>
+
+    <section class="px-4 py-20 lg:px-6 lg:py-28">
+      <Eyebrow>Program events</Eyebrow>
+      <div class="mt-4 grid grid-cols-[minmax(0,1fr)] gap-8 lg:grid-cols-[minmax(260px,0.42fr)_minmax(0,1fr)] lg:gap-16">
+        <div>
+          <h2 class="font-display text-[2.75rem] leading-[1.05] lg:text-[4rem]">What’s happening</h2>
+          <p class="mt-5 max-w-[420px] text-[0.9375rem] leading-[1.5] text-black/65">
+            Discover the gatherings, workshops and shared experiences that are part of {page.name}.
+          </p>
+        </div>
+        {page.events.length > 0 ? (
+          <div class="flex flex-col gap-2">
+            {page.events.map((event) => <EventRow event={event} />)}
+          </div>
+        ) : (
+          <p class="bg-surface p-6 text-body">No events are connected to this program yet.</p>
+        )}
+      </div>
+    </section>
+  </main>
+  <Newsletter newsletter={settings.newsletter} copy={settings.interfaceCopy} />
+</SiteLayout>
