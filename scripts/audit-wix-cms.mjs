@@ -118,7 +118,7 @@ const audit = [];
 for (const collection of collections) {
   const collectionId = collection.id;
   const encodedId = encodeURIComponent(collectionId);
-  const includeHealthItems = process.env.CMS_AUDIT_HEALTH === "1" && collectionId === "CHStayCampaigns";
+  const includeHealthItems = process.env.CMS_AUDIT_HEALTH === "1" && ["CHStayCampaigns", "CHSpaces"].includes(collectionId);
   const [permissions, indexes, itemQuery] = await Promise.all([
     optionalRequest(
       `https://www.wixapis.com/wix-data/v1/permissions?data_collection_id=${encodedId}`,
@@ -225,7 +225,7 @@ if (process.env.CMS_AUDIT_HEALTH === "1") {
     CHSectionItems: [20, "itemKey"],
     CHSocialLinks: [6, "label"],
     CHNavigationItems: [15, "label"],
-    CHSpaces: [17, "title"],
+    CHSpaces: [23, "title"],
     CHRooms: [17, "name"],
     CHEvents: [19, "title"],
     CHNewsArticles: [15, "title"],
@@ -267,6 +267,20 @@ if (process.env.CMS_AUDIT_HEALTH === "1") {
   }
   if (stayCampaignItems.some((item) => !/^\d{4}-(0[1-9]|1[0-2])$/.test(item.period ?? ""))) {
     issues.push({ collectionId: "CHStayCampaigns", issue: "invalid-period" });
+  }
+  const discoverableSpaces = (byId.get("CHSpaces")?.items ?? []).filter((item) => item.discoverable === true);
+  const spaceRoutes = discoverableSpaces.map((item) => `${item.location ?? ""}:${item.routeSlug ?? ""}`);
+  if (discoverableSpaces.some((item) => !item.location || !item.routeSlug)) {
+    issues.push({ collectionId: "CHSpaces", issue: "discoverable-space-missing-location-or-route-slug" });
+  }
+  if (discoverableSpaces.some((item) => !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(item.routeSlug ?? ""))) {
+    issues.push({ collectionId: "CHSpaces", issue: "invalid-route-slug" });
+  }
+  if (new Set(spaceRoutes).size !== spaceRoutes.length) {
+    issues.push({ collectionId: "CHSpaces", issue: "duplicate-location-route-slug" });
+  }
+  if (discoverableSpaces.some((item) => String(item.status ?? "").toLowerCase() === "hidden")) {
+    issues.push({ collectionId: "CHSpaces", issue: "discoverable-space-is-hidden" });
   }
 
   for (const [id, [expectedFieldCount, expectedDisplayField]] of Object.entries(
@@ -342,7 +356,7 @@ if (process.env.CMS_AUDIT_HEALTH === "1") {
         auditedAt: new Date().toISOString(),
         expectedCollectionCount: expectedIds.size,
         actualCustomCollectionCount: customCollections.length,
-        expectedManualFieldCount: 278,
+        expectedManualFieldCount: 284,
         actualManualFieldCount: manualFieldCount,
         userIndexCount,
         itemCount,
@@ -355,7 +369,7 @@ if (process.env.CMS_AUDIT_HEALTH === "1") {
           missingCollections.length === 0 &&
           unexpectedCollections.length === 0 &&
           issues.length === 0 &&
-          manualFieldCount === 278,
+          manualFieldCount === 284,
       },
       null,
       2,

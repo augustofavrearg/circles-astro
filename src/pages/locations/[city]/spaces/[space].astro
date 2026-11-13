@@ -1,0 +1,87 @@
+---
+import SiteLayout from "@/layouts/SiteLayout.astro";
+import Button from "@/components/ui/Button.astro";
+import Faq from "@/components/sections/shared/Faq.astro";
+import Newsletter from "@/components/sections/shared/Newsletter.astro";
+import Media from "@/components/ui/Media.astro";
+import { routes } from "@/config/navigation";
+import { getContentRepository } from "@/services/content/repository";
+
+const repository = await getContentRepository();
+const city = Astro.params.city ?? "";
+const routeSlug = Astro.params.space ?? "";
+const [page, settings, locationPage] = await Promise.all([
+  repository.getLocationSpace(city, routeSlug),
+  repository.getSiteSettings(),
+  repository.getLocationPage(city),
+]);
+if (!page) return new Response("Not found", { status: 404 });
+const heroImage = page.gallery[0] || page.image;
+const gallery = page.gallery.filter((image) => image !== heroImage);
+---
+
+<SiteLayout settings={settings} title={page.seo.title} description={page.seo.description}>
+  <section class="grid min-h-[calc(100svh-80px)] bg-black text-white lg:grid-cols-2">
+    <div class="flex min-w-0 flex-col justify-between px-4 py-10 lg:px-6 lg:py-14">
+      <div>
+        {locationPage ? (
+          <a href={routes.location(page.location.slug)} class="text-detail whitespace-normal uppercase text-white/60 hover:text-white">
+            <span>{page.location.name}</span><span class="block lg:inline"> / {page.category}</span>
+          </a>
+        ) : (
+          <p class="text-detail whitespace-normal uppercase text-white/60"><span>{page.location.name}</span><span class="block lg:inline"> / {page.category}</span></p>
+        )}
+        {page.status === "comingSoon" && <p class="mt-8 inline-flex rounded-full bg-red px-4 py-2 text-detail text-black">Coming soon</p>}
+      </div>
+      <div class="mt-24 lg:mt-16">
+        <h1 class="max-w-[760px] text-balance font-display text-[3.25rem] leading-[0.95] lg:text-[6.25rem]">{page.title}</h1>
+        <p class="mt-8 max-w-[610px] text-[1rem] leading-[1.45] text-white/75 lg:text-[1.125rem]">{page.description}</p>
+        {page.cta && page.status === "active" && (
+          <Button href={page.cta.href} target="_blank" rel="noreferrer" class="mt-9 bg-white text-black">{page.cta.label}</Button>
+        )}
+      </div>
+    </div>
+    <div class="relative min-h-[55svh] min-w-0 lg:min-h-full">
+      <Media src={heroImage} alt={page.title} eager placeholderTone="blue" />
+    </div>
+  </section>
+
+  <section class="grid border-b border-black/15 px-4 py-16 lg:grid-cols-[1fr_2fr] lg:px-6 lg:py-24">
+    <p class="text-detail uppercase">At a glance</p>
+    <dl class="mt-10 grid gap-px bg-black/15 sm:grid-cols-2 lg:mt-0">
+      {page.access && <div class="bg-white p-5 lg:p-7"><dt class="text-detail uppercase text-black/50">Access</dt><dd class="mt-3 font-display text-[1.5rem]">{page.access}</dd></div>}
+      {page.address && <div class="bg-white p-5 lg:p-7"><dt class="text-detail uppercase text-black/50">Location</dt><dd class="mt-3 font-display text-[1.5rem]">{page.address}</dd></div>}
+      {page.hours && <div class="bg-white p-5 lg:p-7"><dt class="text-detail uppercase text-black/50">Hours</dt><dd class="mt-3 whitespace-pre-line font-display text-[1.5rem]">{page.hours}</dd></div>}
+      <div class="bg-white p-5 lg:p-7"><dt class="text-detail uppercase text-black/50">Availability</dt><dd class="mt-3 font-display text-[1.5rem]">{page.status === "comingSoon" ? "Coming soon" : "Open"}</dd></div>
+    </dl>
+  </section>
+
+  {page.amenities.length > 0 && (
+    <section class="px-4 py-20 lg:px-6 lg:py-28">
+      <p class="text-detail uppercase">What you will find</p>
+      <ul class="mt-8 grid border-t border-black/15 sm:grid-cols-2">
+        {page.amenities.map((amenity, index) => <li class:list={["border-b border-black/15 py-5 font-display text-[1.75rem]", index % 2 === 0 ? "sm:pr-8" : "sm:border-l sm:pl-8"]}>{amenity}</li>)}
+      </ul>
+    </section>
+  )}
+
+  {page.story && (
+    <section class="grid bg-surface lg:grid-cols-2">
+      <div class="px-4 py-20 lg:px-12 lg:py-28">
+        {page.story.eyebrow && <p class="text-detail uppercase">{page.story.eyebrow}</p>}
+        <h2 class="mt-4 font-display text-[2.75rem] leading-[1.05] lg:text-[4.5rem]">{page.story.title}</h2>
+        <p class="mt-8 max-w-[620px] whitespace-pre-line text-[0.9375rem] leading-[1.5]">{page.story.text}</p>
+      </div>
+      <div class="relative min-h-[480px]"><Media src={page.story.image} alt="" placeholderTone="yellow" /></div>
+    </section>
+  )}
+
+  {gallery.length > 0 && (
+    <section class="grid gap-2 px-4 py-20 lg:grid-cols-2 lg:px-6 lg:py-28">
+      {gallery.map((image, index) => <div class="relative aspect-[4/3]"><Media src={image} alt="" placeholderTone={index % 2 === 0 ? "blue" : "yellow"} /></div>)}
+    </section>
+  )}
+
+  {page.faq && <Faq {...page.faq} centered uppercase={false} />}
+  <Newsletter newsletter={settings.newsletter} copy={settings.interfaceCopy} class="mt-20" />
+</SiteLayout>

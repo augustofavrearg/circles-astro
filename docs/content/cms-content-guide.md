@@ -269,10 +269,20 @@ Important fields:
 - `title`, `slug`, `spaceType`, `categoryLabel`: identity and classification.
 - `location`: reference to `CHLocations`.
 - `description`, `accessLabel`, `addressOverride`, `status`: public information.
+- `routeSlug`, `discoverable`: opt-in location-scoped public route. The pair `location + routeSlug` must be unique.
+- `page`: optional reference to `CHPages` for additional editorial sections and SEO; the space still has a complete default page without it.
+- `hours`, `ctaLabel`, `externalUrl`: optional operational information and public action.
 - `image`, `gallery`: media.
 - `amenities`: multi-reference to `CHAmenities`.
 - `featuredHome`, `homeCardSize`, `homeSortOrder`: Home-page presentation.
 - `published`, `sortOrder`: visibility and order.
+
+Public routing:
+
+- A published record is not automatically a public detail page. It must also have `discoverable = true`, a non-hidden status, and a `routeSlug`.
+- Its canonical route is `/locations/:location/spaces/:routeSlug`.
+- Internal offerings such as booths or hot desks may remain reusable in other sections without receiving their own route.
+- `CHAmenities` describes reusable attributes of a space; it does not represent a standalone destination or service page.
 
 ### CHRooms — Rooms
 

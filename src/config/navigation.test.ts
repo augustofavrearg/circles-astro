@@ -19,6 +19,7 @@ describe("site navigation", () => {
     expect(routes.cityEvents("barcelona")).toBe("/events?location=barcelona");
     expect(routes.stayCampaign("barcelona", "2027-06")).toBe("/locations/barcelona/stays/2027-06");
     expect(routes.cityRooms("barcelona")).toBe("/rooms/barcelona");
+    expect(routes.locationSpace("andorra", "restaurant")).toBe("/locations/andorra/spaces/restaurant");
   });
 
   it("models unavailable Andorra services as coming soon without links", () => {

@@ -1046,6 +1046,8 @@ export const seedCollections = [
         key: "andorra-spa",
         data: {
           slug: "andorra-spa",
+          routeSlug: "spa",
+          discoverable: true,
           location: reference("CHLocations", "andorra"),
           spaceType: "spa",
           categoryLabel: "Wellness",
@@ -1065,6 +1067,8 @@ export const seedCollections = [
         key: "andorra-restaurant",
         data: {
           slug: "andorra-restaurant",
+          routeSlug: "restaurant",
+          discoverable: true,
           location: reference("CHLocations", "andorra"),
           spaceType: "restaurant",
           categoryLabel: "Culinary experience",
@@ -1084,6 +1088,8 @@ export const seedCollections = [
         key: "barcelona-rooftop",
         data: {
           slug: "barcelona-rooftop",
+          routeSlug: "rooftop",
+          discoverable: true,
           location: reference("CHLocations", "barcelona"),
           spaceType: "events",
           categoryLabel: "Events",

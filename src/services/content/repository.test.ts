@@ -33,4 +33,16 @@ describe("event discovery repository contract", () => {
       period: "2027-06",
     });
   });
+
+  it("exposes only discoverable spaces within their location", async () => {
+    await expect(fixtureRepository.getLocationSpaces("barcelona")).resolves.toMatchObject([
+      { routeSlug: "rooftop", location: { slug: "barcelona" } },
+    ]);
+    await expect(fixtureRepository.getLocationSpaces("andorra")).resolves.toHaveLength(2);
+    await expect(fixtureRepository.getLocationSpace("andorra", "restaurant")).resolves.toMatchObject({
+      slug: "andorra-restaurant",
+      status: "comingSoon",
+    });
+    await expect(fixtureRepository.getLocationSpace("barcelona", "booths")).resolves.toBeUndefined();
+  });
 });

@@ -205,6 +205,17 @@ describe("Wix staging seed manifest", () => {
     ).toBe(true);
   });
 
+  it("publishes only intentional location spaces with location-scoped routes", () => {
+    const spaces = seedCollections.find(({ collectionId }) => collectionId === "CHSpaces");
+    const discoverable = spaces?.items.filter(({ data }) => data.discoverable);
+    expect(discoverable?.map(({ data }) => `${data.location.$seedReference.key}:${data.routeSlug}`)).toEqual([
+      "andorra:spa",
+      "andorra:restaurant",
+      "barcelona:rooftop",
+    ]);
+    expect(new Set(discoverable?.map(({ data }) => `${data.location.$seedReference.key}:${data.routeSlug}`)).size).toBe(discoverable?.length);
+  });
+
   it("keeps sandbox copy out of the Figma-backed Home records", () => {
     const homeRecords = seedCollections.flatMap(({ collectionId, items }) =>
       items

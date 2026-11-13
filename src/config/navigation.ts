@@ -14,6 +14,7 @@ export const routes = {
   events: "/events",
   news: "/news",
   location: (city: string) => `/locations/${city}`,
+  locationSpace: (city: string, space: string) => `/locations/${city}/spaces/${space}`,
   coworking: (city: string) => `/coworking/${city}`,
   cityEvents: (city: string) => `/events?location=${encodeURIComponent(city)}`,
   event: (slug: string) => `/events/${slug}`,

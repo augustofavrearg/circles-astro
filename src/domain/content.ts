@@ -55,6 +55,30 @@ export type Space = {
   details?: PlaceDetails;
 };
 
+export type LocationSpaceSummary = {
+  slug: string;
+  routeSlug: string;
+  location: { slug: string; name: string };
+  category: string;
+  title: string;
+  description: string;
+  access?: string;
+  address?: string;
+  status: "active" | "comingSoon";
+  image?: string;
+  href: string;
+};
+
+export type LocationSpacePage = LocationSpaceSummary & {
+  seo: { title: string; description: string };
+  gallery: string[];
+  amenities: string[];
+  hours?: string;
+  cta?: Link;
+  story?: { eyebrow?: string; title: string; text: string; image?: string };
+  faq?: FaqSection;
+};
+
 export type CircleEvent = {
   title: string;
   description: string;
@@ -491,6 +515,8 @@ export interface ContentRepository {
   getCoworkingPage(city: string): Promise<CoworkingPage | undefined>;
   getLifePage(): Promise<LifePage>;
   getLocationPage(slug: string): Promise<LocationPage | undefined>;
+  getLocationSpaces(location: string): Promise<LocationSpaceSummary[]>;
+  getLocationSpace(location: string, space: string): Promise<LocationSpacePage | undefined>;
   getDeals(): Promise<Deal[]>;
   getEventsPage(): Promise<EventsPage>;
   getEvents(filters?: EventFilters): Promise<EventSummary[]>;

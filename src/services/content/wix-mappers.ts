@@ -487,6 +487,8 @@ export function mapLegalPage(item: WixRecord): LegalPage {
 export function mapSpace(item: WixRecord, location?: WixRecord): Space & { size: "large" | "medium" | "small" } {
   const status = asText(item.status).toLowerCase().replaceAll("-", "");
   const size = asText(item.homeCardSize);
+  const locationSlug = asText(location?.slug);
+  const routeSlug = asText(item.routeSlug);
   return {
     category: asText(item.categoryLabel) || asText(item.spaceType),
     title: asText(item.title),
@@ -495,7 +497,11 @@ export function mapSpace(item: WixRecord, location?: WixRecord): Space & { size:
     address: asText(item.addressOverride) || asText(location?.address) || undefined,
     comingSoon: status === "comingsoon",
     image: wixUrl(item.image) || undefined,
-    href: asText(location?.slug) ? routes.location(asText(location?.slug)) : undefined,
+    href: locationSlug
+      ? asBoolean(item.discoverable) && routeSlug
+        ? routes.locationSpace(locationSlug, routeSlug)
+        : routes.location(locationSlug)
+      : undefined,
     size: size === "medium" || size === "small" ? size : "large",
   };
 }

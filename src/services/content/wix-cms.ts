@@ -8,6 +8,8 @@ import type {
   HomePage,
   LifePage,
   LocationPage,
+  LocationSpacePage,
+  LocationSpaceSummary,
   MembershipsPage,
   MonthPage,
   PartnershipsPage,
@@ -48,7 +50,7 @@ import {
   type LocationLookup,
   type WixRecord,
 } from "./wix-mappers";
-import { siteNavigation } from "@/config/navigation";
+import { routes, siteNavigation } from "@/config/navigation";
 import type { NavigationItem, SiteNavigation } from "@/domain/navigation";
 
 export const COLLECTIONS = {
@@ -79,6 +81,10 @@ export const COLLECTIONS = {
 type PageIdentity = { pageKey?: string; routeKey?: string; routeParam?: string };
 type EventsPageDocument = Partial<EventsPage> & {
   intro?: { title?: string; subtitle?: string };
+};
+type LocationSpacePageDocument = Partial<LocationSpacePage> & {
+  hero?: { eyebrow?: string; title?: string; body?: string; image?: string };
+  story?: { eyebrow?: string; title?: string; body?: string; image?: string };
 };
 
 const CMS_CACHE_TTL_MS = 30_000;
@@ -152,6 +158,57 @@ function buildLocationLookup(locations: WixRecord[]): LocationLookup {
       return [[id, { slug, name: asText(location.name) || asText(location.shortName) || slug, timezone: asText(location.timezone) }]];
     }),
   );
+}
+
+function spaceStatus(space: WixRecord): "active" | "comingSoon" | "hidden" {
+  const status = asText(space.status).toLowerCase().replaceAll(/[-_\s]/g, "");
+  if (status === "hidden") return "hidden";
+  return status === "comingsoon" ? "comingSoon" : "active";
+}
+
+function locationSpaceSummary(space: WixRecord, location: WixRecord): LocationSpaceSummary {
+  const slug = asText(space.slug) || asText(space._id);
+  const routeSlug = asText(space.routeSlug);
+  const locationSlug = asText(location.slug);
+  const locationName = asText(location.name) || asText(location.shortName) || locationSlug;
+  if (!slug || !routeSlug || !locationSlug) {
+    throw new Error(`CHSpaces item "${slug || "unknown"}" is missing slug, routeSlug or a valid location.`);
+  }
+  if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(routeSlug)) {
+    throw new Error(`CHSpaces item "${slug}" has invalid routeSlug "${routeSlug}".`);
+  }
+  return {
+    slug,
+    routeSlug,
+    location: { slug: locationSlug, name: locationName },
+    category: asText(space.categoryLabel) || asText(space.spaceType),
+    title: asText(space.title),
+    description: asText(space.description),
+    access: asText(space.accessLabel) || undefined,
+    address: asText(space.addressOverride) || asText(location.address) || undefined,
+    status: spaceStatus(space) === "comingSoon" ? "comingSoon" : "active",
+    image: wixUrl(space.image) || undefined,
+    href: routes.locationSpace(locationSlug, routeSlug),
+  };
+}
+
+async function discoverableLocationSpaces(locationSlug: string): Promise<Array<{ space: WixRecord; location: WixRecord }>> {
+  const location = (await getPublishedLocations()).find((candidate) => asText(candidate.slug) === locationSlug);
+  if (!location) return [];
+  const locationId = asText(location._id);
+  const spaces = (await queryPublished(COLLECTIONS.spaces)).filter((space) =>
+    referenceId(space.location) === locationId &&
+    asBoolean(space.discoverable) &&
+    spaceStatus(space) !== "hidden",
+  );
+  const seen = new Set<string>();
+  for (const space of spaces) {
+    const routeSlug = asText(space.routeSlug);
+    if (!routeSlug) throw new Error(`Discoverable CHSpaces item "${asText(space.slug)}" has no routeSlug.`);
+    if (seen.has(routeSlug)) throw new Error(`CHSpaces has duplicate routeSlug "${routeSlug}" for location "${locationSlug}".`);
+    seen.add(routeSlug);
+  }
+  return spaces.map((space) => ({ space, location }));
 }
 
 async function hydrateProgramLocations(programs: WixRecord[]): Promise<WixRecord[]> {
@@ -915,6 +972,63 @@ export const wixCmsRepository: ContentRepository = {
           }
         : composed.manager,
     }, slug);
+  },
+  async getLocationSpaces(location) {
+    return (await discoverableLocationSpaces(location)).map(({ space, location: locationRecord }) =>
+      locationSpaceSummary(space, locationRecord));
+  },
+  async getLocationSpace(location, routeSlug) {
+    const matches = (await discoverableLocationSpaces(location))
+      .filter(({ space }) => asText(space.routeSlug) === routeSlug);
+    if (matches.length === 0) return undefined;
+    if (matches.length > 1) throw new Error(`CHSpaces has duplicate routeSlug "${routeSlug}" for location "${location}".`);
+
+    const { space, location: locationRecord } = matches[0];
+    const summary = locationSpaceSummary(space, locationRecord);
+    const [amenities, pageRecord] = await Promise.all([
+      queryReferences(COLLECTIONS.spaces, space, "amenities"),
+      referenceId(space.page) ? findOne(COLLECTIONS.pages, "_id", referenceId(space.page)) : undefined,
+    ]);
+    let composed: LocationSpacePageDocument | undefined;
+    if (pageRecord && asBoolean(pageRecord.published)) {
+      const pageKey = asText(pageRecord.pageKey);
+      const routeKey = asText(pageRecord.routeKey);
+      const routeParam = asText(pageRecord.routeParam);
+      composed = pageKey
+        ? await composePage<LocationSpacePageDocument>({ pageKey }, true)
+        : routeKey
+          ? await composePage<LocationSpacePageDocument>({ routeKey, routeParam }, true)
+          : undefined;
+    }
+
+    const heroImage = composed?.hero?.image || summary.image;
+    const gallery = [heroImage, ...wixGallery(space.gallery)].filter((image): image is string => Boolean(image));
+    const externalUrl = wixUrl(space.externalUrl);
+    const ctaLabel = asText(space.ctaLabel);
+    const story = composed?.story?.title && composed.story.body
+      ? {
+          eyebrow: composed.story.eyebrow,
+          title: composed.story.title,
+          text: composed.story.body,
+          image: composed.story.image,
+        }
+      : undefined;
+    return {
+      ...summary,
+      title: composed?.hero?.title || summary.title,
+      description: composed?.hero?.body || summary.description,
+      image: heroImage,
+      seo: {
+        title: composed?.seo?.title || `${summary.title} · ${summary.location.name} · Circles House`,
+        description: composed?.seo?.description || summary.description,
+      },
+      gallery: [...new Set(gallery)],
+      amenities: amenityLabels(amenities),
+      hours: asText(space.hours) || undefined,
+      cta: ctaLabel && externalUrl ? { label: ctaLabel, href: externalUrl } : undefined,
+      story,
+      faq: composed?.faq,
+    } satisfies LocationSpacePage;
   },
   async getMonthPage(slug) {
     return (await this.getStayCampaignByLegacySlug(slug))?.page;

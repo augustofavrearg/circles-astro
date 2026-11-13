@@ -9,6 +9,7 @@ import {
   mapNewsArticle,
   mapRoom,
   mapSiteSettings,
+  mapSpace,
   isCurrentOrUpcomingEvent,
   resolveCmsHref,
   richContentBlocks,
@@ -91,6 +92,14 @@ describe("Wix CMS canonical mappers", () => {
       label: "Open",
       href: "https://example.com",
     });
+  });
+
+  it("links only discoverable CHSpaces to their location-scoped detail route", () => {
+    const location = { slug: "andorra", address: "Andorra" };
+    expect(mapSpace({ title: "Restaurant", routeSlug: "restaurant", discoverable: true }, location).href)
+      .toBe("/locations/andorra/spaces/restaurant");
+    expect(mapSpace({ title: "Booths", routeSlug: "booths", discoverable: false }, location).href)
+      .toBe("/locations/andorra");
   });
 
   it("derives event labels and city from canonical event data", () => {

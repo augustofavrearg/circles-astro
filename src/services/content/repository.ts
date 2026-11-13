@@ -9,6 +9,7 @@ import {
   homePageFixture,
   lifePageFixture,
   locationPagesFixture,
+  locationSpacesFixture,
   membershipsPageFixture,
   monthPagesFixture,
   partnershipsPageFixture,
@@ -62,6 +63,12 @@ export const fixtureRepository: ContentRepository = {
   },
   async getLocationPage(slug: string) {
     return locationPagesFixture.find((page) => page.slug === slug);
+  },
+  async getLocationSpaces(location: string) {
+    return locationSpacesFixture.filter((space) => space.location.slug === location);
+  },
+  async getLocationSpace(location: string, space: string) {
+    return locationSpacesFixture.find((item) => item.location.slug === location && item.routeSlug === space);
   },
   async getCoworkingPage(city: string) {
     return coworkingPagesFixture.find((page) => page.city === city);

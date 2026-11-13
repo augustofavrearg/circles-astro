@@ -2,6 +2,7 @@
 import { IconMapPinFilled } from "@tabler/icons-react";
 import SiteLayout from "@/layouts/SiteLayout.astro";
 import LocationHero from "@/components/sections/locations/LocationHero.astro";
+import LocationSpaces from "@/components/sections/locations/LocationSpaces.astro";
 import ExperiencesCarousel from "@/components/sections/locations/ExperiencesCarousel.astro";
 import HouseManager from "@/components/sections/locations/HouseManager.astro";
 import RoomCard from "@/components/sections/shared/RoomCard.astro";
@@ -24,13 +25,19 @@ const page = await repository.getLocationPage(Astro.params.city ?? "");
 if (!page) return new Response("Not found", { status: 404 });
 
 // Reviews and "Happening now" come from the home page content for now.
-const [settings, rooms, home] = await Promise.all([repository.getSiteSettings(), repository.getRooms(page.slug), repository.getHomePage()]);
+const [settings, rooms, home, spaces] = await Promise.all([
+  repository.getSiteSettings(),
+  repository.getRooms(page.slug),
+  repository.getHomePage(),
+  repository.getLocationSpaces(page.slug),
+]);
 const booking = createCloudbedsProvider(import.meta.env.CLOUDBEDS_ALLOWED_ORIGIN);
 const { happeningNow } = home;
 const eventsCity = happeningNow.cities.find((city) => city.toLowerCase() === page.slug) ?? "all";
 
 const tabs = [
   { label: "Space", href: "#space" },
+  ...(spaces.length > 0 ? [{ label: "Explore", href: "#spaces" }] : []),
   { label: "Rooms", href: "#rooms" },
   { label: "Experiences", href: "#experiences" },
   { label: "Location", href: "#location" },
@@ -63,6 +70,8 @@ const tabs = [
       <Media src={page.space.image} alt="" placeholderTone="blue" />
     </div>
   </section>
+
+  {spaces.length > 0 && <LocationSpaces {spaces} locationName={page.hero.title} />}
 
   <section id="rooms" class="scroll-mt-32 px-4 pt-28 lg:px-6">
     <header class="text-center">
