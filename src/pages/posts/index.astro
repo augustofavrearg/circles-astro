@@ -1,0 +1,24 @@
+---
+import SiteLayout from "@/layouts/SiteLayout.astro";
+import PostsArchive from "@/components/sections/posts/PostsArchive.astro";
+import { getContentRepository } from "@/services/content/repository";
+
+const requestedPage = Number.parseInt(Astro.url.searchParams.get("page") ?? "1", 10);
+const page = Number.isFinite(requestedPage) && requestedPage > 0 ? requestedPage : 1;
+const repository = await getContentRepository();
+const [settings, postsPage] = await Promise.all([
+  repository.getSiteSettings(),
+  repository.getPostsPage(page, 18),
+]);
+
+if (page > postsPage.pageCount) return new Response("Not found", { status: 404 });
+---
+
+<SiteLayout
+  settings={settings}
+  title={page === 1 ? "Posts · Circles House" : `Posts, page ${page} · Circles House`}
+  description="Stories about community, coliving, coworking and the people building what comes next at Circles House."
+  noindex={page > 1}
+>
+  <PostsArchive {postsPage} />
+</SiteLayout>

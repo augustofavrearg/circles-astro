@@ -1,6 +1,6 @@
 # Events, programs and stay campaigns
 
-- Status: accepted
+- Status: superseded in part by ADR 0004
 - Date: 2026-11-12
 - Scope: event discovery, program geography and commercial monthly pages
 - Supersedes: the monthly routing and single-location program decisions in ADR 0001
@@ -40,8 +40,10 @@ pages.
 Programs keep stable canonical pages at `/programs/:slug`. A program page may
 offer location filtering without changing the program's identity.
 
-A new `CHStayCampaigns` collection connects one location, one `YYYY-MM` period
-and one `CHPages` content record. Its canonical route is
+A new `CHStayCampaigns` collection connects one location and one `YYYY-MM`
+period. ADR 0004 removes the requirement for each campaign to own a distinct
+`CHPages` content record; campaigns instead use reusable editorial composition.
+Its canonical route is
 `/locations/:location/stays/:period`. An optional `legacyRouteParam` supports
 permanent redirects from historical `/months/:slug` URLs. The combination of
 location and period must be unique. Because this Wix site has reached its global

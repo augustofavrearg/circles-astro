@@ -1,0 +1,72 @@
+---
+import SiteLayout from "@/layouts/SiteLayout.astro";
+import Media from "@/components/ui/Media.astro";
+import RichContentBlocks from "@/components/ui/RichContentBlocks.astro";
+import { WixRichContent } from "@/islands/WixRichContent";
+import { getContentRepository } from "@/services/content/repository";
+import { WIX_APPS } from "@wix/essentials";
+import { SEO } from "@wix/seo/components";
+import { loadSEOTagsServiceConfig } from "@wix/seo/services";
+import { seoTags } from "@wix/seo";
+
+export const wixMetadata = {
+  appDefId: WIX_APPS.blogs.id,
+  pageIdentifier: WIX_APPS.blogs.postPageMetadata.pageIdentifier,
+  identifiers: {
+    slug: WIX_APPS.blogs.postPageMetadata.identifiers.slug,
+  },
+};
+
+const slug = Astro.params.slug ?? "";
+const repository = await getContentRepository();
+const forwardedUrl = Astro.request.headers.get("x-wix-forwarded-url");
+const pageUrl = forwardedUrl && URL.canParse(forwardedUrl) && /^https?:$/.test(new URL(forwardedUrl).protocol)
+  ? forwardedUrl
+  : Astro.url.href;
+
+const [settings, post, seoTagsServiceConfig] = await Promise.all([
+  repository.getSiteSettings(),
+  repository.getPost(slug),
+  loadSEOTagsServiceConfig({
+    pageUrl,
+    itemType: seoTags.ItemType.BLOG_POST,
+    itemData: { slug },
+  }).catch(() => null),
+]);
+
+if (!post) return new Response("Not found", { status: 404 });
+---
+
+<SiteLayout
+  settings={settings}
+  title={post.seo.title}
+  description={post.seo.description}
+  useWixSeo={Boolean(seoTagsServiceConfig)}
+>
+  {seoTagsServiceConfig && <SEO.Tags seoTagsServiceConfig={seoTagsServiceConfig} slot="seo-tags" />}
+
+  <article class="pb-28">
+    <header class="border-b border-black/15 px-4 pb-14 pt-20 lg:px-6 lg:pb-20 lg:pt-28">
+      <div class="mx-auto max-w-5xl">
+        <a href="/posts" class="text-detail uppercase tracking-[0.14em] underline decoration-black/30 underline-offset-4">All posts</a>
+        <p class="mt-10 text-detail uppercase tracking-[0.12em] text-black/55">
+          {post.category} · {post.date}{post.minutesToRead ? ` · ${post.minutesToRead} min read` : ""}
+        </p>
+        <h1 class="mt-5 text-balance font-display text-[clamp(3rem,7.5vw,7rem)] leading-[0.92] tracking-[-0.045em]">{post.title}</h1>
+        {post.excerpt && <p class="mt-8 max-w-3xl text-[clamp(1rem,1.6vw,1.35rem)] leading-relaxed text-black/65">{post.excerpt}</p>}
+      </div>
+    </header>
+
+    {post.image && (
+      <div class="relative mx-auto mt-8 aspect-[16/9] max-h-[780px] max-w-[1500px] overflow-hidden bg-paper lg:mt-12">
+        <Media src={post.image} alt={post.imageAlt ?? ""} eager />
+      </div>
+    )}
+
+    <div class="mx-auto mt-14 max-w-3xl px-4 lg:mt-20 lg:px-0">
+      {post.richContent
+        ? <WixRichContent content={post.richContent} baseUrl={Astro.url.origin} />
+        : <RichContentBlocks blocks={post.body} />}
+    </div>
+  </article>
+</SiteLayout>

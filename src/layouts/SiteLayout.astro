@@ -11,6 +11,7 @@ type Props = {
   title?: string;
   description?: string;
   noindex?: boolean;
+  useWixSeo?: boolean;
 };
 
 const {
@@ -18,12 +19,14 @@ const {
   title = "Circles House",
   description = "The coliving and coworking community designed for entrepreneurs and innovators.",
   noindex = false,
+  useWixSeo = false,
 } = Astro.props;
 const currentPath = Astro.url.pathname;
 const seoPolicy = getSeoPolicy(import.meta.env, Astro.url);
 const robotsDirective = getRobotsDirective(seoPolicy, noindex);
 const canonicalUrl = noindex ? undefined : getCanonicalUrl(seoPolicy, currentPath);
 const navigation = settings.navigation ?? siteNavigation;
+const hasWixSeoTags = useWixSeo;
 ---
 
 <!doctype html>
@@ -31,11 +34,12 @@ const navigation = settings.navigation ?? siteNavigation;
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
-    <meta name="description" content={description} />
-    <meta name="robots" content={robotsDirective} />
-    {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
+    {!hasWixSeoTags && <meta name="description" content={description} />}
+    {!hasWixSeoTags && <meta name="robots" content={robotsDirective} />}
+    {!hasWixSeoTags && canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-    <title>{title}</title>
+    {!hasWixSeoTags && <title>{title}</title>}
+    <slot name="seo-tags" />
   </head>
   <body id="top">
     {settings.promotion && (

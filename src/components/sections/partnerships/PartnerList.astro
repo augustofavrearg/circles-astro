@@ -12,8 +12,8 @@ const { eyebrow, title, featuredLabel, items } = Astro.props;
   the rest are rows of logo | description | arrow on desktop and stacked blocks on mobile.
 -->
 <section class="pt-40 lg:pt-34">
-  <SectionHeading {eyebrow} {title} class="items-start text-left" />
-  <ul class="mt-20 px-4 lg:mt-16 lg:px-6">
+  {(eyebrow || title) && <SectionHeading eyebrow={eyebrow ?? ""} title={title ?? ""} class="items-start text-left" />}
+  <ul class:list={["px-4 lg:px-6", eyebrow || title ? "mt-20 lg:mt-16" : "lg:mt-0"]}>
     {items.map((partner) => (
       <li
         class:list={[
@@ -34,8 +34,8 @@ const { eyebrow, title, featuredLabel, items } = Astro.props;
           )}
           {partner.featured && (
             <div class:list={[partner.logo ? "mt-8 lg:mt-0" : ""]}>
-              <p class="text-detail">{featuredLabel}</p>
-              <p class="mt-1 font-display text-[2.25rem] leading-[1.2]">{partner.name}</p>
+              {featuredLabel && <p class="text-detail">{featuredLabel}</p>}
+              <p class:list={["font-display text-[2.25rem] leading-[1.2]", featuredLabel && "mt-1"]}>{partner.name}</p>
             </div>
           )}
         </div>

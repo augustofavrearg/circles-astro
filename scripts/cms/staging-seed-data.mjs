@@ -180,6 +180,46 @@ const pageSectionOverrides = {
   "location-barcelona.faq": {
     eyebrow: "FAQ",
   },
+  "location-andorra.hero": {
+    eyebrow: "Location",
+    lead: "The house",
+    subtitle: "A mountain home for living, working and reconnecting.",
+    body:
+      "Provisional staging copy for testing the Andorra location experience across devices and CMS filters.",
+    primaryCtaLabel: "Explore rooms",
+    primaryExternalUrl: "#rooms",
+  },
+  "location-andorra.space": {
+    lead: "Property amenities",
+    body:
+      "A provisional mountain house experience combining coliving, shared spaces, wellness and local food.",
+  },
+  "location-andorra.rooms": {
+    eyebrow: "Rooms",
+    body:
+      "Provisional room content used to validate a second location in the booking and room discovery flows.",
+  },
+  "location-andorra.band": {
+    primaryCtaLabel: "Join us",
+    primaryRouteKey: "memberships",
+  },
+  "location-andorra.experiences": {
+    eyebrow: "Experience",
+    subtitle: "Discover life in the Pyrenees",
+  },
+  "location-andorra.location": {
+    eyebrow: "Location",
+    body:
+      "Provisional staging information for testing how the Andorra location is presented before final address and editorial content are approved.",
+  },
+  "location-andorra.manager": {
+    eyebrow: "Meet your House Manager",
+    body:
+      "This provisional profile validates the location manager relationship and will be replaced with approved information.",
+  },
+  "location-andorra.faq": {
+    eyebrow: "FAQ",
+  },
   "june.hero": {
     eyebrow: "June @ Circles House Barcelona",
     title: "Say yes to a Month of New Experiences",
@@ -437,6 +477,16 @@ export const seedCollections = [
         reconcile: true,
       },
       {
+        key: "location-andorra",
+        data: page("location-andorra", "location", "location", {
+          routeParam: "andorra",
+          title: "Circles House Andorra · Test preview",
+          description:
+            "Provisional staging page used to validate the Andorra location experience.",
+        }),
+        editorialStatus: "provisional-test-data",
+      },
+      {
         key: "coworking-barcelona",
         data: page("coworking-barcelona", "coworking", "coworking", {
           routeParam: "barcelona",
@@ -517,6 +567,8 @@ export const seedCollections = [
       },
       {
         key: "andorra",
+        editorialStatus: "provisional-test-data",
+        reconcile: true,
         data: {
           slug: "andorra",
           name: "Circles House Andorra",
@@ -524,13 +576,16 @@ export const seedCollections = [
           city: "Andorra la Vella",
           country: "Andorra",
           timezone: "Europe/Andorra",
-          status: "coming-soon",
+          status: "open",
           summary: "A future Circles House location in the Pyrenees.",
           accessLabel: "Coming soon",
           featuredHome: true,
           homeSortOrder: 2,
           published: true,
           sortOrder: 2,
+        },
+        multiReferences: {
+          amenities: ["community-kitchen", "high-speed-wifi"],
         },
       },
     ],
@@ -563,6 +618,20 @@ export const seedCollections = [
           location: reference("CHLocations", "barcelona"),
           published: true,
           sortOrder: 2,
+        },
+      },
+      {
+        key: "andorra-test-house-manager",
+        editorialStatus: "provisional-test-data",
+        data: {
+          slug: "andorra-test-house-manager",
+          personTypes: ["house-manager"],
+          name: "Andorra Test Manager",
+          role: "House Manager",
+          bio: "Provisional staging profile used to validate the Andorra location page.",
+          location: reference("CHLocations", "andorra"),
+          published: true,
+          sortOrder: 10,
         },
       },
       {
@@ -668,6 +737,14 @@ export const seedCollections = [
       ["location-barcelona.location", "location-barcelona", "location.location", "In the hills above Barcelona"],
       ["location-barcelona.manager", "location-barcelona", "location.manager", "Hi, I'm Teagan, community manager."],
       ["location-barcelona.faq", "location-barcelona", "location.faq", "What you need to know"],
+      ["location-andorra.hero", "location-andorra", "location.hero", "Circles House Andorra"],
+      ["location-andorra.space", "location-andorra", "location.space", "A mountain house designed for connection"],
+      ["location-andorra.rooms", "location-andorra", "location.rooms", "Stay in the Pyrenees"],
+      ["location-andorra.band", "location-andorra", "location.band", "Stay longer and save more"],
+      ["location-andorra.experiences", "location-andorra", "location.experiences", "Slow down in Andorra"],
+      ["location-andorra.location", "location-andorra", "location.location", "In the heart of the Pyrenees"],
+      ["location-andorra.manager", "location-andorra", "location.manager", "Meet your Andorra host"],
+      ["location-andorra.faq", "location-andorra", "location.faq", "What you need to know"],
       ["coworking-barcelona.hero", "coworking-barcelona", "coworking.hero", "Work Surrounded by Nature"],
       ["coworking-barcelona.spaces", "coworking-barcelona", "coworking.spaces", "Coworking spaces"],
       ["coworking-barcelona.pricing", "coworking-barcelona", "coworking.pricing", "Coworking Pricing Options"],
@@ -883,6 +960,36 @@ export const seedCollections = [
         data: {
           itemKey: `location-barcelona.experiences.${key}`,
           section: reference("CHPageSections", "location-barcelona.experiences"),
+          title,
+          text,
+          wide,
+          published: true,
+          sortOrder: index + 1,
+        },
+      })),
+      ...[
+        ["coliving", "coliving"],
+        ["coworking", "coworking"],
+      ].map(([key, iconKey], index) => ({
+        key: `location-andorra.hero.${key}`,
+        editorialStatus: "provisional-test-data",
+        data: {
+          itemKey: `location-andorra.hero.${key}`,
+          section: reference("CHPageSections", "location-andorra.hero"),
+          iconKey,
+          published: true,
+          sortOrder: index + 1,
+        },
+      })),
+      ...[
+        ["mountains", "Explore the mountains", "Provisional experience content for testing the Andorra location page", false],
+        ["local-table", "Share a local table", "Provisional culinary experience connected to the future restaurant", true],
+      ].map(([key, title, text, wide], index) => ({
+        key: `location-andorra.experiences.${key}`,
+        editorialStatus: "provisional-test-data",
+        data: {
+          itemKey: `location-andorra.experiences.${key}`,
+          section: reference("CHPageSections", "location-andorra.experiences"),
           title,
           text,
           wide,
@@ -1113,21 +1220,46 @@ export const seedCollections = [
   {
     collectionId: "CHRooms",
     keyField: "slug",
-    items: canonicalRooms.map(({ amenities, ...room }, index) => ({
-      key: room.slug,
-      editorialStatus: "figma-with-provisional-booking-url-and-price",
-      data: {
-        ...room,
-        location: reference("CHLocations", "barcelona"),
-        houseLabel: "Barcelona House",
-        priceLabel: "Starting from",
-        priceValue: "€1.900/month",
-        bookingUrl: "https://hotels.cloudbeds.com/",
-        published: true,
-        sortOrder: index + 1,
-      },
-      multiReferences: { amenities },
-    })),
+    items: [
+      ...canonicalRooms.map(({ amenities, ...room }, index) => ({
+        key: room.slug,
+        editorialStatus: "figma-with-provisional-booking-url-and-price",
+        data: {
+          ...room,
+          location: reference("CHLocations", "barcelona"),
+          houseLabel: "Barcelona House",
+          priceLabel: "Starting from",
+          priceValue: "€1.900/month",
+          bookingUrl: "https://hotels.cloudbeds.com/",
+          published: true,
+          sortOrder: index + 1,
+        },
+        multiReferences: { amenities },
+      })),
+      ...[
+        ["andorra-mountain-studio-test", "Mountain Studio · Test", "Private studio used to validate the Andorra room flow.", "Mountain view", "€1.700/month"],
+        ["andorra-shared-suite-test", "Shared Suite · Test", "Shared suite used to validate multiple locations and room filters.", "Valley view", "€1.100/month"],
+      ].map(([slug, name, description, views, priceValue], index) => ({
+        key: slug,
+        editorialStatus: "provisional-test-data",
+        data: {
+          slug,
+          name,
+          occupancyType: index === 0 ? "private" : "shared",
+          description,
+          features: index === 0 ? ["Private bathroom", "Desk", "Mountain view"] : ["Shared bathroom", "Storage", "Valley view"],
+          views,
+          location: reference("CHLocations", "andorra"),
+          houseLabel: "Andorra House · Test",
+          priceLabel: "Test price",
+          priceValue,
+          bookingUrl: "https://hotels.cloudbeds.com/",
+          published: true,
+          sortOrder: index + 1,
+        },
+        multiReferences: { amenities: index === 0 ? ["desk", "wardrobe-storage"] : ["wardrobe-storage"] },
+      })),
+    ],
   },
   {
     collectionId: "CHEvents",
@@ -1203,6 +1335,48 @@ export const seedCollections = [
           sortOrder: 3,
         },
         editorialStatus: "figma-concept-provisional-date",
+      },
+      {
+        key: "andorra-mountain-breakfast-test-2027-02",
+        editorialStatus: "provisional-test-data",
+        data: {
+          slug: "andorra-mountain-breakfast-test-2027-02",
+          location: reference("CHLocations", "andorra"),
+          eventType: "circles",
+          title: "Mountain Breakfast · Test",
+          subtitle: "Provisional event for location filtering",
+          description: "Test content used to validate an Andorra event without a program.",
+          accessLabel: "Public",
+          venueName: "Circles House Andorra · Test",
+          venueAddress: "Andorra · provisional address",
+          startsAt: "2027-02-06T09:00:00.000Z",
+          endsAt: "2027-02-06T11:00:00.000Z",
+          timezone: "Europe/Andorra",
+          featuredHome: false,
+          published: true,
+          sortOrder: 1,
+        },
+      },
+      {
+        key: "andorra-wellness-session-test-2027-02",
+        editorialStatus: "provisional-test-data",
+        data: {
+          slug: "andorra-wellness-session-test-2027-02",
+          location: reference("CHLocations", "andorra"),
+          eventType: "circles",
+          title: "Wellness Session · Test",
+          subtitle: "Provisional event for the Andorra experience",
+          description: "Test content used to validate event cards and location filtering.",
+          accessLabel: "Members only",
+          venueName: "Circles House Andorra · Test",
+          venueAddress: "Andorra · provisional address",
+          startsAt: "2027-02-13T17:00:00.000Z",
+          endsAt: "2027-02-13T18:30:00.000Z",
+          timezone: "Europe/Andorra",
+          featuredHome: false,
+          published: true,
+          sortOrder: 2,
+        },
       },
     ],
   },
@@ -1406,8 +1580,8 @@ export const seedCollections = [
           sortOrder: 2,
         },
         multiReferences: {
-          pages: ["location-barcelona", "coworking-barcelona", "june"],
-          locations: ["barcelona"],
+          pages: ["location-barcelona", "location-andorra", "coworking-barcelona", "june"],
+          locations: ["barcelona", "andorra"],
         },
       },
       {

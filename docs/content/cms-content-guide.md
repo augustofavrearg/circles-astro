@@ -487,10 +487,18 @@ Important fields:
 - `image`, `video`, `gallery`: media.
 - Primary and secondary CTA fields: actions.
 - `layoutVariant`: approved presentation variation.
+- `sourceMode`: `manual`, `automatic`, or `curated`. An empty value is treated
+  as `manual` for backward compatibility.
+- `sourceKey`: a controlled source such as `location.rooms` or
+  `blog.featuredPosts`; it is required for automatic and curated sections.
+- `sourceLimit`: optional maximum number of loaded entities, from 1 to 100.
 - `enabled`: section visibility.
 - `sortOrder`: section order within the page.
 
-Marketing warning: `componentKey`, layout rules, and route fields are structural. Ask the Website Lead before changing them.
+`sourceKey` is structural and must use a value supported by the application. It
+is not a place for an arbitrary Wix query. Marketing warning: `componentKey`,
+source rules, layout rules, and route fields are structural. Ask the Website
+Lead before changing them.
 
 ### CHSectionItems — Section Items
 
@@ -505,6 +513,8 @@ Important fields:
 - `label`, `title`, `subtitle`, `text`, `value`: flexible local content.
 - `image`, `gallery`, `iconKey`: media and icon content.
 - Link fields: optional action.
+- `entityType`, `entityKey`: optional reference to one canonical entity when the
+  item is a curated editorial slot. Both fields must be completed together.
 - `highlighted`, `wide`, `size`: approved presentation flags.
 - `published`, `sortOrder`: visibility and order.
 
@@ -515,7 +525,10 @@ A Section Item is not a required wrapper for every entity.
 - A room exists in `CHRooms` even if no current page displays it.
 - Rooftop access exists in `CHAmenities` because several records can reuse it.
 - A benefit statement that only belongs to the Memberships benefits section belongs in `CHSectionItems`.
-- A page can display entities directly without creating Section Items for them.
+- An automatic section can display entities directly without creating Section
+  Items for them.
+- A curated section uses Section Items to select and order canonical entities;
+  it does not copy their operational data.
 
 Use a Section Item when the content is a repeated editorial piece whose meaning depends on its parent section. Use a reusable entity when the record has its own identity outside that section.
 

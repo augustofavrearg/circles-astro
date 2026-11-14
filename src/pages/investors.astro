@@ -1,0 +1,23 @@
+---
+import SiteLayout from "@/layouts/SiteLayout.astro";
+import PageIntro from "@/components/sections/shared/PageIntro.astro";
+import InvestorBenefits from "@/components/sections/for-investors/InvestorBenefits.astro";
+import InvestorFeatures from "@/components/sections/for-investors/InvestorFeatures.astro";
+import MemberDiscounts from "@/components/sections/shared/MemberDiscounts.astro";
+import Faq from "@/components/sections/shared/Faq.astro";
+import Newsletter from "@/components/sections/shared/Newsletter.astro";
+import { getContentRepository } from "@/services/content/repository";
+
+const repository = await getContentRepository();
+const [settings, page] = await Promise.all([repository.getSiteSettings(), repository.getForInvestorsPage()]);
+---
+
+<SiteLayout settings={settings} title={page.seo.title} description={page.seo.description}>
+  <PageIntro intro={page.intro} imageAlt="Vallvidrera at sunset, with Tibidabo in the distance" bodyClass="lg:max-w-[510px]" />
+  {page.benefits && page.benefits.items.length > 0 && <InvestorBenefits {...page.benefits} />}
+  {page.features && page.features.items.length > 0 && <InvestorFeatures {...page.features} />}
+  {page.band && <MemberDiscounts {...page.band} text={settings.promotion} compact class="lg:mt-21" />}
+  <!-- Figma For Investors keeps the questions in sentence case on desktop. -->
+  {page.faq && <Faq {...page.faq} centered uppercase={false} />}
+  <Newsletter newsletter={settings.newsletter} copy={settings.interfaceCopy} class="mt-12" />
+</SiteLayout>

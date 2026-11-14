@@ -32,11 +32,11 @@ import {
   mapDeal,
   mapEvent,
   mapFaq,
+  isActiveDeal,
   mapLegalPage,
   mapMembershipPlan,
+  mapLocationNavigationItem,
   mapNavigationItem,
-  mapNewsArticle,
-  mapNewsItem,
   mapPartner,
   mapRoom,
   mapSiteSettings,
@@ -52,6 +52,8 @@ import {
 } from "./wix-mappers";
 import { routes, siteNavigation } from "@/config/navigation";
 import type { NavigationItem, SiteNavigation } from "@/domain/navigation";
+import { getBlogPost, getBlogPostsPage, getFeaturedBlogPosts } from "./wix-blog";
+import { parseEditorialEntityReference, parseSectionSource } from "@/domain/editorial";
 
 export const COLLECTIONS = {
   siteSettings: "CHSiteSettings",
@@ -90,6 +92,12 @@ type LocationSpacePageDocument = Partial<LocationSpacePage> & {
 const CMS_CACHE_TTL_MS = 30_000;
 const cmsCache = new Map<string, { expiresAt: number; value: Promise<unknown> }>();
 
+type CmsQueryOptions = {
+  filter?: Record<string, unknown>;
+  limit?: number;
+  sortField?: string;
+};
+
 function cached<T>(key: string, loader: () => Promise<T>): Promise<T> {
   const now = Date.now();
   const existing = cmsCache.get(key);
@@ -103,16 +111,30 @@ function cached<T>(key: string, loader: () => Promise<T>): Promise<T> {
   return value;
 }
 
-async function queryPublished(collectionId: string, limit = 100, sortField: string | undefined = "sortOrder"): Promise<WixRecord[]> {
-  return cached(`published:${collectionId}:${limit}:${sortField ?? "none"}`, async () => {
-    let query = items
-      .query(collectionId)
-      .eq("published", true)
-      .limit(limit);
-    if (sortField) query = query.ascending(sortField);
-    const result = await query.find({ consistentRead: true });
-    return result.items as WixRecord[];
+async function queryItems(
+  collectionId: string,
+  { filter, limit = 100, sortField }: CmsQueryOptions = {},
+): Promise<WixRecord[]> {
+  const result = await items.query(
+    collectionId,
+    {
+      ...(filter ? { filter } : {}),
+      ...(sortField ? { sort: [{ fieldName: sortField, order: "ASC" as const }] } : {}),
+      paging: { limit, offset: 0 },
+    },
+    { consistentRead: true },
+  );
+  return result.items as WixRecord[];
+}
+
+async function queryAll(collectionId: string, limit = 100, sortField: string | undefined = "sortOrder"): Promise<WixRecord[]> {
+  return cached(`all:${collectionId}:${limit}:${sortField ?? "none"}`, async () => {
+    return queryItems(collectionId, { limit, sortField });
   });
+}
+
+async function queryPublished(collectionId: string, limit = 100, sortField: string | undefined = "sortOrder"): Promise<WixRecord[]> {
+  return (await queryAll(collectionId, limit, sortField)).filter((item) => asBoolean(item.published));
 }
 
 async function queryReferences(collectionId: string, item: WixRecord, field: string): Promise<WixRecord[]> {
@@ -126,8 +148,8 @@ async function queryReferences(collectionId: string, item: WixRecord, field: str
 
 async function findOne(collectionId: string, field: string, value: string): Promise<WixRecord | undefined> {
   return cached(`one:${collectionId}:${field}:${value}`, async () => {
-    const result = await items.query(collectionId).eq(field, value).limit(1).find({ consistentRead: true });
-    return result.items[0] as WixRecord | undefined;
+    const result = await queryItems(collectionId, { filter: { [field]: value }, limit: 1 });
+    return result[0];
   });
 }
 
@@ -139,6 +161,10 @@ async function getRequiredSingleton(collectionId: string, key = "global"): Promi
 
 async function getPublishedLocations(): Promise<WixRecord[]> {
   return queryPublished(COLLECTIONS.locations);
+}
+
+async function getEnabledPageSections(): Promise<WixRecord[]> {
+  return (await queryAll(COLLECTIONS.pageSections, 1000)).filter((section) => asBoolean(section.enabled));
 }
 
 function amenityLabels(records: WixRecord[]): string[] {
@@ -254,6 +280,7 @@ function contentFields(record: WixRecord) {
     highlighted: asBoolean(record.highlighted),
     wide: asBoolean(record.wide),
     size: asText(record.size) || undefined,
+    entity: parseEditorialEntityReference(record),
   };
 }
 
@@ -262,6 +289,7 @@ function splitParagraphs(value: string): string[] {
 }
 
 function composeSection(section: WixRecord, sectionItems: WixRecord[]): Record<string, unknown> {
+  const source = parseSectionSource(section);
   const componentKey = asText(section.componentKey);
   const primaryCta = mapCmsLink(section, "primary");
   const secondaryCta = mapCmsLink(section, "secondary");
@@ -287,6 +315,7 @@ function composeSection(section: WixRecord, sectionItems: WixRecord[]): Record<s
     primaryCta,
     secondaryCta,
     items: mappedItems,
+    ...(source.mode === "manual" ? {} : { source }),
   };
 
   if (componentKey === "home.hero") {
@@ -507,12 +536,11 @@ function pageIdentityLabel({ pageKey, routeKey, routeParam }: PageIdentity): str
 
 async function getPageRecord({ pageKey, routeKey, routeParam }: PageIdentity): Promise<WixRecord | undefined> {
   return cached(`page:${pageKey ?? ""}:${routeKey ?? ""}:${routeParam ?? ""}`, async () => {
-    let query = items.query(COLLECTIONS.pages).eq("published", true).limit(1);
-    if (pageKey) query = query.eq("pageKey", pageKey);
-    if (routeKey) query = query.eq("routeKey", routeKey);
-    if (routeParam) query = query.eq("routeParam", routeParam);
-    const result = await query.find({ consistentRead: true });
-    return result.items[0] as WixRecord | undefined;
+    const pages = await queryPublished(COLLECTIONS.pages, 1000, undefined);
+    return pages.find((page) =>
+      (!pageKey || asText(page.pageKey) === pageKey) &&
+      (!routeKey || asText(page.routeKey) === routeKey) &&
+      (!routeParam || asText(page.routeParam) === routeParam));
   });
 }
 
@@ -540,28 +568,13 @@ async function composePage<T>(identity: PageIdentity, optional = false): Promise
   const pageId = asText(page._id);
   if (!pageId) throw new Error(`CHPages item "${pageLabel}" has no _id.`);
 
-  const sectionResult = await items
-    .query(COLLECTIONS.pageSections)
-    .eq("page", pageId)
-    .eq("enabled", true)
-    .ascending("sortOrder")
-    .limit(100)
-    .find({ consistentRead: true });
-  const sections = sectionResult.items as WixRecord[];
-  const sectionItems = await Promise.all(
-    sections.map(async (section) => {
-      const sectionId = asText(section._id);
-      if (!sectionId) return [];
-      const result = await items
-        .query(COLLECTIONS.sectionItems)
-        .eq("section", sectionId)
-        .eq("published", true)
-        .ascending("sortOrder")
-        .limit(100)
-        .find({ consistentRead: true });
-      return result.items as WixRecord[];
-    }),
-  );
+  const [allSections, allSectionItems] = await Promise.all([
+    getEnabledPageSections(),
+    queryPublished(COLLECTIONS.sectionItems, 1000),
+  ]);
+  const sections = allSections.filter((section) => referenceId(section.page) === pageId);
+  const itemsBySection = Map.groupBy(allSectionItems, (item) => referenceId(item.section));
+  const sectionItems = sections.map((section) => itemsBySection.get(asText(section._id)) ?? []);
 
   const document: Record<string, unknown> = { seo: { title: asText(page.seoTitle), description: asText(page.seoDescription) } };
   if (routeParam) {
@@ -594,10 +607,18 @@ function navigationArea(item: WixRecord): string {
   return asText(item.area).toLowerCase().replaceAll(/[-_\s]/g, "");
 }
 
-function buildNavigation(records: WixRecord[]): SiteNavigation {
+function buildNavigation(records: WixRecord[], locations: WixRecord[]): SiteNavigation {
   const byParent = Map.groupBy(records, (item) => asText(item.parentKey));
+  const locationItems = locations
+    .map(mapLocationNavigationItem)
+    .filter((item): item is NavigationItem => Boolean(item));
   const mapTree = (item: WixRecord): NavigationItem =>
-    mapNavigationItem(item, (byParent.get(asText(item.itemKey)) ?? []).map(mapTree));
+    mapNavigationItem(
+      item,
+      asText(item.itemKey) === "header.locations" && locationItems.length > 0
+        ? locationItems
+        : (byParent.get(asText(item.itemKey)) ?? []).map(mapTree),
+    );
   const roots = records.filter((item) => !asText(item.parentKey));
   const inAreas = (...areas: string[]) => roots.filter((item) => areas.includes(navigationArea(item))).map(mapTree);
   const primary = inAreas("headerprimary", "header");
@@ -616,7 +637,7 @@ function buildNavigation(records: WixRecord[]): SiteNavigation {
 
   return {
     header: {
-      locations: headerLocations.length ? headerLocations : derivedLocations.length ? derivedLocations : siteNavigation.header.locations,
+      locations: locationItems.length ? locationItems : headerLocations.length ? headerLocations : derivedLocations.length ? derivedLocations : siteNavigation.header.locations,
       primary: primary.length ? primary : siteNavigation.header.primary,
       actions: {
         login: findAction("login") ?? siteNavigation.header.actions.login,
@@ -632,13 +653,13 @@ function buildNavigation(records: WixRecord[]): SiteNavigation {
 }
 
 async function loadCmsHomePage(): Promise<HomePage> {
-  const [composedPage, locations, spaces, eventRecords, testimonials, newsRecords] = await Promise.all([
+  const [composedPage, locations, spaces, eventRecords, testimonials, featuredPosts] = await Promise.all([
     requirePage<Partial<HomePage>>({ pageKey: "home" }),
     getPublishedLocations(),
     queryPublished(COLLECTIONS.spaces),
     queryPublished(COLLECTIONS.events, 100, "homeSortOrder"),
     queryPublished(COLLECTIONS.testimonials, 100, "homeSortOrder"),
-    queryPublished(COLLECTIONS.newsArticles, 100, "homeSortOrder"),
+    getFeaturedBlogPosts(6),
   ]);
   const page = requireCompleteHomePage(composedPage);
   const locationById = new Map(locations.map((location) => [asText(location._id), location]));
@@ -651,7 +672,6 @@ async function loadCmsHomePage(): Promise<HomePage> {
     .filter((event) => asBoolean(event.featuredHome) && isCurrentOrUpcomingEvent(event))
     .map((event) => mapEvent(event, locationLookup));
   const featuredTestimonials = testimonials.filter((testimonial) => asBoolean(testimonial.featuredHome));
-  const featuredNews = newsRecords.filter((article) => asBoolean(article.featuredHome)).map(mapNewsItem);
   const locationCards = locations
     .filter((location) => asBoolean(location.featuredHome))
     .sort((left, right) => Number(left.homeSortOrder ?? 0) - Number(right.homeSortOrder ?? 0));
@@ -697,7 +717,7 @@ async function loadCmsHomePage(): Promise<HomePage> {
     })),
     news: {
       ...page.news,
-      items: featuredNews,
+      items: featuredPosts,
     },
   };
 }
@@ -841,18 +861,19 @@ function getCmsHomePage(): Promise<HomePage> {
 }
 
 async function loadSiteSettings() {
-  const [settings, socialResult, copyResult, navigation] = await Promise.all([
+  const [settings, socialResult, copyResult, navigation, locations] = await Promise.all([
     getRequiredSingleton(COLLECTIONS.siteSettings),
-    items.query(COLLECTIONS.socialLinks).eq("published", true).ascending("sortOrder").limit(50).find({ consistentRead: true }),
-    items.query(COLLECTIONS.interfaceCopy).limit(500).find({ consistentRead: true }),
+    queryItems(COLLECTIONS.socialLinks, { filter: { published: true }, sortField: "sortOrder", limit: 50 }),
+    queryItems(COLLECTIONS.interfaceCopy, { limit: 500 }),
     queryPublished(COLLECTIONS.navigationItems),
+    getPublishedLocations(),
   ]);
   return {
-    ...mapSiteSettings(settings, socialResult.items as WixRecord[]),
+    ...mapSiteSettings(settings, socialResult),
     interfaceCopy: Object.fromEntries(
-      (copyResult.items as WixRecord[]).map((item) => [asText(item.copyKey), asText(item.value)]).filter(([key]) => Boolean(key)),
+      copyResult.map((item) => [asText(item.copyKey), asText(item.value)]).filter(([key]) => Boolean(key)),
     ),
-    navigation: buildNavigation(navigation),
+    navigation: buildNavigation(navigation, locations),
   };
 }
 
@@ -1064,14 +1085,12 @@ export const wixCmsRepository: ContentRepository = {
       throw new Error(`CHPrograms item "${slug}" is missing _id, name or valid CHLocations references.`);
     }
 
-    const result = await items
-      .query(COLLECTIONS.events)
-      .eq("published", true)
-      .eq("program", programId)
-      .ascending("sortOrder")
-      .limit(100)
-      .find({ consistentRead: true });
-    const events = (result.items as WixRecord[]).map((event) => {
+    const result = await queryItems(COLLECTIONS.events, {
+      filter: { published: true, program: programId },
+      sortField: "sortOrder",
+      limit: 100,
+    });
+    const events = result.map((event) => {
       validateEventProgramReference(event, new Map([[programId, program]]));
       return mapEvent(event, lookup, new Map([[programId, program]]));
     });
@@ -1114,8 +1133,8 @@ export const wixCmsRepository: ContentRepository = {
     } satisfies ProgramSummary));
   },
   async getTeamMembers() {
-    const result = await items.query(COLLECTIONS.people).eq("published", true).ascending("sortOrder").limit(100).find({ consistentRead: true });
-    return (result.items as WixRecord[]).filter((item) => hasPersonType(item, "team")).map(mapTeamMember);
+    const result = await queryItems(COLLECTIONS.people, { filter: { published: true }, sortField: "sortOrder", limit: 100 });
+    return result.filter((item) => hasPersonType(item, "team")).map(mapTeamMember);
   },
   async getEventsPage() {
     const [document, locations] = await Promise.all([
@@ -1141,8 +1160,7 @@ export const wixCmsRepository: ContentRepository = {
     ]);
     const lookup = buildLocationLookup(locations);
     const programsById = new Map(programs.map((program) => [asText(program._id), program]));
-    const result = await items.query(COLLECTIONS.events).eq("published", true).ascending("sortOrder").limit(100).find({ consistentRead: true });
-    const eventRecords = result.items as WixRecord[];
+    const eventRecords = await queryItems(COLLECTIONS.events, { filter: { published: true }, sortField: "sortOrder", limit: 100 });
     eventRecords.forEach((event) => validateEventProgramReference(event, programsById));
     return eventRecords
       .filter((item) => isCurrentOrUpcomingEvent(item))
@@ -1166,8 +1184,9 @@ export const wixCmsRepository: ContentRepository = {
     return mapEvent(event, buildLocationLookup(locations), programsById);
   },
   async getDeals() {
-    const result = await items.query(COLLECTIONS.deals).eq("published", true).ascending("sortOrder").limit(50).find({ consistentRead: true });
-    return (result.items as WixRecord[]).map(mapDeal);
+    return (await queryPublished(COLLECTIONS.deals, 50))
+      .filter((item) => isActiveDeal(item))
+      .map(mapDeal);
   },
   async getRooms(location) {
     const locations = await getPublishedLocations();
@@ -1180,14 +1199,13 @@ export const wixCmsRepository: ContentRepository = {
         ] as const),
       ),
     );
-    let query = items.query(COLLECTIONS.rooms).eq("published", true).ascending("sortOrder").limit(100);
+    let roomItems = await queryPublished(COLLECTIONS.rooms);
     if (location) {
       const locationItem = locations.find((item) => asText(item.slug) === location);
       if (!locationItem) return [];
-      query = query.eq("location", asText(locationItem._id));
+      roomItems = roomItems.filter((room) => referenceId(room.location) === asText(locationItem._id));
     }
-    const result = await query.find({ consistentRead: true });
-    return Promise.all((result.items as WixRecord[]).map(async (item) => {
+    return Promise.all(roomItems.map(async (item) => {
       const room = mapRoom(item, lookup);
       const amenities = await queryReferences(COLLECTIONS.rooms, item, "amenities");
       return {
@@ -1197,15 +1215,11 @@ export const wixCmsRepository: ContentRepository = {
       };
     }));
   },
-  async getNewsArticles() {
-    const records = await queryPublished(COLLECTIONS.newsArticles, 100, undefined);
-    return records
-      .sort((left, right) => new Date(asText(right.publishedAt)).valueOf() - new Date(asText(left.publishedAt)).valueOf())
-      .map(mapNewsArticle);
+  async getPostsPage(page, pageSize) {
+    return getBlogPostsPage(page, pageSize);
   },
-  async getNewsArticle(slug) {
-    const item = await findOne(COLLECTIONS.newsArticles, "slug", slug);
-    return item && asBoolean(item.published) ? mapNewsArticle(item) : undefined;
+  async getPost(slug) {
+    return getBlogPost(slug);
   },
   async getLegalPage(slug) {
     const storedSlug = slug === "notice" ? "legal-notice" : slug;

@@ -13,8 +13,8 @@ const [settings, page] = await Promise.all([repository.getSiteSettings(), reposi
 
 <SiteLayout settings={settings} title={page.seo.title} description={page.seo.description}>
   <PageIntro intro={page.intro} imageAlt="Barcelona seen from Circles House" bodyClass="lg:max-w-[580px]" />
-  <PartnerList {...page.partners} />
-  <MemberDiscounts {...page.membership} text={settings.promotion} />
-  <Faq {...page.faq} centered />
+  {page.partners.items.length > 0 && <PartnerList {...page.partners} />}
+  {page.membership && <MemberDiscounts {...page.membership} text={settings.promotion} />}
+  {page.faq && <Faq {...page.faq} centered />}
   <Newsletter newsletter={settings.newsletter} copy={settings.interfaceCopy} class="mt-12" />
 </SiteLayout>

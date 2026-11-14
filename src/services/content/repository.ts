@@ -110,16 +110,27 @@ export const fixtureRepository: ContentRepository = {
   async getRooms(location?: string) {
     return location ? roomsFixture.filter((room) => room.locationId === location) : roomsFixture;
   },
-  async getNewsArticles() {
-    return homePageFixture.news.items.map((item) => ({
+  async getPostsPage(page = 1, pageSize = 18) {
+    const allItems = homePageFixture.news.items.map((item) => ({
       ...item,
       slug: item.href.split("/").filter(Boolean).at(-1) ?? "news",
+      href: `/posts/${item.href.split("/").filter(Boolean).at(-1) ?? "news"}`,
       body: [{ type: "paragraph" as const, text: item.excerpt }],
       seo: { title: item.title, description: item.excerpt },
     }));
+    const safePage = Math.max(1, Math.floor(page));
+    const safePageSize = Math.max(1, Math.floor(pageSize));
+    const total = allItems.length;
+    return {
+      items: allItems.slice((safePage - 1) * safePageSize, safePage * safePageSize),
+      page: safePage,
+      pageSize: safePageSize,
+      total,
+      pageCount: Math.max(1, Math.ceil(total / safePageSize)),
+    };
   },
-  async getNewsArticle(slug: string) {
-    return (await this.getNewsArticles()).find((article) => article.slug === slug);
+  async getPost(slug: string) {
+    return (await this.getPostsPage(1, 100)).items.find((article) => article.slug === slug);
   },
   async getLegalPage() {
     return undefined;

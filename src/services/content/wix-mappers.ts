@@ -153,7 +153,8 @@ export function resolveCmsHref(routeKey: unknown, routeParam?: unknown, anchor?:
       case "partnerships": href = routes.partnerships; break;
       case "ambassadors": href = routes.ambassadors; break;
       case "events": href = parameter ? routes.cityEvents(parameter) : routes.events; break;
-      case "news": href = routes.news; break;
+      case "news":
+      case "posts": href = routes.posts; break;
       case "location": href = routes.location(requireRouteParam(key, parameter)); break;
       case "coworking": href = routes.coworking(requireRouteParam(key, parameter)); break;
       case "month":
@@ -255,6 +256,18 @@ export function mapDeal(item: WixRecord): Deal {
     cta: ctaLabel && ctaHref ? { label: ctaLabel, href: ctaHref } : undefined,
     image: wixUrl(item.image) || undefined,
   };
+}
+
+/** Keeps scheduled promotions inside their inclusive CMS validity window. */
+export function isActiveDeal(item: WixRecord, now = new Date()): boolean {
+  const startsOn = asDate(item.startsOn);
+  if (startsOn && now < startsOn) return false;
+
+  const endsOn = asDate(item.endsOn);
+  if (!endsOn) return true;
+  const inclusiveEnd = new Date(endsOn);
+  inclusiveEnd.setUTCHours(23, 59, 59, 999);
+  return now <= inclusiveEnd;
 }
 
 function asDate(value: unknown): Date | undefined {
@@ -436,7 +449,7 @@ export function mapNewsItem(item: WixRecord): NewsItem {
     category: asText(item.category),
     date: dateLabel(item.publishedAt),
     image: wixUrl(item.image) || undefined,
-    href: `/news/${encodeURIComponent(slug)}`,
+    href: `/posts/${encodeURIComponent(slug)}`,
   };
 }
 
@@ -527,6 +540,19 @@ export function mapNavigationItem(item: WixRecord, children: readonly Navigation
     image: wixUrl(item.image) || undefined,
     menuLabel: asText(item.menuLabel) || undefined,
     children: children.length ? children : undefined,
+  };
+}
+
+export function mapLocationNavigationItem(location: WixRecord): NavigationItem | undefined {
+  const slug = asText(location.slug);
+  if (!slug || !asBoolean(location.published)) return undefined;
+  const place = asText(location.shortName) || asText(location.city) || asText(location.name) || slug;
+  const country = asText(location.country);
+  return {
+    status: "link",
+    label: [place, country].filter(Boolean).join(", "),
+    href: routes.location(slug),
+    image: wixUrl(location.cardImage) || wixUrl(location.heroImage) || undefined,
   };
 }
 

@@ -42,11 +42,11 @@ function collectReferences(value, references = []) {
 }
 
 describe("Wix staging seed manifest", () => {
-  it("covers every canonical collection with 173 uniquely keyed records", () => {
+  it("covers every canonical collection with 191 uniquely keyed records", () => {
     expect(seedCollections.map(({ collectionId }) => collectionId)).toEqual(
       expectedCollections,
     );
-    expect(seedCollections.flatMap(({ items }) => items)).toHaveLength(173);
+    expect(seedCollections.flatMap(({ items }) => items)).toHaveLength(191);
 
     for (const { collectionId, keyField, items } of seedCollections) {
       const keys = items.map(({ key }) => key);
@@ -128,13 +128,36 @@ describe("Wix staging seed manifest", () => {
     expect(pages?.items.find(({ key }) => key === "location-barcelona")?.data.seoTitle).toBe("Circles House Barcelona");
   });
 
-  it("limits seed reconciliation to the Barcelona location contract", () => {
+  it("provides clearly provisional Andorra data for cross-location testing", () => {
+    const pages = seedCollections.find(({ collectionId }) => collectionId === "CHPages");
+    const sections = seedCollections.find(({ collectionId }) => collectionId === "CHPageSections");
+    const items = seedCollections.find(({ collectionId }) => collectionId === "CHSectionItems");
+    const rooms = seedCollections.find(({ collectionId }) => collectionId === "CHRooms");
+    const events = seedCollections.find(({ collectionId }) => collectionId === "CHEvents");
+
+    expect(pages?.items.find(({ key }) => key === "location-andorra")?.editorialStatus).toBe("provisional-test-data");
+    expect(sections?.items.filter(({ key }) => key.startsWith("location-andorra."))).toHaveLength(8);
+    expect(items?.items.filter(({ key }) => key.startsWith("location-andorra.hero."))).toHaveLength(2);
+    expect(items?.items.filter(({ key }) => key.startsWith("location-andorra.experiences."))).toHaveLength(2);
+    expect(rooms?.items.filter(({ data }) => data.location?.$seedReference?.key === "andorra")).toHaveLength(2);
+    expect(events?.items.filter(({ data }) => data.location?.$seedReference?.key === "andorra")).toHaveLength(2);
+    const andorra = seedCollections.find(({ collectionId }) => collectionId === "CHLocations")?.items.find(({ key }) => key === "andorra");
+    const faqs = seedCollections.find(({ collectionId }) => collectionId === "CHFaqs");
+    expect(andorra).toMatchObject({
+      reconcile: true,
+      data: { status: "open" },
+      multiReferences: { amenities: ["community-kitchen", "high-speed-wifi"] },
+    });
+    expect(faqs?.items.some(({ multiReferences }) => multiReferences?.pages?.includes("location-andorra"))).toBe(true);
+  });
+
+  it("limits seed reconciliation to the approved location contracts", () => {
     const reconciled = seedCollections.flatMap(({ collectionId, items }) =>
       items.filter(({ reconcile }) => reconcile).map(({ key }) => `${collectionId}:${key}`),
     );
 
-    expect(reconciled).toHaveLength(13);
-    expect(reconciled.every((key) => key.includes("location-barcelona"))).toBe(true);
+    expect(reconciled).toHaveLength(14);
+    expect(reconciled.filter((key) => !key.includes("location-barcelona"))).toEqual(["CHLocations:andorra"]);
   });
 
   it("composes Memberships from editorial sections and reusable entities", () => {

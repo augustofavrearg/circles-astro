@@ -1,17 +1,3 @@
 ---
-import SiteLayout from "@/layouts/SiteLayout.astro";
-import NewsGrid from "@/components/sections/shared/NewsGrid.astro";
-import { getContentRepository } from "@/services/content/repository";
-
-const repository = await getContentRepository();
-const [settings, articles] = await Promise.all([
-  repository.getSiteSettings(),
-  repository.getNewsArticles(),
-]);
+return Astro.redirect(`/posts${Astro.url.search}`, 301);
 ---
-
-<SiteLayout settings={settings} title="News · Circles House" description="Latest news and announcements from Circles House.">
-  <div class="pb-28">
-    <NewsGrid eyebrow="News" title="Latest announcements" items={articles} />
-  </div>
-</SiteLayout>

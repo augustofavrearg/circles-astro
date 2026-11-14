@@ -114,7 +114,19 @@ export type NewsItem = {
 export type NewsArticle = NewsItem & {
   slug: string;
   body: FaqBlock[];
+  /** Native Wix Blog document, rendered with Ricos when present. */
+  richContent?: unknown;
+  imageAlt?: string;
+  minutesToRead?: number;
   seo: { title: string; description: string };
+};
+
+export type PostsPage = {
+  items: NewsArticle[];
+  page: number;
+  pageSize: number;
+  total: number;
+  pageCount: number;
 };
 
 export type LegalPage = {
@@ -227,7 +239,7 @@ export type FaqSection = { eyebrow: string; title: string; items: FaqItem[] };
 export type AmbassadorsPage = {
   seo: { title: string; description: string };
   intro: PageIntro;
-  faq: FaqSection;
+  faq?: FaqSection;
 };
 
 export type Partner = {
@@ -244,9 +256,9 @@ export type Partner = {
 export type PartnershipsPage = {
   seo: { title: string; description: string };
   intro: PageIntro;
-  partners: { eyebrow: string; title: string; featuredLabel: string; items: Partner[] };
-  membership: CtaBand;
-  faq: FaqSection;
+  partners: { eyebrow?: string; title?: string; featuredLabel?: string; items: Partner[] };
+  membership?: CtaBand;
+  faq?: FaqSection;
 };
 
 /** A promotion on /deals. `description` keeps paragraphs separated by a blank line. */
@@ -325,10 +337,10 @@ export type InvestorFeature = { title: string; text: string; cta?: Link; image?:
 export type ForInvestorsPage = {
   seo: { title: string; description: string };
   intro: PageIntro;
-  benefits: { eyebrow: string; title: string; items: InvestorBenefit[] };
-  features: { eyebrow: string; title: string; items: InvestorFeature[] };
-  band: CtaBand;
-  faq: FaqSection;
+  benefits?: { eyebrow: string; title: string; items: InvestorBenefit[] };
+  features?: { eyebrow: string; title: string; items: InvestorFeature[] };
+  band?: CtaBand;
+  faq?: FaqSection;
 };
 
 export type TeamMember = {
@@ -343,9 +355,9 @@ export type TeamMember = {
 export type TeamPage = {
   seo: { title: string; description: string };
   intro: PageIntro;
-  members: { eyebrow: string; title: string };
-  band: CtaBand;
-  faq: FaqSection;
+  members?: { eyebrow?: string; title?: string };
+  band?: CtaBand;
+  faq?: FaqSection;
 };
 
 export type WhatIsCirclesPage = {
@@ -522,7 +534,7 @@ export interface ContentRepository {
   getEvents(filters?: EventFilters): Promise<EventSummary[]>;
   getEvent(slug: string): Promise<EventSummary | undefined>;
   getRooms(location?: string): Promise<import("./booking").Room[]>;
-  getNewsArticles(): Promise<NewsArticle[]>;
-  getNewsArticle(slug: string): Promise<NewsArticle | undefined>;
+  getPostsPage(page?: number, pageSize?: number): Promise<PostsPage>;
+  getPost(slug: string): Promise<NewsArticle | undefined>;
   getLegalPage(slug: string): Promise<LegalPage | undefined>;
 }

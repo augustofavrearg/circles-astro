@@ -17,9 +17,9 @@ const [settings, page, members] = await Promise.all([
 
 <SiteLayout settings={settings} title={page.seo.title} description={page.seo.description}>
   <PageIntro intro={page.intro} imageAlt="Members talking on the Circles House rooftop" bodyClass="lg:max-w-[460px]" />
-  <TeamGrid {...page.members} {members} />
-  <MemberDiscounts {...page.band} text={settings.promotion} compact class="lg:mt-28" />
+  {members.length > 0 && <TeamGrid {...page.members} {members} />}
+  {page.band && <MemberDiscounts {...page.band} text={settings.promotion} compact class="lg:mt-28" />}
   <!-- Figma Team keeps the questions in sentence case on desktop. -->
-  <Faq {...page.faq} centered uppercase={false} />
+  {page.faq && <Faq {...page.faq} centered uppercase={false} />}
   <Newsletter newsletter={settings.newsletter} copy={settings.interfaceCopy} class="mt-12" />
 </SiteLayout>

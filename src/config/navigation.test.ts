@@ -19,6 +19,7 @@ describe("site navigation", () => {
     expect(routes.cityEvents("barcelona")).toBe("/events?location=barcelona");
     expect(routes.stayCampaign("barcelona", "2027-06")).toBe("/locations/barcelona/stays/2027-06");
     expect(routes.cityRooms("barcelona")).toBe("/rooms/barcelona");
+    expect(routes.locationRoom("barcelona", "panoramic-loft")).toBe("/locations/barcelona/rooms/panoramic-loft");
     expect(routes.locationSpace("andorra", "restaurant")).toBe("/locations/andorra/spaces/restaurant");
   });
 
@@ -36,7 +37,7 @@ describe("site navigation", () => {
   });
 
   it("publishes implemented content routes and contains no co-owner entry", () => {
-    expect(siteNavigation.footer.extras.find((item) => item.label === "News")?.status).toBe("link");
+    expect(siteNavigation.footer.extras.find((item) => item.label === "Posts")?.status).toBe("link");
     expect(siteNavigation.footer.extras.some((item) => item.label.toLowerCase().includes("co-owner"))).toBe(false);
     expect(siteNavigation.footer.legal.every((item) => item.status === "link")).toBe(true);
   });

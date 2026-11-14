@@ -2,7 +2,7 @@
 import type { ForInvestorsPage } from "@/domain/content";
 import Eyebrow from "@/components/ui/Eyebrow.astro";
 
-type Props = ForInvestorsPage["benefits"];
+type Props = NonNullable<ForInvestorsPage["benefits"]>;
 const { eyebrow, title, items } = Astro.props;
 ---
 

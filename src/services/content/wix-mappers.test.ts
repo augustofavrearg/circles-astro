@@ -6,10 +6,12 @@ import {
   mapEvent,
   mapFaq,
   mapNavigationItem,
+  mapLocationNavigationItem,
   mapNewsArticle,
   mapRoom,
   mapSiteSettings,
   mapSpace,
+  isActiveDeal,
   isCurrentOrUpcomingEvent,
   resolveCmsHref,
   richContentBlocks,
@@ -43,9 +45,24 @@ describe("Wix CMS canonical mappers", () => {
     expect(resolveCmsHref("location", "barcelona", "rooms")).toBe("/locations/barcelona#rooms");
     expect(resolveCmsHref("events", "barcelona")).toBe("/events?location=barcelona");
     expect(resolveCmsHref("memberships")).toBe("/memberships");
+    expect(resolveCmsHref("for-investors")).toBe("/investors");
     expect(resolveCmsHref("month", "june")).toBe("/months/june");
     expect(resolveCmsHref("program", "founders-month")).toBe("/programs/founders-month");
     expect(() => resolveCmsHref("co-owners")).toThrow(/Unknown Wix CMS routeKey/);
+  });
+
+  it("maps every published location to a selectable navigation destination", () => {
+    expect(mapLocationNavigationItem({
+      slug: "andorra",
+      shortName: "Andorra",
+      country: "Andorra",
+      published: true,
+    })).toMatchObject({
+      status: "link",
+      label: "Andorra, Andorra",
+      href: "/locations/andorra",
+    });
+    expect(mapLocationNavigationItem({ slug: "hidden", published: false })).toBeUndefined();
   });
 
   it("normalizes Wix program dates", () => {
@@ -92,6 +109,15 @@ describe("Wix CMS canonical mappers", () => {
       label: "Open",
       href: "https://example.com",
     });
+  });
+
+  it("keeps deals only inside their inclusive validity window", () => {
+    const now = new Date("2026-11-13T12:00:00.000Z");
+
+    expect(isActiveDeal({ startsOn: "2026-11-13", endsOn: "2026-11-13" }, now)).toBe(true);
+    expect(isActiveDeal({ startsOn: "2026-11-14" }, now)).toBe(false);
+    expect(isActiveDeal({ endsOn: "2026-11-12" }, now)).toBe(false);
+    expect(isActiveDeal({}, now)).toBe(true);
   });
 
   it("links only discoverable CHSpaces to their location-scoped detail route", () => {
@@ -217,7 +243,7 @@ describe("Wix CMS canonical mappers", () => {
     expect(mapNavigationItem({ label: "News", status: "link", routeKey: "news" })).toEqual({
       status: "link",
       label: "News",
-      href: "/news",
+      href: "/posts",
       image: undefined,
       menuLabel: undefined,
       children: undefined,

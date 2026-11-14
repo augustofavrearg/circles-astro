@@ -2,6 +2,11 @@ import { spawnSync } from "node:child_process";
 import { readFile } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import {
+  editorialEntityTypes,
+  editorialSourceKeys,
+  editorialSourceModes,
+} from "./cms/editorial-composition-schema.mjs";
 
 const repositoryRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const wixConfig = JSON.parse(
@@ -118,7 +123,12 @@ const audit = [];
 for (const collection of collections) {
   const collectionId = collection.id;
   const encodedId = encodeURIComponent(collectionId);
-  const includeHealthItems = process.env.CMS_AUDIT_HEALTH === "1" && ["CHStayCampaigns", "CHSpaces"].includes(collectionId);
+  const includeHealthItems = process.env.CMS_AUDIT_HEALTH === "1" && [
+    "CHStayCampaigns",
+    "CHSpaces",
+    "CHPageSections",
+    "CHSectionItems",
+  ].includes(collectionId);
   const [permissions, indexes, itemQuery] = await Promise.all([
     optionalRequest(
       `https://www.wixapis.com/wix-data/v1/permissions?data_collection_id=${encodedId}`,
@@ -221,8 +231,8 @@ if (process.env.CMS_AUDIT_HEALTH === "1") {
     CHPeople: [10, "name"],
     CHPrograms: [12, "name"],
     CHStayCampaigns: [8, "name"],
-    CHPageSections: [25, "sectionKey"],
-    CHSectionItems: [20, "itemKey"],
+    CHPageSections: [28, "sectionKey"],
+    CHSectionItems: [22, "itemKey"],
     CHSocialLinks: [6, "label"],
     CHNavigationItems: [15, "label"],
     CHSpaces: [23, "title"],
@@ -281,6 +291,38 @@ if (process.env.CMS_AUDIT_HEALTH === "1") {
   }
   if (discoverableSpaces.some((item) => String(item.status ?? "").toLowerCase() === "hidden")) {
     issues.push({ collectionId: "CHSpaces", issue: "discoverable-space-is-hidden" });
+  }
+
+  const pageSections = byId.get("CHPageSections")?.items ?? [];
+  for (const section of pageSections) {
+    const mode = String(section.sourceMode ?? "").trim() || "manual";
+    const sourceKey = String(section.sourceKey ?? "").trim();
+    const sourceLimit = section.sourceLimit;
+    if (!editorialSourceModes.includes(mode)) {
+      issues.push({ collectionId: "CHPageSections", itemKey: section.sectionKey, issue: "invalid-source-mode", actual: mode });
+    }
+    if ((mode === "manual" && sourceKey) || (mode !== "manual" && !sourceKey)) {
+      issues.push({ collectionId: "CHPageSections", itemKey: section.sectionKey, issue: "inconsistent-source-key" });
+    }
+    if (sourceKey && !editorialSourceKeys.includes(sourceKey)) {
+      issues.push({ collectionId: "CHPageSections", itemKey: section.sectionKey, issue: "invalid-source-key", actual: sourceKey });
+    }
+    if (sourceLimit !== undefined && sourceLimit !== null && sourceLimit !== "" &&
+      (!Number.isInteger(Number(sourceLimit)) || Number(sourceLimit) < 1 || Number(sourceLimit) > 100)) {
+      issues.push({ collectionId: "CHPageSections", itemKey: section.sectionKey, issue: "invalid-source-limit", actual: sourceLimit });
+    }
+  }
+
+  const sectionItems = byId.get("CHSectionItems")?.items ?? [];
+  for (const item of sectionItems) {
+    const entityType = String(item.entityType ?? "").trim();
+    const entityKey = String(item.entityKey ?? "").trim();
+    if (Boolean(entityType) !== Boolean(entityKey)) {
+      issues.push({ collectionId: "CHSectionItems", itemKey: item.itemKey, issue: "incomplete-entity-reference" });
+    }
+    if (entityType && !editorialEntityTypes.includes(entityType)) {
+      issues.push({ collectionId: "CHSectionItems", itemKey: item.itemKey, issue: "invalid-entity-type", actual: entityType });
+    }
   }
 
   for (const [id, [expectedFieldCount, expectedDisplayField]] of Object.entries(
@@ -356,7 +398,7 @@ if (process.env.CMS_AUDIT_HEALTH === "1") {
         auditedAt: new Date().toISOString(),
         expectedCollectionCount: expectedIds.size,
         actualCustomCollectionCount: customCollections.length,
-        expectedManualFieldCount: 284,
+        expectedManualFieldCount: 289,
         actualManualFieldCount: manualFieldCount,
         userIndexCount,
         itemCount,
@@ -369,7 +411,7 @@ if (process.env.CMS_AUDIT_HEALTH === "1") {
           missingCollections.length === 0 &&
           unexpectedCollections.length === 0 &&
           issues.length === 0 &&
-          manualFieldCount === 284,
+          manualFieldCount === 289,
       },
       null,
       2,
