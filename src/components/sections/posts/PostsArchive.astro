@@ -4,7 +4,16 @@ import Media from "@/components/ui/Media.astro";
 
 type Props = { postsPage: PostsPage };
 const { postsPage } = Astro.props;
-const pageHref = (page: number) => page === 1 ? "/posts" : `/posts?page=${page}`;
+const archiveHref = (category?: string, page = 1) => {
+  const params = new URLSearchParams();
+  if (category) params.set("category", category);
+  if (page > 1) params.set("page", String(page));
+  const query = params.toString();
+  return query ? `/posts?${query}` : "/posts";
+};
+const pageHref = (page: number) => archiveHref(postsPage.activeCategory?.slug, page);
+const visibleCategories = postsPage.categories.filter((category) =>
+  category.postCount > 0 || category.slug === postsPage.activeCategory?.slug);
 ---
 
 <section aria-labelledby="posts-title" class="pb-28">
@@ -23,8 +32,43 @@ const pageHref = (page: number) => page === 1 ? "/posts" : `/posts?page=${page}`
   </header>
 
   <div class="mx-auto max-w-[1500px] px-4 pt-12 lg:px-6 lg:pt-20">
+    {visibleCategories.length > 0 && (
+      <nav aria-label="Filter posts by category" class="mb-10 border-b border-black/15 pb-5 lg:mb-14">
+        <ul class="flex flex-wrap gap-x-2 gap-y-3">
+          <li>
+            <a
+              href={archiveHref()}
+              aria-current={!postsPage.activeCategory ? "page" : undefined}
+              class:list={[
+                "inline-flex min-h-11 items-center border px-5 text-detail uppercase tracking-[0.12em] transition-colors",
+                !postsPage.activeCategory ? "border-black bg-black text-white" : "border-black/20 hover:border-black",
+              ]}
+            >
+              All
+            </a>
+          </li>
+          {visibleCategories.map((category) => (
+            <li>
+              <a
+                href={archiveHref(category.slug)}
+                aria-current={postsPage.activeCategory?.slug === category.slug ? "page" : undefined}
+                class:list={[
+                  "inline-flex min-h-11 items-center border px-5 text-detail uppercase tracking-[0.12em] transition-colors",
+                  postsPage.activeCategory?.slug === category.slug
+                    ? "border-black bg-black text-white"
+                    : "border-black/20 hover:border-black",
+                ]}
+              >
+                {category.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    )}
+
     <div class="mb-8 flex items-center justify-between border-b border-black/15 pb-4 text-detail uppercase tracking-[0.12em]">
-      <span>Latest posts</span>
+      <span>{postsPage.activeCategory ? `${postsPage.activeCategory.label} posts` : "Latest posts"}</span>
       <span>{postsPage.total} {postsPage.total === 1 ? "story" : "stories"}</span>
     </div>
 
@@ -55,7 +99,11 @@ const pageHref = (page: number) => page === 1 ? "/posts" : `/posts?page=${page}`
         ))}
       </div>
     ) : (
-      <p class="py-24 text-center font-display text-h4">No posts have been published yet.</p>
+      <p class="py-24 text-center font-display text-h4">
+        {postsPage.activeCategory
+          ? `No ${postsPage.activeCategory.label.toLowerCase()} posts have been published yet.`
+          : "No posts have been published yet."}
+      </p>
     )}
 
     {postsPage.pageCount > 1 && (

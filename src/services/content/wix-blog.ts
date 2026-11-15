@@ -1,9 +1,10 @@
 import { categories, posts } from "@wix/blog";
-import type { NewsArticle, NewsItem, PostsPage } from "@/domain/content";
+import type { NewsArticle, NewsItem, PostCategory, PostsPage } from "@/domain/content";
 import { wixUrl } from "./wix-mappers";
 
 const CACHE_TTL_MS = 30_000;
-let categoryCache: { expiresAt: number; value: Promise<Map<string, string>> } | undefined;
+type BlogCategory = PostCategory & { id: string };
+let categoryCache: { expiresAt: number; value: Promise<BlogCategory[]> } | undefined;
 
 function formatDate(value: Date | null | undefined): string {
   return value
@@ -11,16 +12,29 @@ function formatDate(value: Date | null | undefined): string {
     : "";
 }
 
-async function categoryLabels(): Promise<Map<string, string>> {
+function categorySlug(label: string): string {
+  return label
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
+async function blogCategories(): Promise<BlogCategory[]> {
   if (categoryCache && categoryCache.expiresAt > Date.now()) return categoryCache.value;
 
-  const value = categories
-    .listCategories({ paging: { limit: 100 } })
-    .then((result) => new Map(
-      (result.categories ?? [])
-        .filter((category): category is typeof category & { _id: string } => Boolean(category._id))
-        .map((category) => [category._id, category.label || "Stories"]),
-    ));
+  const value = categories.listCategories({ paging: { limit: 100 } }).then((result) =>
+    (result.categories ?? [])
+      .filter((category): category is typeof category & { _id: string } => Boolean(category._id))
+      .map((category) => ({
+        id: category._id,
+        slug: (category.slug || categorySlug(category.label || "Stories")).toLowerCase(),
+        label: category.label || "Stories",
+        postCount: category.postCount ?? 0,
+      }))
+      .sort((left, right) => left.label.localeCompare(right.label)),
+  );
   categoryCache = { expiresAt: Date.now() + CACHE_TTL_MS, value };
   return value;
 }
@@ -57,21 +71,39 @@ function mapBlogPost(post: posts.Post, labels: Map<string, string>): NewsArticle
   };
 }
 
-export async function getBlogPostsPage(page = 1, pageSize = 18): Promise<PostsPage> {
+export async function getBlogPostsPage(page = 1, pageSize = 18, categorySlug?: string): Promise<PostsPage> {
   const safePageSize = Math.min(100, Math.max(1, Math.floor(pageSize)));
   const safePage = Math.max(1, Math.floor(page));
-  const [result, labels] = await Promise.all([
-    posts.listPosts({
-      sort: "PUBLISHED_DATE_DESC",
-      paging: { limit: safePageSize, offset: (safePage - 1) * safePageSize },
-      fieldsets: ["URL"],
-    }),
-    categoryLabels(),
-  ]);
+  const categoryItems = await blogCategories();
+  const activeCategory = categorySlug
+    ? categoryItems.find((category) => category.slug === categorySlug)
+    : undefined;
+  if (categorySlug && !activeCategory) {
+    return {
+      items: [],
+      categories: categoryItems,
+      page: safePage,
+      pageSize: safePageSize,
+      total: 0,
+      pageCount: 1,
+    };
+  }
+
+  const result = await posts.listPosts({
+    ...(activeCategory ? { categoryIds: [activeCategory.id] } : {}),
+    sort: "PUBLISHED_DATE_DESC",
+    paging: { limit: safePageSize, offset: (safePage - 1) * safePageSize },
+    fieldsets: ["URL"],
+  });
+  const labels = new Map(categoryItems.map((category) => [category.id, category.label]));
   const total = result.metaData?.total ?? result.posts?.length ?? 0;
 
   return {
     items: (result.posts ?? []).map((post) => mapBlogPost(post, labels)),
+    categories: categoryItems.map(({ slug, label, postCount }) => ({ slug, label, postCount })),
+    ...(activeCategory
+      ? { activeCategory: { slug: activeCategory.slug, label: activeCategory.label, postCount: activeCategory.postCount } }
+      : {}),
     page: safePage,
     pageSize: safePageSize,
     total,
@@ -80,14 +112,14 @@ export async function getBlogPostsPage(page = 1, pageSize = 18): Promise<PostsPa
 }
 
 export async function getFeaturedBlogPosts(limit = 6): Promise<NewsItem[]> {
-  let [result, labels] = await Promise.all([
+  let [result, categoryItems] = await Promise.all([
     posts.listPosts({
       featured: true,
       sort: "PUBLISHED_DATE_DESC",
       paging: { limit: Math.min(100, Math.max(1, limit)) },
       fieldsets: ["URL"],
     }),
-    categoryLabels(),
+    blogCategories(),
   ]);
   if (!result.posts?.length) {
     result = await posts.listPosts({
@@ -96,15 +128,17 @@ export async function getFeaturedBlogPosts(limit = 6): Promise<NewsItem[]> {
       fieldsets: ["URL"],
     });
   }
+  const labels = new Map(categoryItems.map((category) => [category.id, category.label]));
   return (result.posts ?? []).map((post) => mapBlogPost(post, labels));
 }
 
 export async function getBlogPost(slug: string): Promise<NewsArticle | undefined> {
   try {
-    const [result, labels] = await Promise.all([
+    const [result, categoryItems] = await Promise.all([
       posts.getPostBySlug(slug, { fieldsets: ["URL", "RICH_CONTENT", "SEO", "CONTENT_TEXT"] }),
-      categoryLabels(),
+      blogCategories(),
     ]);
+    const labels = new Map(categoryItems.map((category) => [category.id, category.label]));
     return result.post ? mapBlogPost(result.post, labels) : undefined;
   } catch (error) {
     const wixError = error as {

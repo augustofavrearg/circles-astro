@@ -41,6 +41,11 @@ content to be visited directly. The standard route families are:
 - `/programs/:program`
 - `/posts` and `/posts/:post`
 
+Wix Blog Posts are the single canonical editorial entity. Editorial concepts
+such as News are Wix Blog categories, not separate collections or route
+families. `/posts` may be filtered with a stable category slug, for example
+`/posts?category=news`; the canonical detail route remains `/posts/:post`.
+
 Not every collection item needs a detail route. The supported exposure levels
 are embedded content, a collection page, a collection page plus entity detail,
 or an external destination. Deals and partners may be presented inside Pages

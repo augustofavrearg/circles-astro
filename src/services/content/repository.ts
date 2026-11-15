@@ -131,7 +131,7 @@ export const fixtureRepository: ContentRepository = {
       },
     };
   },
-  async getPostsPage(page = 1, pageSize = 18) {
+  async getPostsPage(page = 1, pageSize = 18, category) {
     const allItems = homePageFixture.news.items.map((item) => ({
       ...item,
       slug: item.href.split("/").filter(Boolean).at(-1) ?? "news",
@@ -141,9 +141,24 @@ export const fixtureRepository: ContentRepository = {
     }));
     const safePage = Math.max(1, Math.floor(page));
     const safePageSize = Math.max(1, Math.floor(pageSize));
-    const total = allItems.length;
+    const categories = [...new Set(allItems.map((item) => item.category))]
+      .map((label) => ({
+        label,
+        slug: label.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""),
+        postCount: allItems.filter((item) => item.category === label).length,
+      }))
+      .sort((left, right) => left.label.localeCompare(right.label));
+    const activeCategory = category ? categories.find((item) => item.slug === category) : undefined;
+    const filteredItems = activeCategory
+      ? allItems.filter((item) => item.category === activeCategory.label)
+      : category
+        ? []
+        : allItems;
+    const total = filteredItems.length;
     return {
-      items: allItems.slice((safePage - 1) * safePageSize, safePage * safePageSize),
+      items: filteredItems.slice((safePage - 1) * safePageSize, safePage * safePageSize),
+      categories,
+      ...(activeCategory ? { activeCategory } : {}),
       page: safePage,
       pageSize: safePageSize,
       total,

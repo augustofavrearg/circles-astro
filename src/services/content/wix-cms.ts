@@ -1273,8 +1273,8 @@ export const wixCmsRepository: ContentRepository = {
       },
     };
   },
-  async getPostsPage(page, pageSize) {
-    return getBlogPostsPage(page, pageSize);
+  async getPostsPage(page, pageSize, category) {
+    return getBlogPostsPage(page, pageSize, category);
   },
   async getPost(slug) {
     return getBlogPost(slug);

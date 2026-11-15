@@ -59,4 +59,18 @@ describe("event discovery repository contract", () => {
     await expect(fixtureRepository.getRoom("barcelona", "king-studio")).resolves.toBeUndefined();
     await expect(fixtureRepository.getRoom("andorra", "king-studio-terrace-sea-view")).resolves.toBeUndefined();
   });
+
+  it("filters the posts archive by a stable category slug", async () => {
+    await expect(fixtureRepository.getPostsPage(1, 18, "news")).resolves.toMatchObject({
+      activeCategory: { slug: "news", label: "News" },
+      total: 1,
+      items: [{ category: "News" }],
+    });
+    const missingCategory = await fixtureRepository.getPostsPage(1, 18, "missing");
+    expect(missingCategory).toMatchObject({
+      total: 0,
+      items: [],
+    });
+    expect(missingCategory).not.toHaveProperty("activeCategory");
+  });
 });

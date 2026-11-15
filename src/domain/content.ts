@@ -121,8 +121,16 @@ export type NewsArticle = NewsItem & {
   seo: { title: string; description: string };
 };
 
+export type PostCategory = {
+  slug: string;
+  label: string;
+  postCount: number;
+};
+
 export type PostsPage = {
   items: NewsArticle[];
+  categories: PostCategory[];
+  activeCategory?: PostCategory;
   page: number;
   pageSize: number;
   total: number;
@@ -558,7 +566,7 @@ export interface ContentRepository {
   getEvent(slug: string): Promise<EventSummary | undefined>;
   getRooms(location?: string): Promise<import("./booking").Room[]>;
   getRoom(location: string, room: string): Promise<import("./booking").RoomDetailPage | undefined>;
-  getPostsPage(page?: number, pageSize?: number): Promise<PostsPage>;
+  getPostsPage(page?: number, pageSize?: number, category?: string): Promise<PostsPage>;
   getPost(slug: string): Promise<NewsArticle | undefined>;
   getLegalPage(slug: string): Promise<LegalPage | undefined>;
 }

@@ -5,20 +5,25 @@ import { getContentRepository } from "@/services/content/repository";
 
 const requestedPage = Number.parseInt(Astro.url.searchParams.get("page") ?? "1", 10);
 const page = Number.isFinite(requestedPage) && requestedPage > 0 ? requestedPage : 1;
+const category = Astro.url.searchParams.get("category")?.trim().toLowerCase() || undefined;
 const repository = await getContentRepository();
 const [settings, postsPage] = await Promise.all([
   repository.getSiteSettings(),
-  repository.getPostsPage(page, 18),
+  repository.getPostsPage(page, 18, category),
 ]);
 
+if (category && !postsPage.activeCategory) return new Response("Not found", { status: 404 });
 if (page > postsPage.pageCount) return new Response("Not found", { status: 404 });
+const categoryLabel = postsPage.activeCategory?.label;
 ---
 
 <SiteLayout
   settings={settings}
-  title={page === 1 ? "Posts · Circles House" : `Posts, page ${page} · Circles House`}
+  title={categoryLabel
+    ? `${categoryLabel} posts${page > 1 ? `, page ${page}` : ""} · Circles House`
+    : page === 1 ? "Posts · Circles House" : `Posts, page ${page} · Circles House`}
   description="Stories about community, coliving, coworking and the people building what comes next at Circles House."
-  noindex={page > 1}
+  noindex={page > 1 || Boolean(category)}
 >
   <PostsArchive {postsPage} />
 </SiteLayout>

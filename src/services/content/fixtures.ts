@@ -234,7 +234,7 @@ export const homePageFixture: HomePage = {
         title: "The Science of Supper: How Community Dinners Cultivate Wellbeing",
         excerpt: "Why sharing a table can improve happiness, resilience and the quality of our connections.",
         contentType: "feature",
-        category: "Announcement",
+        category: "News",
         date: "Aug 21, 2025",
         href: "/#news",
         image: "/images/news/community-dinners.png",
