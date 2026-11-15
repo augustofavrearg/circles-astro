@@ -5,6 +5,7 @@ import {
   mapDeal,
   mapEvent,
   mapFaq,
+  mapCoworkingLocationNavigationItem,
   mapNavigationItem,
   mapLocationNavigationItem,
   mapNewsArticle,
@@ -63,6 +64,27 @@ describe("Wix CMS canonical mappers", () => {
       href: "/locations/andorra",
     });
     expect(mapLocationNavigationItem({ slug: "hidden", published: false })).toBeUndefined();
+  });
+
+  it("maps coworking locations only when their published page is available", () => {
+    const location = {
+      slug: "barcelona",
+      shortName: "Barcelona",
+      country: "Spain",
+      published: true,
+    };
+
+    expect(mapCoworkingLocationNavigationItem(location, true)).toMatchObject({
+      status: "link",
+      label: "Barcelona, Spain",
+      href: "/coworking/barcelona",
+    });
+    expect(mapCoworkingLocationNavigationItem({ ...location, slug: "andorra", shortName: "Andorra", country: "Andorra" }, false)).toEqual({
+      status: "comingSoon",
+      label: "Andorra, Andorra",
+      image: undefined,
+      badge: "Coming soon",
+    });
   });
 
   it("normalizes Wix program dates", () => {
@@ -255,7 +277,7 @@ describe("Wix CMS canonical mappers", () => {
     expect(mapNavigationItem({ label: "News", status: "link", routeKey: "news" })).toEqual({
       status: "link",
       label: "News",
-      href: "/posts",
+      href: "/posts?category=news",
       image: undefined,
       menuLabel: undefined,
       children: undefined,

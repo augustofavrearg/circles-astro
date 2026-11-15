@@ -153,7 +153,7 @@ export function resolveCmsHref(routeKey: unknown, routeParam?: unknown, anchor?:
       case "partnerships": href = routes.partnerships; break;
       case "ambassadors": href = routes.ambassadors; break;
       case "events": href = parameter ? routes.cityEvents(parameter) : routes.events; break;
-      case "news":
+      case "news": href = routes.postCategory("news"); break;
       case "posts": href = routes.posts; break;
       case "location": href = routes.location(requireRouteParam(key, parameter)); break;
       case "coworking": href = routes.coworking(requireRouteParam(key, parameter)); break;
@@ -557,6 +557,21 @@ export function mapLocationNavigationItem(location: WixRecord): NavigationItem |
     href: routes.location(slug),
     image: wixUrl(location.cardImage) || wixUrl(location.heroImage) || undefined,
   };
+}
+
+export function mapCoworkingLocationNavigationItem(location: WixRecord, available: boolean): NavigationItem | undefined {
+  const slug = asText(location.slug);
+  if (!slug || !asBoolean(location.published)) return undefined;
+  const place = asText(location.shortName) || asText(location.city) || asText(location.name) || slug;
+  const country = asText(location.country);
+  const shared = {
+    label: [place, country].filter(Boolean).join(", "),
+    image: wixUrl(location.cardImage) || wixUrl(location.heroImage) || undefined,
+  };
+
+  return available
+    ? { status: "link", ...shared, href: routes.coworking(slug) }
+    : { status: "comingSoon", ...shared, badge: "Coming soon" };
 }
 
 export function hasPersonType(item: WixRecord, type: string): boolean {

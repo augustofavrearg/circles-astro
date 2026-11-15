@@ -22,6 +22,7 @@ const {
   useWixSeo = false,
 } = Astro.props;
 const currentPath = Astro.url.pathname;
+const currentLocation = `${Astro.url.pathname}${Astro.url.search}`;
 const seoPolicy = getSeoPolicy(import.meta.env, Astro.url);
 const robotsDirective = getRobotsDirective(seoPolicy, noindex);
 const canonicalUrl = noindex ? undefined : getCanonicalUrl(seoPolicy, currentPath);
@@ -47,8 +48,8 @@ const hasWixSeoTags = useWixSeo;
         {settings.promotion}
       </div>
     )}
-    <HeaderMenu client:load navigation={navigation.header} {currentPath} />
+    <HeaderMenu client:load navigation={navigation.header} currentPath={currentLocation} />
     <main><slot /></main>
-    <Footer navigation={navigation.footer} footerImage={settings.footer.image} contact={settings.contact} socials={settings.socials} {currentPath} />
+    <Footer navigation={navigation.footer} footerImage={settings.footer.image} contact={settings.contact} socials={settings.socials} currentPath={currentLocation} />
   </body>
 </html>

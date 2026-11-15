@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { routes, siteNavigation } from "./navigation";
+import { routes, siteNavigation, withDealsNavigation, withPostsNavigation } from "./navigation";
 
 describe("site navigation", () => {
-  it("keeps Members Login hidden until authentication exists", () => {
-    expect(siteNavigation.header.actions.login).toEqual({ status: "hidden", label: "Members Login" });
+  it("does not expose an authentication action", () => {
+    expect("login" in siteNavigation.header.actions).toBe(false);
   });
 
   it("uses canonical routes instead of home anchors", () => {
@@ -12,6 +12,8 @@ describe("site navigation", () => {
     expect(links.every((item) => !item.href.includes("#"))).toBe(true);
     expect(links.find((item) => item.label === "Coliving")?.href).toBe(routes.location("barcelona"));
     expect(links.find((item) => item.label === "Events")?.href).toBe(routes.events);
+    expect(links.find((item) => item.label === "Posts")?.href).toBe(routes.posts);
+    expect(links.find((item) => item.label === "Deals")?.href).toBe(routes.deals);
     expect(siteNavigation.header.primary
       .flatMap((item) => "children" in item ? item.children ?? [] : [])
       .some((item) => item.status === "link" && item.href.startsWith("/months/")))
@@ -37,8 +39,40 @@ describe("site navigation", () => {
   });
 
   it("publishes implemented content routes and contains no co-owner entry", () => {
-    expect(siteNavigation.footer.extras.find((item) => item.label === "Posts")?.status).toBe("link");
+    expect(siteNavigation.footer.extras.find((item) => item.label === "News")).toEqual({
+      status: "link",
+      label: "News",
+      href: "/posts?category=news",
+    });
     expect(siteNavigation.footer.extras.some((item) => item.label.toLowerCase().includes("co-owner"))).toBe(false);
     expect(siteNavigation.footer.legal.every((item) => item.status === "link")).toBe(true);
+  });
+
+  it("adds Posts after Events to CMS navigation without duplicating it", () => {
+    const cmsNavigation = [
+      { status: "link", label: "Community", href: routes.lifeAtCircles },
+      { status: "link", label: "Happening Now", href: routes.events },
+      { status: "link", label: "About", href: routes.whatIsCircles },
+    ] as const;
+
+    expect(withPostsNavigation(cmsNavigation).map((item) => item.label)).toEqual([
+      "Community",
+      "Happening Now",
+      "Posts",
+      "About",
+    ]);
+    expect(withPostsNavigation(withPostsNavigation(cmsNavigation)).filter((item) => item.label === "Posts")).toHaveLength(1);
+  });
+
+  it("adds Deals to CMS navigation without duplicating it", () => {
+    const cmsNavigation = [
+      { status: "link", label: "About", href: routes.whatIsCircles },
+    ] as const;
+
+    expect(withDealsNavigation(cmsNavigation)).toEqual([
+      ...cmsNavigation,
+      { status: "link", label: "Deals", href: routes.deals },
+    ]);
+    expect(withDealsNavigation(withDealsNavigation(cmsNavigation)).filter((item) => item.label === "Deals")).toHaveLength(1);
   });
 });

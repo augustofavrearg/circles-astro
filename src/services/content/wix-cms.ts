@@ -36,6 +36,7 @@ import {
   isActiveDeal,
   mapLegalPage,
   mapMembershipPlan,
+  mapCoworkingLocationNavigationItem,
   mapLocationNavigationItem,
   mapNavigationItem,
   mapPartner,
@@ -51,7 +52,7 @@ import {
   type LocationLookup,
   type WixRecord,
 } from "./wix-mappers";
-import { routes, siteNavigation } from "@/config/navigation";
+import { routes, siteNavigation, withDealsNavigation, withPostsNavigation } from "@/config/navigation";
 import type { NavigationItem, SiteNavigation } from "@/domain/navigation";
 import { getBlogPost, getBlogPostsPage, getFeaturedBlogPosts } from "./wix-blog";
 import { parseEditorialEntityReference, parseSectionSource } from "@/domain/editorial";
@@ -627,26 +628,69 @@ function navigationArea(item: WixRecord): string {
   return asText(item.area).toLowerCase().replaceAll(/[-_\s]/g, "");
 }
 
-function buildNavigation(records: WixRecord[], locations: WixRecord[]): SiteNavigation {
+function isRouteFamily(item: NavigationItem, route: string): boolean {
+  return item.status === "link" && (item.href === route || item.href.startsWith(`${route}/`));
+}
+
+function normalizeCmsPrimaryNavigation(items: readonly NavigationItem[], coworkingItems: readonly NavigationItem[]): readonly NavigationItem[] {
+  const withoutRooms = items.filter((item) => !isRouteFamily(item, routes.rooms));
+  if (withoutRooms.some((item) => isRouteFamily(item, "/coworking"))) return withoutRooms;
+
+  const fallbackCoworking = siteNavigation.header.primary.find((item) => isRouteFamily(item, "/coworking"));
+  if (!fallbackCoworking || fallbackCoworking.status !== "link") return withoutRooms;
+  const children = coworkingItems.length ? coworkingItems : fallbackCoworking.children;
+  const firstAvailable = children?.find((item) => item.status === "link");
+  const coworking: NavigationItem = {
+    ...fallbackCoworking,
+    href: firstAvailable?.status === "link" ? firstAvailable.href : fallbackCoworking.href,
+    children,
+  };
+  const colivingIndex = withoutRooms.findIndex((item) => isRouteFamily(item, "/locations"));
+  if (colivingIndex < 0) return [coworking, ...withoutRooms];
+  return [...withoutRooms.slice(0, colivingIndex + 1), coworking, ...withoutRooms.slice(colivingIndex + 1)];
+}
+
+function buildNavigation(records: WixRecord[], locations: WixRecord[], pages: WixRecord[]): SiteNavigation {
   const byParent = Map.groupBy(records, (item) => asText(item.parentKey));
   const locationItems = locations
     .map(mapLocationNavigationItem)
     .filter((item): item is NavigationItem => Boolean(item));
-  const mapTree = (item: WixRecord): NavigationItem =>
-    mapNavigationItem(
-      item,
-      asText(item.itemKey) === "header.locations" && locationItems.length > 0
-        ? locationItems
-        : (byParent.get(asText(item.itemKey)) ?? []).map(mapTree),
-    );
+  const coworkingLocations = new Set(
+    pages
+      .filter((page) => asText(page.routeKey) === "coworking")
+      .map((page) => asText(page.routeParam))
+      .filter(Boolean),
+  );
+  const coworkingItems = locations
+    .map((location) => mapCoworkingLocationNavigationItem(location, coworkingLocations.has(asText(location.slug))))
+    .filter((item): item is NavigationItem => Boolean(item));
+  const mapTree = (item: WixRecord): NavigationItem => {
+    const rootHeaderItem = !asText(item.parentKey) && ["headerprimary", "header"].includes(navigationArea(item));
+    const routeKey = asText(item.routeKey);
+    const isColiving = rootHeaderItem && routeKey === "location";
+    const isCoworking = rootHeaderItem && routeKey === "coworking";
+    const mappedItem = isColiving
+      ? { ...item, label: "Coliving", menuLabel: "Coliving at" }
+      : isCoworking
+        ? { ...item, label: "Coworking", menuLabel: "Coworking at" }
+        : item;
+    const children = isColiving && locationItems.length > 0
+      ? locationItems
+      : isCoworking && coworkingItems.length > 0
+        ? coworkingItems
+        : (byParent.get(asText(item.itemKey)) ?? []).map(mapTree);
+    return mapNavigationItem(mappedItem, children);
+  };
   const roots = records.filter((item) => !asText(item.parentKey));
   const inAreas = (...areas: string[]) => roots.filter((item) => areas.includes(navigationArea(item))).map(mapTree);
-  const primary = inAreas("headerprimary", "header");
+  const cmsPrimary = normalizeCmsPrimaryNavigation(inAreas("headerprimary", "header"), coworkingItems);
+  const primary = cmsPrimary.length
+    ? withDealsNavigation(withPostsNavigation(cmsPrimary))
+    : siteNavigation.header.primary;
   const headerLocations = inAreas("headerlocations");
   const derivedLocations = roots
     .filter((item) => asText(item.routeKey) === "location")
     .map(mapTree);
-  const actions = inAreas("headeraction");
   const findAction = (key: string) => {
     const record = roots.find((item) => navigationArea(item) === "headeraction" && asText(item.itemKey).toLowerCase().includes(key));
     return record ? mapTree(record) : undefined;
@@ -658,10 +702,9 @@ function buildNavigation(records: WixRecord[], locations: WixRecord[]): SiteNavi
   return {
     header: {
       locations: locationItems.length ? locationItems : headerLocations.length ? headerLocations : derivedLocations.length ? derivedLocations : siteNavigation.header.locations,
-      primary: primary.length ? primary : siteNavigation.header.primary,
+      primary,
       actions: {
-        login: findAction("login") ?? siteNavigation.header.actions.login,
-        book: findAction("book") ?? actions[0] ?? siteNavigation.header.actions.book,
+        book: findAction("book") ?? siteNavigation.header.actions.book,
       },
     },
     footer: {
@@ -879,19 +922,20 @@ function getCmsHomePage(): Promise<HomePage> {
 }
 
 async function loadSiteSettings() {
-  const [settings, socialResult, copyResult, navigation, locations] = await Promise.all([
+  const [settings, socialResult, copyResult, navigation, locations, pages] = await Promise.all([
     getRequiredSingleton(COLLECTIONS.siteSettings),
     queryItems(COLLECTIONS.socialLinks, { filter: { published: true }, sortField: "sortOrder", limit: 50 }),
     queryItems(COLLECTIONS.interfaceCopy, { limit: 500 }),
     queryPublished(COLLECTIONS.navigationItems),
     getPublishedLocations(),
+    queryPublished(COLLECTIONS.pages),
   ]);
   return {
     ...mapSiteSettings(settings, socialResult),
     interfaceCopy: Object.fromEntries(
       copyResult.map((item) => [asText(item.copyKey), asText(item.value)]).filter(([key]) => Boolean(key)),
     ),
-    navigation: buildNavigation(navigation, locations),
+    navigation: buildNavigation(navigation, locations, pages),
   };
 }
 

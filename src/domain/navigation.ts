@@ -25,7 +25,6 @@ export type HeaderNavigation = {
   locations: readonly NavigationItem[];
   primary: readonly NavigationItem[];
   actions: {
-    login: NavigationItem;
     book: NavigationItem;
   };
 };
@@ -50,6 +49,11 @@ export function isVisibleNavigationItem(item: NavigationItem): item is Navigatio
 }
 
 export function isPathCurrent(currentPath: string, href: string) {
+  const base = "https://circles.house";
+  const current = new URL(currentPath, base);
+  const destination = new URL(href, base);
   const normalize = (path: string) => path !== "/" ? path.replace(/\/+$/, "") : path;
-  return normalize(currentPath) === normalize(href);
+
+  if (normalize(current.pathname) !== normalize(destination.pathname)) return false;
+  return [...destination.searchParams].every(([key, value]) => current.searchParams.get(key) === value);
 }

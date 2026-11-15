@@ -13,6 +13,7 @@ export const routes = {
   ambassadors: "/ambassadors",
   events: "/events",
   posts: "/posts",
+  postCategory: (category: string) => `/posts?category=${encodeURIComponent(category)}`,
   location: (city: string) => `/locations/${city}`,
   locationRoom: (city: string, room: string) => `/locations/${city}/rooms/${room}`,
   locationSpace: (city: string, space: string) => `/locations/${city}/spaces/${space}`,
@@ -89,13 +90,30 @@ const about: NavigationItem = {
   ],
 };
 
+const postsNavigation = { status: "link", label: "Posts", href: routes.posts } as const;
+const dealsNavigation = { status: "link", label: "Deals", href: routes.deals } as const;
+
+export function withPostsNavigation(items: readonly NavigationItem[]): readonly NavigationItem[] {
+  if (items.some((item) => item.status === "link" && item.href === routes.posts)) return items;
+
+  const eventsIndex = items.findIndex((item) => item.status === "link" && item.href === routes.events);
+  if (eventsIndex < 0) return [...items, postsNavigation];
+  return [...items.slice(0, eventsIndex + 1), postsNavigation, ...items.slice(eventsIndex + 1)];
+}
+
+export function withDealsNavigation(items: readonly NavigationItem[]): readonly NavigationItem[] {
+  if (items.some((item) => item.status === "link" && item.href === routes.deals)) return items;
+  return [...items, dealsNavigation];
+}
+
 const primary = [
   coliving,
   coworking,
   community,
   happeningNow,
+  postsNavigation,
   about,
-  { status: "link", label: "Deals", href: routes.deals },
+  dealsNavigation,
 ] satisfies readonly NavigationItem[];
 
 export const bookStayLink = { status: "link", label: "Book a Stay", href: routes.rooms } as const;
@@ -105,14 +123,13 @@ export const siteNavigation: SiteNavigation = {
     locations,
     primary,
     actions: {
-      login: { status: "hidden", label: "Members Login" },
       book: bookStayLink,
     },
   },
   footer: {
     main: [...primary, bookStayLink],
     extras: [
-      { status: "link", label: "Posts", href: routes.posts },
+      { status: "link", label: "News", href: routes.postCategory("news") },
       { status: "link", label: "Coworking Barcelona", href: routes.coworking("barcelona") },
       { status: "comingSoon", label: "Coworking Andorra", badge: "Coming soon" },
       { status: "comingSoon", label: "Spa Andorra", badge: "Coming soon" },
