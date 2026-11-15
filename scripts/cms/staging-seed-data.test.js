@@ -42,11 +42,11 @@ function collectReferences(value, references = []) {
 }
 
 describe("Wix staging seed manifest", () => {
-  it("covers every canonical collection with 186 uniquely keyed records", () => {
+  it("covers every canonical collection with 188 uniquely keyed records", () => {
     expect(seedCollections.map(({ collectionId }) => collectionId)).toEqual(
       expectedCollections,
     );
-    expect(seedCollections.flatMap(({ items }) => items)).toHaveLength(186);
+    expect(seedCollections.flatMap(({ items }) => items)).toHaveLength(188);
 
     for (const { collectionId, keyField, items } of seedCollections) {
       const keys = items.map(({ key }) => key);
@@ -90,6 +90,16 @@ describe("Wix staging seed manifest", () => {
     );
     expect(items?.items.filter(({ key }) => key.startsWith("coworking-barcelona.pricing."))).toHaveLength(4);
     expect(spaces?.items.filter(({ data }) => data.location?.$seedReference?.key === "barcelona" && data.spaceType === "coworking")).toHaveLength(4);
+    expect(sections?.items.find(({ key }) => key === "coworking-barcelona.hero")?.data.primaryExternalUrl).toContain("wa.me/34623328787");
+    expect(items?.items.filter(({ key }) => key.startsWith("coworking-barcelona.pricing.")).every(({ data }) => data.externalUrl?.includes("wa.me/34623328787"))).toBe(true);
+  });
+
+  it("keeps the general chat and community invitation as separate WhatsApp destinations", () => {
+    const socialLinks = seedCollections.find(({ collectionId }) => collectionId === "CHSocialLinks");
+    const sections = seedCollections.find(({ collectionId }) => collectionId === "CHPageSections");
+
+    expect(socialLinks?.items.find(({ key }) => key === "whatsapp")?.data.url).toContain("wa.me/34623328787");
+    expect(sections?.items.find(({ key }) => key === "memberships.hub")?.data.primaryExternalUrl).toContain("chat.whatsapp.com/");
   });
 
   it("keeps the events intro aligned with the approved design copy", () => {
@@ -183,6 +193,15 @@ describe("Wix staging seed manifest", () => {
     expect(people?.items.some(({ data }) => data.personTypes?.includes("member"))).toBe(true);
     expect(plans?.items).toHaveLength(1);
     expect(JSON.stringify(plans?.items)).not.toMatch(/sandbox/i);
+    expect(JSON.stringify(sections?.items)).not.toMatch(/\/api\/auth|"primaryRouteKey":"memberships"/);
+    expect(sections?.items
+      .filter(({ data }) => data.primaryCtaLabel === "Join on WhatsApp")
+      .every(({ data }) => data.primaryExternalUrl?.includes("chat.whatsapp.com/")))
+      .toBe(true);
+    expect(plans?.items[0]?.data).toMatchObject({
+      ctaLabel: "Join on WhatsApp",
+      externalUrl: expect.stringContaining("chat.whatsapp.com/"),
+    });
   });
 
   it("resolves every declared multi-reference target", () => {

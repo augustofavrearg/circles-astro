@@ -1,5 +1,15 @@
 export const STAGING_SITE_ID = "26a062ff-2d9e-499e-9704-9fcd2907dc7e";
 
+const whatsappUrl = (message) =>
+  `https://wa.me/34623328787?text=${encodeURIComponent(message)}`;
+
+const whatsappLinks = {
+  coworkingPass: whatsappUrl("Hey! I have a few questions regarding the co-working pass"),
+  coworkingTour: whatsappUrl("Hey! I want to book a tour for the Co-working space at Circles."),
+  general: whatsappUrl("Hey! I'd like to know more about Circles House."),
+  community: "https://chat.whatsapp.com/IC3c9ZibNzz4hEcZOXHzYc?mode=ems_copy_c",
+};
+
 export function reference(collectionId, key) {
   return { $seedReference: { collectionId, key } };
 }
@@ -51,8 +61,8 @@ const pageSectionOverrides = {
     eyebrow: "Join us",
     body:
       "Our digital community is where ambitious entrepreneurs come together with seamless opportunities to engage, share ideas, spark connections, and turn visions into reality.",
-    primaryCtaLabel: "Apply",
-    primaryRouteKey: "memberships",
+    primaryCtaLabel: "Join on WhatsApp",
+    primaryExternalUrl: whatsappLinks.community,
   },
   "home.introduction": {
     subtitle: "MANY LIFE EXPERIENCES",
@@ -72,8 +82,8 @@ const pageSectionOverrides = {
       "Choose from private studios, comfortable suites and shared rooms designed for focused work, meaningful rest and life in community.",
   },
   "rooms.band": {
-    primaryCtaLabel: "Become a member",
-    primaryRouteKey: "memberships",
+    primaryCtaLabel: "Join on WhatsApp",
+    primaryExternalUrl: whatsappLinks.community,
     secondaryCtaLabel: "Explore Barcelona",
     secondaryRouteKey: "location",
     secondaryRouteParam: "barcelona",
@@ -94,8 +104,8 @@ const pageSectionOverrides = {
     eyebrow: "Memberships",
     body:
       "Join Circles Membership for exclusive access to locations, deals, events, and the Member Hub.\nIt’s where everything begins.",
-    primaryCtaLabel: "Apply",
-    primaryExternalUrl: "/api/auth/login",
+    primaryCtaLabel: "Join on WhatsApp",
+    primaryExternalUrl: whatsappLinks.community,
   },
   "memberships.benefits": {
     eyebrow: "Why join",
@@ -106,6 +116,8 @@ const pageSectionOverrides = {
       "Circles Member Hub is a place for Members to connect, share networking opportunities, and view community events",
     body:
       "Explore the vibrant surroundings, immerse yourself in local culture, and discover hidden gems that await you at every turn. Whether you’re seeking relaxation or adventure, Circles Spaces has something for everyone.",
+    primaryCtaLabel: "Join on WhatsApp",
+    primaryExternalUrl: whatsappLinks.community,
   },
   "memberships.pricing": {
     eyebrow: "Pricing",
@@ -114,8 +126,8 @@ const pageSectionOverrides = {
     eyebrow: "Members",
   },
   "memberships.band": {
-    primaryCtaLabel: "Join us",
-    primaryExternalUrl: "/api/auth/login",
+    primaryCtaLabel: "Join on WhatsApp",
+    primaryExternalUrl: whatsappLinks.community,
   },
   "memberships.faq": {
     eyebrow: "FAQ",
@@ -131,6 +143,8 @@ const pageSectionOverrides = {
   "coworking-barcelona.hero": {
     eyebrow: "Coworking @ Circles Barcelona",
     subtitle: "See What Makes our Inspiring Coworking Spaces Perfect for Entrepreneurs and Innovators",
+    primaryCtaLabel: "Book a tour",
+    primaryExternalUrl: whatsappLinks.coworkingTour,
   },
   "coworking-barcelona.spaces": {
     eyebrow: "Coworking spaces",
@@ -140,8 +154,8 @@ const pageSectionOverrides = {
     lead: "Includes access to:",
   },
   "coworking-barcelona.band": {
-    primaryCtaLabel: "Join us",
-    primaryRouteKey: "memberships",
+    primaryCtaLabel: "Join on WhatsApp",
+    primaryExternalUrl: whatsappLinks.community,
     secondaryCtaLabel: "Book a Stay",
     secondaryRouteKey: "rooms",
   },
@@ -168,8 +182,8 @@ const pageSectionOverrides = {
       "Our house offers a range of thoughtfully designed rooms to suit various lifestyles, combining luxury and functionality. Whether you’re looking for a monthly stay or a flexible option, we’ve got you covered.",
   },
   "location-barcelona.band": {
-    primaryCtaLabel: "Join us",
-    primaryRouteKey: "memberships",
+    primaryCtaLabel: "Join on WhatsApp",
+    primaryExternalUrl: whatsappLinks.community,
   },
   "location-barcelona.experiences": {
     eyebrow: "Experience",
@@ -208,8 +222,8 @@ const pageSectionOverrides = {
       "Provisional room content used to validate a second location in the booking and room discovery flows.",
   },
   "location-andorra.band": {
-    primaryCtaLabel: "Join us",
-    primaryRouteKey: "memberships",
+    primaryCtaLabel: "Join on WhatsApp",
+    primaryExternalUrl: whatsappLinks.community,
   },
   "location-andorra.experiences": {
     eyebrow: "Experience",
@@ -662,6 +676,7 @@ export const seedCollections = [
     collectionId: "CHSocialLinks",
     keyField: "networkKey",
     items: [
+      ["whatsapp", "WhatsApp", whatsappLinks.general, "brand-whatsapp"],
       ["instagram", "Instagram", "https://www.instagram.com/", "brand-instagram"],
       ["linkedin", "LinkedIn", "https://www.linkedin.com/", "brand-linkedin"],
       ["youtube", "YouTube", "https://www.youtube.com/", "brand-youtube"],
@@ -675,14 +690,15 @@ export const seedCollections = [
     keyField: "itemKey",
     items: [
       ["header.home", "header", "Home", "home"],
-      ["header.locations", "header", "Locations", "location", "barcelona"],
-      ["header.rooms", "header", "Rooms", "rooms"],
+      ["header.locations", "header", "Coliving", "location", "barcelona"],
+      ["header.coworking", "header", "Coworking", "coworking", "barcelona"],
       ["header.events", "header", "Events", "events"],
       ["header.events.all", "header", "All events", "events", undefined, "header.events"],
       ["header.events.barcelona", "header", "Barcelona", "events", "barcelona", "header.events"],
       ["header.month.june", "header", "June", "month", "june", "header.events"],
       ["header.founders-month", "header", "Founders Month", "program", "founders-month", "header.events"],
       ["header.memberships", "header", "Memberships", "memberships"],
+      ["header.deals", "header", "Deals", "deals"],
       ["footer.team", "footer", "Team", "team"],
       ["footer.partnerships", "footer", "Partnerships", "partnerships"],
       ["footer.investors", "footer", "For investors", "for-investors"],
@@ -944,6 +960,8 @@ export const seedCollections = [
           text: coworkingPlanIncludes,
           value,
           highlighted,
+          linkLabel: "Contact us",
+          externalUrl: whatsappLinks.coworkingPass,
           published: true,
           sortOrder: index + 1,
         },
@@ -1593,12 +1611,12 @@ export const seedCollections = [
       },
       {
         key: "memberships.apply",
-        editorialStatus: "provisional-application-flow",
+        editorialStatus: "whatsapp-community-flow",
         data: {
           faqKey: "memberships.apply",
-          question: "How do I apply?",
+          question: "How do I join?",
           answer: richContent(
-            "Use the application link to tell us about yourself. The final application destination and review process must be confirmed before production.",
+            "Use the WhatsApp invitation to join Circles | Entrepreneur Hub. There is no account, login or application form.",
           ),
           published: true,
           sortOrder: 4,
@@ -1622,8 +1640,8 @@ export const seedCollections = [
           priceValue: "€2,350/Year",
           note: "Cancel anytime",
           features: ["Member Hub", "Priority booking", "Community events", "Partner benefits"],
-          ctaLabel: "Apply",
-          routeKey: "memberships",
+          ctaLabel: "Join on WhatsApp",
+          externalUrl: whatsappLinks.community,
           highlighted: true,
           published: true,
           sortOrder: 1,

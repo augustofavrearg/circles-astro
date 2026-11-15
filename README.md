@@ -301,6 +301,24 @@ chooses a room and follows its CMS-managed `bookingUrl` to Cloudbeds. Set
 The fixture URLs intentionally point only to the Cloudbeds host. Replace them with the
 real room-specific links before any production release.
 
+## WhatsApp
+
+Customer-facing WhatsApp actions use direct `wa.me` links instead of short links. The
+audited production number and message templates are centralized in
+`src/lib/whatsapp.ts` for flexible stays, coworking tours, coworking-pass questions,
+referrals and general enquiries. The Member Hub keeps its separate WhatsApp community
+invitation.
+
+Membership has no account, authentication or application flow. Every membership CTA
+(`Become a Member`, `Apply` or `Join us` in legacy CMS content) is normalized to the
+single `Circles | Entrepreneur Hub` WhatsApp invitation. The Memberships page remains
+an informational destination, but joining always happens in WhatsApp.
+
+Wix CMS stores these destinations as external CTA URLs. Update the centralized code
+and the matching CMS records together if the business number, messages or community
+invitation changes. WhatsApp opens the conversation; CRM synchronization and Meta
+webhooks are a separate backend integration.
+
 ## Wix-managed setup
 
 This repository is already linked to its Wix-managed project through

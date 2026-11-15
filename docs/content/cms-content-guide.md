@@ -83,7 +83,7 @@ The categories are a learning and ownership system. They explain the responsibil
 | Global | Information used across the whole website. | `CHSiteSettings`, `CHInterfaceCopy`, `CHSocialLinks`, `CHNavigationItems` |
 | Reusable entities | Real concepts that can exist independently and be referenced from several places. | `CHAmenities`, `CHLocations`, `CHPeople`, `CHPrograms` |
 | Offerings | Products, access, or services offered by Circles House. | `CHSpaces`, `CHRooms`, `CHMembershipPlans` |
-| Editorial and operational content | Publishable information that changes over time or communicates a specific subject. | `CHEvents`, `CHStayCampaigns`, `CHNewsArticles`, `CHDeals`, `CHTestimonials`, `CHPartners`, `CHFaqs`, `CHLegalPages` |
+| Editorial and operational content | Publishable information that changes over time or communicates a specific subject. Wix Blog Posts use the Wix application rather than a `CH...` collection. | `CHEvents`, `CHStayCampaigns`, `CHDeals`, `CHTestimonials`, `CHPartners`, `CHFaqs`, `CHLegalPages` |
 | Page composition | Records that assemble editorial page experiences. | `CHPages`, `CHPageSections`, `CHSectionItems` |
 
 These five categories prevent two common problems:
@@ -144,6 +144,13 @@ Marketing warning: edit `value`, not `copyKey`, unless the Website Lead approves
 
 `CHSocialLinks` stores the official social network destinations displayed by the website.
 
+The WhatsApp record must use a direct `https://wa.me/...` URL generated from the
+approved business number and message. Page-specific conversations are stored on their
+corresponding CTA fields instead: flexible stays in the room experience, coworking
+tours on `coworking.hero`, coworking-pass enquiries on the pricing items, referrals in
+`CHDeals`, and the community invitation on `memberships.hub`. Do not replace these
+distinct messages with one generic short link.
+
 Why it is global: the same official accounts may appear in navigation, footer, or contact areas.
 
 Important fields:
@@ -171,6 +178,25 @@ Important fields:
 - `published`, `sortOrder`: visibility and order.
 
 Marketing warning: a navigation label may be editorial, but its route configuration is structural. Ask the Website Lead before changing route fields.
+
+Use `routeKey: posts` for the complete editorial archive at `/posts`. Use
+`routeKey: news` only for the News category entry point; it resolves to
+`/posts?category=news` and does not create a separate `/news` route.
+
+In the primary header, a root item with `routeKey: location` is presented as
+**Coliving** and receives the published `CHLocations` as its destinations. A
+root item with `routeKey: coworking` is presented as **Coworking**; locations
+with a published Coworking page are linked and the remaining published
+locations are shown as coming soon.
+
+Do not place `routeKey: rooms` in the primary header. Rooms are discovered in
+the relevant Coliving location page. The frontend ignores legacy primary
+`rooms` entries and guarantees a Coworking selector when Wix has not yet added
+one.
+
+The primary header must also expose `routeKey: deals` as **Deals**. The
+frontend adds this canonical `/deals` entry when an older Wix navigation does
+not provide it and avoids duplicating it when the CMS record already exists.
 
 ## 5. Reusable Entity Collections
 
@@ -207,7 +233,11 @@ Important fields:
 - `city`, `country`, `timezone`, `address`: geographical information.
 - `status`: business state, such as active or coming soon.
 - `summary`, `accessLabel`: editorial summary.
-- `heroImage`, `cardImage`, `gallery`, `mapImage`, `mapUrl`: media and map content.
+- `heroImage`, `cardImage`, `gallery`: location media.
+- `address`: canonical source for the embedded Google map.
+- `mapUrl`: optional approved Google Maps destination used by the directions
+  action. The interactive map itself is generated from `address`; do not upload
+  a replacement `mapImage`.
 - `amenities`: multi-reference to `CHAmenities`.
 - `featuredHome`, `homeSortOrder`: Home-page selection and order.
 - `published`, `sortOrder`: public visibility and general order.
@@ -218,7 +248,7 @@ Marketing warning: use `CHLocations`, not the Wix application collection `Locati
 
 `CHPeople` stores reusable people: team members, location managers, members, authors, or other people presented by the site.
 
-Why it is reusable: one person may appear on the Team page, represent a location, and author an article without duplicating their biography.
+Why it is reusable: one person may appear on the Team page and represent a location without duplicating their biography.
 
 Important fields:
 
@@ -228,7 +258,8 @@ Important fields:
 - `location`: optional reference to `CHLocations`.
 - `published`, `sortOrder`: visibility and order.
 
-Used by: team and member views, location management content, and `CHNewsArticles.author`.
+Used by: team and member views and location management content. Wix Blog owns
+its own author profiles.
 
 ### CHPrograms — Programs
 
@@ -325,6 +356,13 @@ Important fields:
 - `highlighted`: featured plan state.
 - `published`, `sortOrder`: visibility and order.
 
+Membership flow invariant: there is no login, account, authentication or application
+form. Every action that invites a visitor to become a member must use the approved
+`Circles | Entrepreneur Hub` WhatsApp group URL. Keep `ctaLabel` as
+`Join on WhatsApp`, leave `routeKey` empty, and store the group invitation in
+`externalUrl`. The `/memberships` route is informational and must not be used as an
+intermediate conversion step.
+
 ## 7. Editorial and Operational Collections
 
 These collections contain publishable, time-sensitive, informational, promotional, or legally governed content.
@@ -366,25 +404,29 @@ the shared `CHPages` record `stay-campaign-template`; adding a month requires a
 campaign record, not a new Page, Section, or copied Item tree. The legacy `page`
 field may remain in the Wix schema for compatibility but must be empty.
 
-### CHNewsArticles — News Articles
+### Wix Blog Posts
 
-`CHNewsArticles` stores all long-form articles, not only news. It includes news, opinions, features, guides, and announcements.
+Wix Blog is the canonical source for all long-form posts. News is a Wix Blog
+category, not a separate collection, entity or route family. Editors publish
+news, opinions, features, guides and announcements through the same Wix Blog
+workflow.
 
-Why one collection: all these content types share the same structure, route, SEO needs, and publishing workflow. `contentType` differentiates their editorial purpose.
+Important fields and relationships:
 
-Important fields:
+- `title`, `slug`, `excerpt` and rich content define the post.
+- Categories provide stable editorial filters. Use the category slug `news` for
+  product, service, location and company news.
+- Authors, publication dates, cover media and SEO metadata remain owned by Wix
+  Blog.
+- Featured posts may feed automatic editorial sections.
 
-- `title`, `slug`, `excerpt`, `body`: article content.
-- `contentType`: one of `news`, `opinion`, `feature`, `guide`, or `announcement`.
-- `category`: editorial topic, not the article format.
-- `author`: reference to `CHPeople`.
-- `publishedAt`: editorial publication date.
-- `image`, `socialImage`: article and sharing media.
-- `seoTitle`, `seoDescription`: search metadata.
-- `featuredHome`, `homeSortOrder`: Home-page selection and order.
-- `published`: public visibility.
+Public routing:
 
-Editorial rule: an opinion article must reference its author in `CHPeople`. Other content types may use an author when editorial attribution is required.
+- `/posts` lists every published post.
+- `/posts?category=news` filters the archive without creating a `/news` route.
+- `/posts/:slug` is the only canonical detail route.
+
+Do not create `CHNewsArticles`, `/news` or `/news/:slug` for this purpose.
 
 ### CHDeals — Deals
 
@@ -580,8 +622,6 @@ CHLocations ←── CHPeople
       ├──────── CHEvents
       ├──────── CHStayCampaigns
       └──────── CHTestimonials
-
-CHPeople ←───── CHNewsArticles.author
 
 CHPages ←────── CHPageSections ←────── CHSectionItems
    ↑
@@ -813,7 +853,7 @@ Do not create fake practice records in production.
 Continue with collections that require dates, rich content, or relationships:
 
 - `CHFaqs`
-- `CHNewsArticles`
+- Wix Blog Posts
 - `CHEvents`
 - `CHDeals`
 - `CHMembershipPlans`
@@ -834,7 +874,7 @@ Edit these only through an explicit task and with Website Lead coordination:
 
 Before writing `CONTENT VERIFIED`, Marketing confirms:
 
-- [ ] I edited the correct `CH...` collection.
+- [ ] I edited the correct `CH...` collection or Wix Blog area.
 - [ ] The record represents the correct kind of information.
 - [ ] The key or slug is unique and follows the established pattern.
 - [ ] Required copy is complete and factually accurate.
@@ -879,9 +919,11 @@ Correction: Circles House website locations belong in `CHLocations`.
 
 Correction: programs group related events. An independent event needs a location but does not require a program.
 
-### Mistake: Treating every article as news
+### Mistake: Creating a separate entity or route for News
 
-Correction: use `contentType` to distinguish news, opinion, feature, guide, and announcement. Use `category` for the editorial topic.
+Correction: publish through Wix Blog and assign the stable `news` category.
+News is filtered within `/posts`; it does not have a separate collection or
+route family.
 
 ## 17. When Marketing Must Stop and Ask
 
