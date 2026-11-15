@@ -32,6 +32,10 @@ describe("event discovery repository contract", () => {
     await expect(fixtureRepository.getStayCampaignByLegacySlug("june")).resolves.toMatchObject({
       period: "2027-06",
     });
+    await expect(fixtureRepository.getMonthPage("june")).resolves.toMatchObject({
+      slug: "june",
+      seo: { title: "June at Circles House Barcelona · Circles House" },
+    });
   });
 
   it("exposes only discoverable spaces within their location", async () => {
@@ -44,5 +48,15 @@ describe("event discovery repository contract", () => {
       status: "comingSoon",
     });
     await expect(fixtureRepository.getLocationSpace("barcelona", "booths")).resolves.toBeUndefined();
+  });
+
+  it("resolves only rooms opted into location-scoped detail routing", async () => {
+    await expect(fixtureRepository.getRoom("barcelona", "king-studio-terrace-sea-view")).resolves.toMatchObject({
+      discoverable: true,
+      href: "/locations/barcelona/rooms/king-studio-terrace-sea-view",
+      locationId: "barcelona",
+    });
+    await expect(fixtureRepository.getRoom("barcelona", "king-studio")).resolves.toBeUndefined();
+    await expect(fixtureRepository.getRoom("andorra", "king-studio-terrace-sea-view")).resolves.toBeUndefined();
   });
 });

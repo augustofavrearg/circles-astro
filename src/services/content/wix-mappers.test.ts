@@ -85,6 +85,7 @@ describe("Wix CMS canonical mappers", () => {
           location: "location-id",
           bookingUrl: { url: "https://booking.example/room" },
           occupancyType: "private",
+          discoverable: true,
           features: ["Private bathroom", "Desk"],
           published: true,
         },
@@ -97,7 +98,18 @@ describe("Wix CMS canonical mappers", () => {
       bookingUrl: "https://booking.example/room",
       occupancyType: "private",
       features: ["Private bathroom", "Desk"],
+      discoverable: true,
+      href: "/locations/barcelona/rooms/garden-room",
     });
+  });
+
+  it("does not invent detail routes for non-discoverable rooms", () => {
+    expect(mapRoom({
+      slug: "private-inventory-room",
+      name: "Private inventory room",
+      location: "location-id",
+      bookingUrl: "https://booking.example/room",
+    }, locations).href).toBeUndefined();
   });
 
   it("maps CHDeals routeKey and externalUrl", () => {

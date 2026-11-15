@@ -55,9 +55,9 @@ const roomTypes = rooms.map((room) => room.name);
       <p class="mx-4 mt-16 bg-surface p-6 text-body lg:mx-6">No events are scheduled for this stay period yet.</p>
     )}
   </section>
-  <ExternalEventsCarousel id="external-events" {...page.external} />
+  {page.external?.items.length ? <ExternalEventsCarousel id="external-events" {...page.external} /> : null}
   <StayApplicationForm id="apply-again" {...page.form} {roomTypes} variant="red" />
-  <ExternalEventsCarousel id="seasonal-events" {...page.seasonal} />
-  <Faq {...page.faq} centered uppercase={false} />
+  {page.seasonal?.items.length ? <ExternalEventsCarousel id="seasonal-events" {...page.seasonal} /> : null}
+  {page.faq?.items.length ? <Faq {...page.faq} centered uppercase={false} /> : null}
   <Newsletter newsletter={settings.newsletter} copy={settings.interfaceCopy} class="mt-12" />
 </SiteLayout>

@@ -256,7 +256,13 @@ export type Partner = {
 export type PartnershipsPage = {
   seo: { title: string; description: string };
   intro: PageIntro;
-  partners: { eyebrow?: string; title?: string; featuredLabel?: string; items: Partner[] };
+  partners: {
+    eyebrow?: string;
+    title?: string;
+    featuredLabel?: string;
+    items: Partner[];
+    source?: import("./editorial").SectionSourceConfig;
+  };
   membership?: CtaBand;
   faq?: FaqSection;
 };
@@ -270,6 +276,16 @@ export type Deal = {
   terms: string;
   cta?: Link;
   image?: string;
+};
+
+export type DealsPage = {
+  seo: { title: string; description: string };
+  deals: {
+    eyebrow?: string;
+    title?: string;
+    emptyText: string;
+    source?: import("./editorial").SectionSourceConfig;
+  };
 };
 
 /** An event on the /events listing (Figma "Events" rows). `city` is the city slug. */
@@ -428,9 +444,9 @@ export type MonthPage = {
   rooms: { eyebrow: string; title: string; text: string };
   band: CtaBand;
   events: { eyebrow: string; title: string };
-  external: EventCarousel;
-  seasonal: EventCarousel;
-  faq: FaqSection;
+  external?: EventCarousel;
+  seasonal?: EventCarousel;
+  faq?: FaqSection;
 };
 
 export type StayCampaign = {
@@ -499,7 +515,12 @@ export type LocationPage = {
     card: { eyebrow: string; title: string; text: string; cta?: Link; amenities: SpaceAmenity[]; access?: string };
   };
   space: { title: string; text: string; amenitiesLabel: string; amenities: string[]; image?: string };
-  rooms: { eyebrow: string; title: string; text: string };
+  rooms: {
+    eyebrow: string;
+    title: string;
+    text: string;
+    source?: import("./editorial").SectionSourceConfig;
+  };
   band: CtaBand;
   experiences: { eyebrow: string; title: string; subtitle: string; items: Experience[] };
   location: { eyebrow: string; title: string; text: string; mapImage?: string; mapHref?: string };
@@ -529,11 +550,14 @@ export interface ContentRepository {
   getLocationPage(slug: string): Promise<LocationPage | undefined>;
   getLocationSpaces(location: string): Promise<LocationSpaceSummary[]>;
   getLocationSpace(location: string, space: string): Promise<LocationSpacePage | undefined>;
+  getDealsPage(): Promise<DealsPage>;
   getDeals(): Promise<Deal[]>;
+  getPartners(): Promise<Partner[]>;
   getEventsPage(): Promise<EventsPage>;
   getEvents(filters?: EventFilters): Promise<EventSummary[]>;
   getEvent(slug: string): Promise<EventSummary | undefined>;
   getRooms(location?: string): Promise<import("./booking").Room[]>;
+  getRoom(location: string, room: string): Promise<import("./booking").RoomDetailPage | undefined>;
   getPostsPage(page?: number, pageSize?: number): Promise<PostsPage>;
   getPost(slug: string): Promise<NewsArticle | undefined>;
   getLegalPage(slug: string): Promise<LegalPage | undefined>;

@@ -6,14 +6,17 @@ import MemberDiscounts from "@/components/sections/shared/MemberDiscounts.astro"
 import Faq from "@/components/sections/shared/Faq.astro";
 import Newsletter from "@/components/sections/shared/Newsletter.astro";
 import { getContentRepository } from "@/services/content/repository";
+import { resolveEditorialSource } from "@/services/content/editorial-sources";
 
 const repository = await getContentRepository();
 const [settings, page] = await Promise.all([repository.getSiteSettings(), repository.getPartnershipsPage()]);
+const partnerSource = page.partners.source ?? { mode: "automatic", key: "partners.published" } as const;
+const partners = await resolveEditorialSource(repository, partnerSource, {}, "partners.published");
 ---
 
 <SiteLayout settings={settings} title={page.seo.title} description={page.seo.description}>
   <PageIntro intro={page.intro} imageAlt="Barcelona seen from Circles House" bodyClass="lg:max-w-[580px]" />
-  {page.partners.items.length > 0 && <PartnerList {...page.partners} />}
+  {partners.length > 0 && <PartnerList {...page.partners} items={partners} />}
   {page.membership && <MemberDiscounts {...page.membership} text={settings.promotion} />}
   {page.faq && <Faq {...page.faq} centered />}
   <Newsletter newsletter={settings.newsletter} copy={settings.interfaceCopy} class="mt-12" />

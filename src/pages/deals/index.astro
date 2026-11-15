@@ -2,22 +2,29 @@
 import SiteLayout from "@/layouts/SiteLayout.astro";
 import DealRow from "@/components/sections/deals/DealRow.astro";
 import Newsletter from "@/components/sections/shared/Newsletter.astro";
+import SectionHeading from "@/components/ui/SectionHeading.astro";
 import { getContentRepository } from "@/services/content/repository";
+import { resolveEditorialSource } from "@/services/content/editorial-sources";
 
 const repository = await getContentRepository();
-const [settings, deals] = await Promise.all([repository.getSiteSettings(), repository.getDeals()]);
+const [settings, page] = await Promise.all([repository.getSiteSettings(), repository.getDealsPage()]);
+const dealSource = page.deals.source ?? { mode: "automatic", key: "deals.active" } as const;
+const deals = await resolveEditorialSource(repository, dealSource, {}, "deals.active");
 ---
 
 <SiteLayout
   settings={settings}
-  title="Deals · Circles House"
-  description="Current Circles House offers for coliving and coworking stays in Barcelona and Andorra."
+  title={page.seo.title}
+  description={page.seo.description}
 >
-  <h1 class="sr-only">Deals</h1>
+  {(page.deals.eyebrow || page.deals.title) && (
+    <SectionHeading eyebrow={page.deals.eyebrow ?? ""} title={page.deals.title ?? ""} class="items-start pt-20 text-left lg:pt-28" />
+  )}
+  <h1 class="sr-only">{page.seo.title}</h1>
   {deals.length > 0 ? (
     deals.map((deal, index) => <DealRow deal={deal} first={index === 0} />)
   ) : (
-    <p class="px-4 py-24 text-center text-body lg:px-6">There are no deals available right now.</p>
+    <p class="px-4 py-24 text-center text-body lg:px-6">{page.deals.emptyText}</p>
   )}
   <Newsletter newsletter={settings.newsletter} copy={settings.interfaceCopy} class="mt-12" />
 </SiteLayout>

@@ -2,6 +2,7 @@ import type {
   AmbassadorsPage,
   CoworkingPage,
   Deal,
+  DealsPage,
   EventSummary,
   EventsPage,
   FaqSection,
@@ -353,6 +354,19 @@ export const dealsFixture: Deal[] = [
   },
 ];
 
+export const dealsPageFixture: DealsPage = {
+  seo: {
+    title: "Deals · Circles House",
+    description: "Current Circles House offers for coliving and coworking stays in Barcelona and Andorra.",
+  },
+  deals: {
+    eyebrow: "Current offers",
+    title: "Stay longer, experience more.",
+    emptyText: "There are no deals available right now.",
+    source: { mode: "automatic", key: "deals.active" },
+  },
+};
+
 export const partnershipsPageFixture: PartnershipsPage = {
   seo: {
     title: "Partnerships · Circles House",
@@ -371,6 +385,7 @@ export const partnershipsPageFixture: PartnershipsPage = {
     eyebrow: "Why join",
     title: "Why partner with Circles?",
     featuredLabel: "Partner of the month",
+    source: { mode: "automatic", key: "partners.published" },
     // Logos and partner links are pending; the name stands in for the logo meanwhile.
     items: [
       {
@@ -621,72 +636,45 @@ export const membershipsPageFixture: MembershipsPage = {
   faq: sharedFaq,
 };
 
-// Figma shows the same three events in both carousels, all in August; the real ones are pending.
-const wagnerEvening = {
-  title: "“Der fliegende Holländer” by Wagner",
-  venue: "Palau de la Música Catalana C/ Palau de la Música 4-6, 08003 Barcelona",
-  dateLabel: "Monday, August 18",
-  timeLabel: "9:00 PM - 11:30 PM GMT+2",
-};
-
-// Figma "The space" cards on the June page. Photos are pending; the card cut off on the left in Figma is left out.
+// Shared cards used by the reusable stay campaign template.
 const juneSpaces: MonthPage["space"]["spaces"] = [
   { size: "large", category: "Coworking space", title: "Hot desks", access: "Members only" },
   { size: "medium", category: "Coliving space", title: "Cabins", access: "Members only" },
   { size: "small", category: "Health", title: "Gyms", access: "Members only" },
 ];
 
-const carmenEvening = {
-  title: "“Carmen” by Bizet",
-  venue: "Gran Teatre del Liceu Carrer de Sant Pau, 65, 08001 Barcelona",
-  dateLabel: "Tuesday, August 19",
-  timeLabel: "8:00 PM - 10:30 PM GMT+2",
-};
-
-const traviataEvening = {
-  title: "“La Traviata” by Verdi",
-  venue: "Teatre Nacional de Catalunya Carrer de les Arts, 10, 08013 Barcelona",
-  dateLabel: "Wednesday, August 20",
-  timeLabel: "8:30 PM - 11:00 PM GMT+2",
-};
-
-export const monthPagesFixture: MonthPage[] = [
-  {
-    slug: "june",
-    city: "barcelona",
-    seo: {
-      title: "June at Circles House Barcelona",
-      description: "Say yes to a month of new experiences: deep work, new ideas and community, included with your stay between June 1 and June 30.",
-    },
-    hero: {
-      eyebrow: "June@Circles House Barcelona",
-      title: "Say yes to a Month of New Experiences",
-      body: "This June, we invite you to say yes to a summer full of possibility. NEW BEGINNINGS is a month-long celebration of curiosity, creativity, and the courage to start again. Say yes to deep work, to sharing new ideas, to building with clarity and to the moments in between that keep you balanced and connected.\n\nAll of this is included with your stay at Circles between June 1 — June 30.",
-      cta: { label: "Reserve Now", href: "#rooms" },
-    },
-    form: {
-      eyebrow: "Join us",
-      title: "Start your stay here",
-      subtitle: "Please complete the form to apply for your free week.",
-    },
-    space: {
-      eyebrow: "The space",
-      title: "Modern private lofts and shared rooftop spaces to live, work & play.",
-      spaces: juneSpaces,
-    },
-    rooms: {
-      eyebrow: "Why join",
-      title: "A room for your needs",
-      text: "Our house offers a range of thoughtfully designed rooms to suit various lifestyles, combining luxury and functionality. Whether you’re looking for a monthly stay or a flexible option, we’ve got you covered.",
-    },
-    band: { title: "Stay longer and Save more", primaryCta: { label: "Join us", href: "/api/auth/login" } },
-    events: { eyebrow: "Why join", title: "What you will say Yes to" },
-    external: { eyebrow: "External events", title: "What else is happening in the city this month.", items: [wagnerEvening, carmenEvening, traviataEvening] },
-    // Figma shows "December @ Circles" on the June page; confirm which season this block should follow.
-    seasonal: { eyebrow: "Seasonal events", title: "December @ Circles", items: [wagnerEvening, carmenEvening, traviataEvening] },
-    faq: sharedFaq,
+export const stayCampaignTemplateFixture: MonthPage = {
+  slug: "stay-campaign-template",
+  city: "barcelona",
+  seo: {
+    title: "Stay at Circles House",
+    description: "Explore rooms, spaces and community events for a Circles House stay.",
   },
-];
+  hero: {
+    eyebrow: "Stay @ Circles House",
+    title: "Say yes to a Month of New Experiences",
+    body: "Make space for deep work, new ideas and the moments in between that keep you balanced and connected.",
+    cta: { label: "Reserve Now", href: "#rooms" },
+  },
+  form: {
+    eyebrow: "Join us",
+    title: "Start your stay here",
+    subtitle: "Please complete the form to apply for your free week.",
+  },
+  space: {
+    eyebrow: "The space",
+    title: "Modern private lofts and shared rooftop spaces to live, work & play.",
+    spaces: juneSpaces,
+  },
+  rooms: {
+    eyebrow: "Why join",
+    title: "A room for your needs",
+    text: "Our house offers a range of thoughtfully designed rooms to suit various lifestyles, combining luxury and functionality. Whether you’re looking for a monthly stay or a flexible option, we’ve got you covered.",
+  },
+  band: { title: "Stay longer and Save more", primaryCta: { label: "Join us", href: "/api/auth/login" } },
+  events: { eyebrow: "Why join", title: "What you will say Yes to" },
+  faq: sharedFaq,
+};
 
 const coworkingIncludes = ["Coworking", "Social club", "Gym and Shower", "Meeting Rooms", "Booths", "Bar and free coffee", "Gardens", "Rooftop"];
 
@@ -824,6 +812,7 @@ export const locationPagesFixture: LocationPage[] = [
       eyebrow: "Rooms",
       title: "A room for your needs",
       text: "Our house offers a range of thoughtfully designed rooms to suit various lifestyles, combining luxury and functionality. Whether you’re looking for a monthly stay or a flexible option, we’ve got you covered.",
+      source: { mode: "automatic", key: "location.rooms" },
     },
     band: { title: "Stay longer and Save more", primaryCta: { label: "Join us", href: "/memberships" } },
     experiences: {
@@ -1017,7 +1006,15 @@ export const stayCampaignsFixture: StayCampaign[] = [
     period: "2027-06",
     legacyRouteParam: "june",
     location: { slug: "barcelona", name: "Circles House Barcelona" },
-    page: monthPagesFixture[0],
+    page: {
+      ...stayCampaignTemplateFixture,
+      slug: "june",
+      seo: {
+        title: "June at Circles House Barcelona · Circles House",
+        description: "Explore rooms, spaces and community events for June at Circles House Barcelona.",
+      },
+      hero: { ...stayCampaignTemplateFixture.hero, eyebrow: "June at Circles House Barcelona" },
+    },
   },
 ];
 
@@ -1038,6 +1035,8 @@ export const roomsFixture: Room[] = [
   {
     ...commonRoom,
     id: "king-studio-terrace-sea-view",
+    discoverable: true,
+    href: "/locations/barcelona/rooms/king-studio-terrace-sea-view",
     name: "King Studio + Terrace",
     occupancyType: "private",
     description: "Private studio with an ensuite bathroom and terrace, featuring a desk, wardrobe and air conditioning.",

@@ -3,6 +3,7 @@ import type {
   AmbassadorsPage,
   ContentRepository,
   CoworkingPage,
+  DealsPage,
   EventsPage,
   ForInvestorsPage,
   HomePage,
@@ -378,6 +379,25 @@ function composeSection(section: WixRecord, sectionItems: WixRecord[]): Record<s
 
   if (componentKey === "home.news") {
     return { eyebrow: asText(section.eyebrow), title: asText(section.title), items: [] };
+  }
+
+  if (componentKey === "deals.list") {
+    return {
+      eyebrow: asText(section.eyebrow),
+      title: asText(section.title),
+      emptyText: body || "There are no deals available right now.",
+      ...(source.mode === "manual" ? {} : { source }),
+    };
+  }
+
+  if (componentKey === "partnerships.partners") {
+    return {
+      eyebrow: asText(section.eyebrow),
+      title: asText(section.title),
+      featuredLabel: asText(section.subtitle) || undefined,
+      items: [],
+      ...(source.mode === "manual" ? {} : { source }),
+    };
   }
 
   if (componentKey === "memberships.intro") {
@@ -794,7 +814,7 @@ function requireCompleteLocationPage(page: Partial<LocationPage>, slug: string):
 }
 
 function requireCompleteMonthPage(page: Partial<MonthPage>, slug: string): MonthPage {
-  const requiredSections = ["seo", "hero", "form", "space", "rooms", "band", "events", "external", "seasonal", "faq"] as const;
+  const requiredSections = ["seo", "hero", "form", "space", "rooms", "band", "events"] as const;
   for (const key of requiredSections) {
     if (!page[key] || typeof page[key] !== "object") {
       throw new Error(`CHPages item "month:${slug}" is missing the required "month.${key}" content.`);
@@ -802,9 +822,6 @@ function requireCompleteMonthPage(page: Partial<MonthPage>, slug: string): Month
   }
   if (!page.hero?.cta) throw new Error(`CHPageSections item "${slug}.hero" requires a primary CTA.`);
   if (!page.space?.spaces.length) throw new Error(`CHPages item "month:${slug}" requires at least one published space.`);
-  if (!page.external?.items.length) throw new Error(`CHPageSections item "${slug}.external" requires at least one published item.`);
-  if (!page.seasonal?.items.length) throw new Error(`CHPageSections item "${slug}.seasonal" requires at least one published item.`);
-  if (!page.faq?.items.length) throw new Error(`CHPages item "month:${slug}" requires at least one related FAQ.`);
   return page as MonthPage;
 }
 
@@ -812,22 +829,17 @@ async function composeStayCampaign(record: WixRecord): Promise<StayCampaign> {
   const campaignKey = asText(record.campaignKey);
   const period = asText(record.period);
   const locationId = referenceId(record.location);
-  const pageId = referenceId(record.page);
-  if (!campaignKey || !/^\d{4}-(0[1-9]|1[0-2])$/.test(period) || !locationId || !pageId) {
+  if (!campaignKey || !/^\d{4}-(0[1-9]|1[0-2])$/.test(period) || !locationId) {
     throw new Error(`CHStayCampaigns item "${campaignKey || asText(record._id) || "unknown"}" is incomplete.`);
   }
 
-  const [locations, pageRecord] = await Promise.all([
-    getPublishedLocations(),
-    findOne(COLLECTIONS.pages, "_id", pageId),
-  ]);
+  const locations = await getPublishedLocations();
   const location = locations.find((candidate) => asText(candidate._id) === locationId);
-  if (!location || !pageRecord || !asBoolean(pageRecord.published)) {
-    throw new Error(`CHStayCampaigns item "${campaignKey}" references an unpublished or missing location/page.`);
+  if (!location) {
+    throw new Error(`CHStayCampaigns item "${campaignKey}" references an unpublished or missing location.`);
   }
-  const pageKey = asText(pageRecord.pageKey);
-  const composed = pageKey ? await composePage<Partial<MonthPage>>({ pageKey }, true) : undefined;
-  if (!composed) throw new Error(`CHStayCampaigns item "${campaignKey}" references a page that cannot be composed.`);
+  const composed = await composePage<Partial<MonthPage>>({ pageKey: "stay-campaign-template" }, true);
+  if (!composed) throw new Error('CHPages item "stay-campaign-template" cannot be composed.');
 
   const locationIdValue = asText(location._id);
   const spaces = (await queryPublished(COLLECTIONS.spaces))
@@ -838,9 +850,10 @@ async function composeStayCampaign(record: WixRecord): Promise<StayCampaign> {
       size: (["large", "medium", "small"] as const)[index] ?? "small",
     }));
   const locationSlug = asText(location.slug);
+  const name = asText(record.name) || campaignKey;
   return {
     campaignKey,
-    name: asText(record.name) || campaignKey,
+    name,
     period,
     legacyRouteParam: asText(record.legacyRouteParam) || undefined,
     location: {
@@ -851,6 +864,11 @@ async function composeStayCampaign(record: WixRecord): Promise<StayCampaign> {
       ...composed,
       slug: asText(record.legacyRouteParam) || period,
       city: locationSlug,
+      seo: {
+        title: `${name} · Circles House`,
+        description: `Explore rooms, spaces and community events for ${name}.`,
+      },
+      hero: { ...composed.hero!, eyebrow: name },
       space: { ...composed.space!, spaces },
     }, campaignKey),
   };
@@ -894,14 +912,17 @@ export const wixCmsRepository: ContentRepository = {
   },
   getAmbassadorsPage: () => requirePage<AmbassadorsPage>({ pageKey: "ambassadors" }),
   async getPartnershipsPage() {
-    const [page, partners] = await Promise.all([
-      requirePage<PartnershipsPage>({ pageKey: "partnerships" }),
-      queryPublished(COLLECTIONS.partners),
-    ]);
+    const page = await requirePage<Partial<PartnershipsPage>>({ pageKey: "partnerships" });
     return {
       ...page,
-      partners: { ...page.partners, items: partners.map(mapPartner) },
-    };
+      partners: {
+        eyebrow: "Why join",
+        title: "Why partner with Circles?",
+        featuredLabel: "Partner of the month",
+        items: [],
+        ...page.partners,
+      },
+    } as PartnershipsPage;
   },
   getForInvestorsPage: () => requirePage<ForInvestorsPage>({ pageKey: "for-investors" }),
   getTeamPage: () => requirePage<TeamPage>({ pageKey: "team" }),
@@ -1188,6 +1209,24 @@ export const wixCmsRepository: ContentRepository = {
       .filter((item) => isActiveDeal(item))
       .map(mapDeal);
   },
+  async getDealsPage() {
+    const page = await composePage<DealsPage>({ pageKey: "deals" }, true);
+    return page ?? {
+      seo: {
+        title: "Deals · Circles House",
+        description: "Current Circles House offers for coliving and coworking stays in Barcelona and Andorra.",
+      },
+      deals: {
+        eyebrow: "Current offers",
+        title: "Stay longer, experience more.",
+        emptyText: "There are no deals available right now.",
+        source: { mode: "automatic", key: "deals.active" },
+      },
+    };
+  },
+  async getPartners() {
+    return (await queryPublished(COLLECTIONS.partners)).map(mapPartner);
+  },
   async getRooms(location) {
     const locations = await getPublishedLocations();
     const lookup = buildLocationLookup(locations);
@@ -1214,6 +1253,25 @@ export const wixCmsRepository: ContentRepository = {
         locationAmenities: locationAmenities.get(referenceId(item.location)) ?? [],
       };
     }));
+  },
+  async getRoom(location, slug) {
+    const matches = (await this.getRooms(location))
+      .filter((room) => room.id === slug && room.discoverable);
+    if (matches.length > 1) {
+      throw new Error(`CHRooms has duplicate slug "${slug}" for location "${location}".`);
+    }
+    const room = matches[0];
+    if (!room?.href) return undefined;
+    return {
+      ...room,
+      discoverable: true,
+      href: room.href,
+      gallery: [...new Set([room.image, ...(room.gallery ?? [])].filter((image): image is string => Boolean(image)))],
+      seo: {
+        title: `${room.name} · ${room.locationName} · Circles House`,
+        description: room.description ?? `Explore ${room.name} at ${room.locationName}.`,
+      },
+    };
   },
   async getPostsPage(page, pageSize) {
     return getBlogPostsPage(page, pageSize);

@@ -299,7 +299,17 @@ Important fields:
 - `amenities`: multi-reference to `CHAmenities`.
 - `features`: room-specific feature list.
 - `priceLabel`, `priceValue`, `bookingUrl`: commercial information.
+- `discoverable`: explicit opt-in for a public Room detail page. Published
+  Rooms without this flag remain available to listings and booking flows.
 - `published`, `sortOrder`: visibility and order.
+
+Public routing:
+
+- A discoverable Room uses `/locations/:location/rooms/:slug`.
+- `CHRooms` remains the canonical source; do not create one `CHPages` record per
+  Room.
+- The base detail page uses the Room's own content. Page composition is only a
+  future optional enhancement for Rooms that need a richer editorial story.
 
 ### CHMembershipPlans — Membership Plans
 
@@ -339,19 +349,22 @@ An event does not require a program. Do not create a program merely because an e
 
 ### CHStayCampaigns — Stay campaigns
 
-`CHStayCampaigns` connects a commercial monthly page to exactly one location and
-one calendar period. It must not be used to group events like a program.
+`CHStayCampaigns` connects a commercial stay offer to exactly one location and
+one calendar period. It must not be used to group events like a program or to
+create a second copy of the editorial Page hierarchy.
 
 Important fields:
 
 - `campaignKey`, `name`: stable editorial identity.
 - `location`: required reference to `CHLocations`.
 - `period`: required `YYYY-MM` calendar period.
-- `page`: required reference to the composed `CHPages` content.
 - `legacyRouteParam`: optional redirect key for an old `/months/:slug` URL.
 - `published`, `sortOrder`: visibility and order.
 
-The combination of `location` and `period` must be unique.
+The combination of `location` and `period` must be unique. Every campaign uses
+the shared `CHPages` record `stay-campaign-template`; adding a month requires a
+campaign record, not a new Page, Section, or copied Item tree. The legacy `page`
+field may remain in the Wix schema for compatibility but must be empty.
 
 ### CHNewsArticles — News Articles
 
@@ -387,6 +400,9 @@ Important fields:
 
 Marketing warning: `published=true` does not replace correct start and end dates. Validate both.
 
+Deals appear through the `deals.active` source inside the stable Deals Page.
+Do not create a Page or internal detail route for each promotion.
+
 ### CHTestimonials — Testimonials
 
 `CHTestimonials` stores external opinions, reviews, and testimonials about Circles House.
@@ -412,6 +428,10 @@ Important fields:
 - `logo`, `url`: partner media and destination.
 - `featured`: highlighted partner state.
 - `published`, `sortOrder`: visibility and order.
+
+Partners appear through the `partners.published` source inside the
+Partnerships Page. Their optional `url` is an external destination; it does not
+create an internal Partner route.
 
 ### CHFaqs — FAQs
 
@@ -565,8 +585,6 @@ CHPeople ←───── CHNewsArticles.author
 
 CHPages ←────── CHPageSections ←────── CHSectionItems
    ↑
-   ├─────────── CHPrograms.page
-   ├─────────── CHStayCampaigns.page
    └─────────── CHFaqs.pages
 
 CHLocations ←─ CHFaqs.locations

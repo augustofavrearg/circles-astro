@@ -222,6 +222,7 @@ export function mapRoom(item: WixRecord, locations: LocationLookup): Room {
   const bookingUrl = wixUrl(item.bookingUrl);
   const location = locations.get(referenceId(item.location));
   const occupancyType = asText(item.occupancyType).toLowerCase();
+  const discoverable = asBoolean(item.discoverable);
   if (!id || !bookingUrl || !location) throw new Error(`CHRooms item "${id || "unknown"}" is missing slug, bookingUrl or a valid CHLocations reference.`);
   return {
     id,
@@ -238,6 +239,8 @@ export function mapRoom(item: WixRecord, locations: LocationLookup): Room {
     views: asText(item.views) || undefined,
     floorPlan: wixUrl(item.floorPlan) || undefined,
     price: asText(item.priceValue) ? { label: asText(item.priceLabel) || "Starting from", value: asText(item.priceValue) } : undefined,
+    discoverable,
+    href: discoverable ? routes.locationRoom(location.slug, id) : undefined,
   };
 }
 

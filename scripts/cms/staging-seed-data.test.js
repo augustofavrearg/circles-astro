@@ -42,11 +42,11 @@ function collectReferences(value, references = []) {
 }
 
 describe("Wix staging seed manifest", () => {
-  it("covers every canonical collection with 191 uniquely keyed records", () => {
+  it("covers every canonical collection with 186 uniquely keyed records", () => {
     expect(seedCollections.map(({ collectionId }) => collectionId)).toEqual(
       expectedCollections,
     );
-    expect(seedCollections.flatMap(({ items }) => items)).toHaveLength(191);
+    expect(seedCollections.flatMap(({ items }) => items)).toHaveLength(186);
 
     for (const { collectionId, keyField, items } of seedCollections) {
       const keys = items.map(({ key }) => key);
@@ -151,6 +151,20 @@ describe("Wix staging seed manifest", () => {
     expect(faqs?.items.some(({ multiReferences }) => multiReferences?.pages?.includes("location-andorra"))).toBe(true);
   });
 
+  it("uses one reusable Page hierarchy for all stay campaigns", () => {
+    const pages = seedCollections.find(({ collectionId }) => collectionId === "CHPages");
+    const sections = seedCollections.find(({ collectionId }) => collectionId === "CHPageSections");
+    const sectionItems = seedCollections.find(({ collectionId }) => collectionId === "CHSectionItems");
+    const campaigns = seedCollections.find(({ collectionId }) => collectionId === "CHStayCampaigns");
+
+    expect(pages?.items.some(({ key }) => key === "stay-campaign-template")).toBe(true);
+    expect(pages?.items.some(({ key }) => key === "june")).toBe(false);
+    expect(sections?.items.filter(({ key }) => key.startsWith("stay-campaign."))).toHaveLength(7);
+    expect(sections?.items.some(({ key }) => key.startsWith("june."))).toBe(false);
+    expect(sectionItems?.items.some(({ key }) => key.startsWith("june."))).toBe(false);
+    expect(campaigns?.items.every(({ data }) => data.page === undefined)).toBe(true);
+  });
+
   it("limits seed reconciliation to the approved location contracts", () => {
     const reconciled = seedCollections.flatMap(({ collectionId, items }) =>
       items.filter(({ reconcile }) => reconcile).map(({ key }) => `${collectionId}:${key}`),
@@ -195,6 +209,14 @@ describe("Wix staging seed manifest", () => {
         }
       }
     }
+  });
+
+  it("opts only the P2 pilot room into detail routing", () => {
+    const rooms = seedCollections.find(({ collectionId }) => collectionId === "CHRooms");
+    const discoverable = rooms?.items.filter(({ data }) => data.discoverable === true);
+
+    expect(discoverable?.map(({ key }) => key)).toEqual(["king-studio-terrace-sea-view"]);
+    expect(discoverable?.[0]?.data.location?.$seedReference?.key).toBe("barcelona");
   });
 
   it("creates valid minimal Ricos paragraph nesting", () => {

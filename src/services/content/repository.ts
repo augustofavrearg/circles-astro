@@ -3,6 +3,7 @@ import {
   ambassadorsPageFixture,
   coworkingPagesFixture,
   dealsFixture,
+  dealsPageFixture,
   eventsFixture,
   eventsPageFixture,
   forInvestorsPageFixture,
@@ -11,7 +12,6 @@ import {
   locationPagesFixture,
   locationSpacesFixture,
   membershipsPageFixture,
-  monthPagesFixture,
   partnershipsPageFixture,
   programPagesFixture,
   programsFixture,
@@ -74,7 +74,7 @@ export const fixtureRepository: ContentRepository = {
     return coworkingPagesFixture.find((page) => page.city === city);
   },
   async getMonthPage(slug: string) {
-    return monthPagesFixture.find((page) => page.slug === slug);
+    return stayCampaignsFixture.find((campaign) => campaign.legacyRouteParam === slug)?.page;
   },
   async getStayCampaign(location: string, period: string) {
     return stayCampaignsFixture.find((campaign) => campaign.location.slug === location && campaign.period === period);
@@ -90,6 +90,12 @@ export const fixtureRepository: ContentRepository = {
   },
   async getDeals() {
     return dealsFixture;
+  },
+  async getDealsPage() {
+    return dealsPageFixture;
+  },
+  async getPartners() {
+    return partnershipsPageFixture.partners.items;
   },
   async getEventsPage() {
     return eventsPageFixture;
@@ -109,6 +115,21 @@ export const fixtureRepository: ContentRepository = {
   },
   async getRooms(location?: string) {
     return location ? roomsFixture.filter((room) => room.locationId === location) : roomsFixture;
+  },
+  async getRoom(location: string, room: string) {
+    const match = roomsFixture.find((candidate) =>
+      candidate.locationId === location && candidate.id === room && candidate.discoverable);
+    if (!match?.href) return undefined;
+    return {
+      ...match,
+      discoverable: true,
+      href: match.href,
+      gallery: match.gallery ?? [],
+      seo: {
+        title: `${match.name} · ${match.locationName} · Circles House`,
+        description: match.description ?? `Explore ${match.name} at ${match.locationName}.`,
+      },
+    };
   },
   async getPostsPage(page = 1, pageSize = 18) {
     const allItems = homePageFixture.news.items.map((item) => ({

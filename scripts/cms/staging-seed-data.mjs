@@ -120,6 +120,14 @@ const pageSectionOverrides = {
   "memberships.faq": {
     eyebrow: "FAQ",
   },
+  "partnerships.partners": {
+    eyebrow: "Why join",
+    subtitle: "Partner of the month",
+  },
+  "deals.list": {
+    eyebrow: "Current offers",
+    body: "There are no deals available right now.",
+  },
   "coworking-barcelona.hero": {
     eyebrow: "Coworking @ Circles Barcelona",
     subtitle: "See What Makes our Inspiring Coworking Spaces Perfect for Entrepreneurs and Innovators",
@@ -220,42 +228,36 @@ const pageSectionOverrides = {
   "location-andorra.faq": {
     eyebrow: "FAQ",
   },
-  "june.hero": {
-    eyebrow: "June @ Circles House Barcelona",
+  "stay-campaign.hero": {
+    eyebrow: "Stay @ Circles House",
     title: "Say yes to a Month of New Experiences",
     body:
-      "This June, we invite you to say yes to a summer full of possibility. New Beginnings is a month-long celebration of curiosity, creativity, and the courage to start again.\n\nAll of this is included with your stay at Circles between June 1 and June 30.",
+      "Make space for deep work, new ideas and the moments in between that keep you balanced and connected.",
     primaryCtaLabel: "Reserve now",
     primaryExternalUrl: "#rooms",
   },
-  "june.form": {
+  "stay-campaign.form": {
     eyebrow: "Join us",
     title: "Start your stay here",
     subtitle: "Complete the form to apply for your stay.",
   },
-  "june.space": {
+  "stay-campaign.space": {
     eyebrow: "The space",
     title: "Modern private lofts and shared rooftop spaces to live, work & play.",
   },
-  "june.rooms": {
+  "stay-campaign.rooms": {
     eyebrow: "Why join",
     body:
       "Our house offers a range of thoughtfully designed rooms to suit different lifestyles, combining comfort and functionality.",
   },
-  "june.band": {
+  "stay-campaign.band": {
     primaryCtaLabel: "View rooms",
     primaryRouteKey: "rooms",
   },
-  "june.events": {
+  "stay-campaign.events": {
     eyebrow: "Included this month",
   },
-  "june.external": {
-    eyebrow: "External events",
-  },
-  "june.seasonal": {
-    eyebrow: "Seasonal events",
-  },
-  "june.faq": {
+  "stay-campaign.faq": {
     eyebrow: "FAQ",
   },
 };
@@ -458,6 +460,13 @@ export const seedCollections = [
         data: page("partnerships", "static", "partnerships"),
       },
       {
+        key: "deals",
+        data: page("deals", "static", "deals", {
+          title: "Deals · Circles House",
+          description: "Current Circles House offers for coliving and coworking stays in Barcelona and Andorra.",
+        }),
+      },
+      {
         key: "ambassadors",
         data: page("ambassadors", "static", "ambassadors"),
       },
@@ -497,12 +506,11 @@ export const seedCollections = [
         editorialStatus: "figma",
       },
       {
-        key: "june",
-        data: page("june", "month", "month", {
-          routeParam: "june",
-          title: "June at Circles House Barcelona · Circles House",
+        key: "stay-campaign-template",
+        data: page("stay-campaign-template", "month", "month", {
+          title: "Stay at Circles House",
           description:
-            "Explore rooms, spaces and community events at Circles House Barcelona throughout June.",
+            "Explore rooms, spaces and community events for a Circles House stay.",
         }),
       },
     ],
@@ -727,6 +735,8 @@ export const seedCollections = [
       ["what-is-circles.intro", "what-is-circles", "what-is-circles.intro", "A more meaningful way to live"],
       ["life-at-circles.intro", "life-at-circles", "life-at-circles.intro", "Life at Circles"],
       ["partnerships.intro", "partnerships", "partnerships.intro", "Partner with Circles"],
+      ["partnerships.partners", "partnerships", "partnerships.partners", "Why partner with Circles?"],
+      ["deals.list", "deals", "deals.list", "Stay longer, experience more."],
       ["ambassadors.intro", "ambassadors", "ambassadors.intro", "Become an ambassador"],
       ["for-investors.intro", "for-investors", "for-investors.intro", "Invest in community-led living"],
       ["location-barcelona.hero", "location-barcelona", "location.hero", "Circles House Barcelona"],
@@ -750,15 +760,13 @@ export const seedCollections = [
       ["coworking-barcelona.pricing", "coworking-barcelona", "coworking.pricing", "Coworking Pricing Options"],
       ["coworking-barcelona.band", "coworking-barcelona", "coworking.band", "Stay longer and Save more"],
       ["coworking-barcelona.faq", "coworking-barcelona", "coworking.faq", "What you need to know"],
-      ["june.hero", "june", "month.hero", "June at Circles House Barcelona"],
-      ["june.form", "june", "month.form", "Start your stay here"],
-      ["june.space", "june", "month.space", "Modern private lofts and shared rooftop spaces to live, work & play."],
-      ["june.rooms", "june", "month.rooms", "A room for your needs"],
-      ["june.band", "june", "month.band", "Stay longer and save more"],
-      ["june.events", "june", "month.events", "What you will say yes to"],
-      ["june.external", "june", "month.external", "What else is happening in the city this month"],
-      ["june.seasonal", "june", "month.seasonal", "Summer @ Circles"],
-      ["june.faq", "june", "month.faq", "What you need to know"],
+      ["stay-campaign.hero", "stay-campaign-template", "month.hero", "A month of new experiences"],
+      ["stay-campaign.form", "stay-campaign-template", "month.form", "Start your stay here"],
+      ["stay-campaign.space", "stay-campaign-template", "month.space", "Modern private lofts and shared spaces to live, work & play."],
+      ["stay-campaign.rooms", "stay-campaign-template", "month.rooms", "A room for your needs"],
+      ["stay-campaign.band", "stay-campaign-template", "month.band", "Stay longer and save more"],
+      ["stay-campaign.events", "stay-campaign-template", "month.events", "What you will say yes to"],
+      ["stay-campaign.faq", "stay-campaign-template", "month.faq", "What you need to know"],
     ].map(([sectionKey, pageKey, componentKey, title], index) => ({
       key: sectionKey,
       editorialStatus:
@@ -783,6 +791,11 @@ export const seedCollections = [
             : "Sandbox",
         title,
         body: "This section is CMS-managed staging content.",
+        ...({
+          "location.rooms": { sourceMode: "automatic", sourceKey: "location.rooms" },
+          "partnerships.partners": { sourceMode: "automatic", sourceKey: "partners.published" },
+          "deals.list": { sourceMode: "automatic", sourceKey: "deals.active" },
+        }[componentKey] ?? {}),
         ...(pageSectionOverrides[sectionKey] ?? {}),
         enabled: true,
         sortOrder: index + 1,
@@ -997,27 +1010,6 @@ export const seedCollections = [
           sortOrder: index + 1,
         },
       })),
-      ...[
-        ["june.external.sonar", "Sónar Barcelona", "Fira Montjuïc and Fira Gran Via", "Thursday, June 17", "4:00 PM"],
-        ["june.external.design-week", "Barcelona Design Week", "Venues across Barcelona", "Monday, June 21", "10:00 AM"],
-        ["june.external.grec", "Grec Festival", "Montjuïc and venues across Barcelona", "Friday, June 25", "8:00 PM"],
-        ["june.seasonal.rooftop", "Rooftop Community Dinner", "Circles House Barcelona", "Friday, June 11", "8:00 PM"],
-        ["june.seasonal.founders", "Founders Roundtable", "Circles House Barcelona", "Wednesday, June 16", "6:30 PM"],
-        ["june.seasonal.midsummer", "Midsummer Gathering", "Circles House Barcelona", "Wednesday, June 23", "7:30 PM"],
-      ].map(([itemKey, title, text, label, value], index) => ({
-        key: itemKey,
-        editorialStatus: "provisional-editable",
-        data: {
-          itemKey,
-          section: reference("CHPageSections", itemKey.startsWith("june.external.") ? "june.external" : "june.seasonal"),
-          title,
-          text,
-          label,
-          value,
-          published: true,
-          sortOrder: (index % 3) + 1,
-        },
-      })),
     ],
   },
   {
@@ -1030,7 +1022,6 @@ export const seedCollections = [
           slug: "founders-month",
           location: reference("CHLocations", "barcelona"),
           locationScope: "selected",
-          page: reference("CHPages", "june"),
           name: "Founders Month",
           theme: "Build with community",
           startsOn: "2027-06-01",
@@ -1055,7 +1046,6 @@ export const seedCollections = [
           period: "2027-06",
           legacyRouteParam: "june",
           location: reference("CHLocations", "barcelona"),
-          page: reference("CHPages", "june"),
           published: true,
           sortOrder: 1,
         },
@@ -1231,6 +1221,7 @@ export const seedCollections = [
           priceLabel: "Starting from",
           priceValue: "€1.900/month",
           bookingUrl: "https://hotels.cloudbeds.com/",
+          discoverable: index === 0,
           published: true,
           sortOrder: index + 1,
         },
@@ -1580,7 +1571,7 @@ export const seedCollections = [
           sortOrder: 2,
         },
         multiReferences: {
-          pages: ["location-barcelona", "location-andorra", "coworking-barcelona", "june"],
+          pages: ["location-barcelona", "location-andorra", "coworking-barcelona", "stay-campaign-template"],
           locations: ["barcelona", "andorra"],
         },
       },

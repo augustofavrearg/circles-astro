@@ -41,7 +41,9 @@ const occupancyLabel = room.occupancyType === "private" ? "Private" : room.occup
         <a href={room.floorPlan} target="_blank" rel="noreferrer" class="hidden shrink-0 text-[0.8125rem] hover:underline lg:block">View floor plan</a>
       )}
     </div>
-    <h3 class="mt-5 font-display text-[2.25rem] leading-[1.2] lg:mt-6 lg:text-[1.75rem]">{room.name}</h3>
+    <h3 class="mt-5 font-display text-[2.25rem] leading-[1.2] lg:mt-6 lg:text-[1.75rem]">
+      {room.href ? <a href={room.href} class="decoration-1 underline-offset-4 hover:underline">{room.name}</a> : room.name}
+    </h3>
     {room.views && <p class="mt-1 font-display text-[1.125rem] text-red lg:text-[0.9375rem]">{room.views}</p>}
     {room.description && <p class="mt-5 max-w-[460px] text-[0.9375rem] leading-[1.4] lg:mt-6 lg:text-[0.8125rem]">{room.description}</p>}
     {((room.amenities?.length ?? 0) > 0 || (room.locationAmenities?.length ?? 0) > 0) && (
@@ -68,7 +70,8 @@ const occupancyLabel = room.occupancyType === "private" ? "Private" : room.occup
         </p>
       )}
       <div class="mt-3 flex gap-1 lg:mt-0">
-        <!-- Availability, dates and payment stay in Cloudbeds. "Contact" appears once it has a destination. -->
+        {room.href && <Button href={room.href} variant="secondary">View room</Button>}
+        <!-- Availability, dates and payment stay in Cloudbeds. -->
         <Button href={bookingHref} rel="external">{buttonLabel}</Button>
       </div>
     </div>

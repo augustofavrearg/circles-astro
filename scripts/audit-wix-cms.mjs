@@ -124,10 +124,12 @@ for (const collection of collections) {
   const collectionId = collection.id;
   const encodedId = encodeURIComponent(collectionId);
   const includeHealthItems = process.env.CMS_AUDIT_HEALTH === "1" && [
+    "CHPages",
     "CHStayCampaigns",
     "CHSpaces",
     "CHPageSections",
     "CHSectionItems",
+    "CHRooms",
   ].includes(collectionId);
   const [permissions, indexes, itemQuery] = await Promise.all([
     optionalRequest(
@@ -169,7 +171,10 @@ for (const collection of collections) {
       itemData?.totalCount ??
       null,
     items: includeItems || includeHealthItems
-      ? (itemData?.dataItems ?? []).map((item) => item.data ?? item)
+      ? (itemData?.dataItems ?? []).map((item) => ({
+          _id: item.id ?? item.data?._id,
+          ...(item.data ?? item),
+        }))
       : undefined,
     itemQueryError: itemQuery.ok ? undefined : itemQuery,
   });
@@ -236,7 +241,7 @@ if (process.env.CMS_AUDIT_HEALTH === "1") {
     CHSocialLinks: [6, "label"],
     CHNavigationItems: [15, "label"],
     CHSpaces: [23, "title"],
-    CHRooms: [17, "name"],
+    CHRooms: [18, "name"],
     CHEvents: [19, "title"],
     CHNewsArticles: [15, "title"],
     CHDeals: [13, "title"],
@@ -278,6 +283,18 @@ if (process.env.CMS_AUDIT_HEALTH === "1") {
   if (stayCampaignItems.some((item) => !/^\d{4}-(0[1-9]|1[0-2])$/.test(item.period ?? ""))) {
     issues.push({ collectionId: "CHStayCampaigns", issue: "invalid-period" });
   }
+  if (stayCampaignItems.some((item) => Boolean(item.page))) {
+    issues.push({ collectionId: "CHStayCampaigns", issue: "legacy-page-reference-must-be-empty" });
+  }
+
+  const pages = byId.get("CHPages")?.items ?? [];
+  const stayTemplate = pages.find((item) => item.pageKey === "stay-campaign-template");
+  if (!stayTemplate || stayTemplate.published !== true) {
+    issues.push({ collectionId: "CHPages", itemKey: "stay-campaign-template", issue: "required-template-missing" });
+  }
+  if (pages.some((item) => item.pageKey === "june")) {
+    issues.push({ collectionId: "CHPages", itemKey: "june", issue: "legacy-month-page-present" });
+  }
   const discoverableSpaces = (byId.get("CHSpaces")?.items ?? []).filter((item) => item.discoverable === true);
   const spaceRoutes = discoverableSpaces.map((item) => `${item.location ?? ""}:${item.routeSlug ?? ""}`);
   if (discoverableSpaces.some((item) => !item.location || !item.routeSlug)) {
@@ -294,6 +311,17 @@ if (process.env.CMS_AUDIT_HEALTH === "1") {
   }
 
   const pageSections = byId.get("CHPageSections")?.items ?? [];
+  const requiredStaySections = ["hero", "form", "space", "rooms", "band", "events", "faq"]
+    .map((key) => `stay-campaign.${key}`);
+  for (const sectionKey of requiredStaySections) {
+    const section = pageSections.find((item) => item.sectionKey === sectionKey);
+    if (!section || section.page !== stayTemplate?._id || section.enabled !== true) {
+      issues.push({ collectionId: "CHPageSections", itemKey: sectionKey, issue: "required-template-section-missing" });
+    }
+  }
+  if (pageSections.some((item) => String(item.sectionKey ?? "").startsWith("june."))) {
+    issues.push({ collectionId: "CHPageSections", issue: "legacy-month-sections-present" });
+  }
   for (const section of pageSections) {
     const mode = String(section.sourceMode ?? "").trim() || "manual";
     const sourceKey = String(section.sourceKey ?? "").trim();
@@ -312,8 +340,28 @@ if (process.env.CMS_AUDIT_HEALTH === "1") {
       issues.push({ collectionId: "CHPageSections", itemKey: section.sectionKey, issue: "invalid-source-limit", actual: sourceLimit });
     }
   }
+  const requiredAutomaticSources = {
+    "location-barcelona.rooms": "location.rooms",
+    "location-andorra.rooms": "location.rooms",
+    "partnerships.partners": "partners.published",
+    "deals.list": "deals.active",
+  };
+  for (const [sectionKey, sourceKey] of Object.entries(requiredAutomaticSources)) {
+    const section = pageSections.find((candidate) => candidate.sectionKey === sectionKey);
+    if (!section || section.sourceMode !== "automatic" || section.sourceKey !== sourceKey) {
+      issues.push({
+        collectionId: "CHPageSections",
+        itemKey: sectionKey,
+        issue: "required-automatic-source-missing",
+        expected: sourceKey,
+      });
+    }
+  }
 
   const sectionItems = byId.get("CHSectionItems")?.items ?? [];
+  if (sectionItems.some((item) => String(item.itemKey ?? "").startsWith("june."))) {
+    issues.push({ collectionId: "CHSectionItems", issue: "legacy-month-items-present" });
+  }
   for (const item of sectionItems) {
     const entityType = String(item.entityType ?? "").trim();
     const entityKey = String(item.entityKey ?? "").trim();
@@ -323,6 +371,16 @@ if (process.env.CMS_AUDIT_HEALTH === "1") {
     if (entityType && !editorialEntityTypes.includes(entityType)) {
       issues.push({ collectionId: "CHSectionItems", itemKey: item.itemKey, issue: "invalid-entity-type", actual: entityType });
     }
+  }
+
+  const discoverableRooms = (byId.get("CHRooms")?.items ?? []).filter((item) => item.discoverable === true);
+  const roomRoutes = discoverableRooms.map((item) => `${item.location ?? ""}:${item.slug ?? ""}`);
+  if (discoverableRooms.some((item) =>
+    item.published !== true || !item.location || !item.slug || !item.name || !item.description || !item.bookingUrl)) {
+    issues.push({ collectionId: "CHRooms", issue: "discoverable-room-incomplete" });
+  }
+  if (new Set(roomRoutes).size !== roomRoutes.length) {
+    issues.push({ collectionId: "CHRooms", issue: "duplicate-location-room-slug" });
   }
 
   for (const [id, [expectedFieldCount, expectedDisplayField]] of Object.entries(
@@ -398,7 +456,7 @@ if (process.env.CMS_AUDIT_HEALTH === "1") {
         auditedAt: new Date().toISOString(),
         expectedCollectionCount: expectedIds.size,
         actualCustomCollectionCount: customCollections.length,
-        expectedManualFieldCount: 289,
+        expectedManualFieldCount: 290,
         actualManualFieldCount: manualFieldCount,
         userIndexCount,
         itemCount,
@@ -411,7 +469,7 @@ if (process.env.CMS_AUDIT_HEALTH === "1") {
           missingCollections.length === 0 &&
           unexpectedCollections.length === 0 &&
           issues.length === 0 &&
-          manualFieldCount === 289,
+          manualFieldCount === 290,
       },
       null,
       2,

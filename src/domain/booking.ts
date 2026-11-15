@@ -18,6 +18,16 @@ export type Room = {
   views?: string;
   floorPlan?: string;
   price?: { label: string; value: string };
+  /** Only rooms explicitly opted into public detail routing expose this URL. */
+  discoverable?: boolean;
+  href?: string;
+};
+
+export type RoomDetailPage = Room & {
+  discoverable: true;
+  href: string;
+  gallery: string[];
+  seo: { title: string; description: string };
 };
 
 export interface BookingProvider {

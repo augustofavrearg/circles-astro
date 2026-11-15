@@ -1,0 +1,134 @@
+---
+import SiteLayout from "@/layouts/SiteLayout.astro";
+import Button from "@/components/ui/Button.astro";
+import Media from "@/components/ui/Media.astro";
+import Newsletter from "@/components/sections/shared/Newsletter.astro";
+import { routes } from "@/config/navigation";
+import { createCloudbedsProvider } from "@/services/booking/cloudbeds";
+import { getContentRepository } from "@/services/content/repository";
+
+const repository = await getContentRepository();
+const city = Astro.params.city ?? "";
+const roomSlug = Astro.params.room ?? "";
+const [page, settings] = await Promise.all([
+  repository.getRoom(city, roomSlug),
+  repository.getSiteSettings(),
+]);
+if (!page) return new Response("Not found", { status: 404 });
+
+const booking = createCloudbedsProvider(import.meta.env.CLOUDBEDS_ALLOWED_ORIGIN);
+const bookingHref = booking.getRedirect(page).toString();
+const heroImage = page.gallery[0] || page.image;
+const gallery = page.gallery.filter((image) => image !== heroImage);
+const occupancyLabel = page.occupancyType === "private"
+  ? "Private room"
+  : page.occupancyType === "shared"
+    ? "Shared room"
+    : "Room";
+---
+
+<SiteLayout settings={settings} title={page.seo.title} description={page.seo.description}>
+  <main>
+    <section class="grid min-h-[calc(100svh-80px)] bg-black text-white lg:grid-cols-[0.88fr_1.12fr]">
+      <div class="flex min-w-0 flex-col justify-between px-4 py-9 lg:px-6 lg:py-12">
+        <nav aria-label="Breadcrumb" class="text-detail uppercase text-white/55">
+          <a href={routes.location(page.locationId)} class="hover:text-white">{page.locationName}</a>
+          <span aria-hidden="true"> / </span>
+          <a href={routes.cityRooms(page.locationId)} class="hover:text-white">Rooms</a>
+        </nav>
+
+        <div class="mt-24 max-w-[700px] lg:mt-16">
+          <p class="text-detail uppercase text-red">{occupancyLabel}</p>
+          <h1 class="mt-4 text-balance font-display text-[3.5rem] leading-[0.92] sm:text-[4.5rem] lg:text-[6.4rem]">
+            {page.name}
+          </h1>
+          {page.views && <p class="mt-5 font-display text-[1.35rem] text-white/65">{page.views}</p>}
+          {page.description && <p class="mt-8 max-w-[580px] text-[1rem] leading-[1.5] text-white/72">{page.description}</p>}
+
+          <div class="mt-10 flex flex-wrap items-end gap-x-8 gap-y-5 border-t border-white/20 pt-6">
+            {page.price && (
+              <p>
+                <span class="block text-detail uppercase text-white/45">{page.price.label}</span>
+                <span class="mt-1 block font-display text-[1.65rem]">{page.price.value}</span>
+              </p>
+            )}
+            <Button href={bookingHref} rel="external" class="bg-white text-black">Check availability</Button>
+          </div>
+        </div>
+      </div>
+
+      <div class="relative min-h-[55svh] min-w-0 lg:min-h-full">
+        <Media src={heroImage} alt={`${page.name} at ${page.locationName}`} eager placeholderTone="yellow" />
+        {page.houseLabel && <p class="absolute top-4 right-4 rounded bg-black/50 px-4 py-2 text-detail backdrop-blur-sm">{page.houseLabel}</p>}
+      </div>
+    </section>
+
+    {(page.features?.length ?? 0) > 0 && (
+      <section aria-labelledby="room-details-heading" class="grid border-b border-black/12 px-4 py-16 lg:grid-cols-[1fr_2fr] lg:px-6 lg:py-24">
+        <div>
+          <p class="text-detail uppercase text-black/45">The room</p>
+          <h2 id="room-details-heading" class="mt-3 max-w-[330px] font-display text-[2.5rem] leading-[1.05]">Everything you need, nothing you do not.</h2>
+        </div>
+        <ul class="mt-10 grid gap-px bg-black/12 sm:grid-cols-2 lg:mt-0">
+          {page.features?.map((feature, index) => (
+            <li class="flex min-h-28 items-end justify-between bg-white p-5 lg:min-h-36 lg:p-7">
+              <span class="font-display text-[1.5rem]">{feature}</span>
+              <span aria-hidden="true" class="text-detail text-red">{String(index + 1).padStart(2, "0")}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
+
+    {((page.amenities?.length ?? 0) > 0 || (page.locationAmenities?.length ?? 0) > 0) && (
+      <section aria-labelledby="amenities-heading" class="bg-surface px-4 py-20 lg:px-6 lg:py-28">
+        <header class="max-w-[760px]">
+          <p class="text-detail uppercase text-red">Included in your stay</p>
+          <h2 id="amenities-heading" class="mt-3 font-display text-[2.75rem] leading-[1.05] lg:text-[4.5rem]">Your room, plus the whole house.</h2>
+        </header>
+        <div class="mt-14 grid gap-12 border-t border-black/15 pt-8 lg:grid-cols-2 lg:gap-20">
+          {(page.amenities?.length ?? 0) > 0 && (
+            <div>
+              <h3 class="text-detail uppercase text-black/45">Inside the room</h3>
+              <ul class="mt-5 divide-y divide-black/12 border-b border-black/12">
+                {page.amenities?.map((amenity) => <li class="py-4 font-display text-[1.55rem]">{amenity}</li>)}
+              </ul>
+            </div>
+          )}
+          {(page.locationAmenities?.length ?? 0) > 0 && (
+            <div>
+              <h3 class="text-detail uppercase text-black/45">Around the house</h3>
+              <ul class="mt-5 divide-y divide-black/12 border-b border-black/12">
+                {page.locationAmenities?.map((amenity) => <li class="py-4 font-display text-[1.55rem]">{amenity}</li>)}
+              </ul>
+            </div>
+          )}
+        </div>
+      </section>
+    )}
+
+    {gallery.length > 0 && (
+      <section aria-label={`${page.name} gallery`} class="grid gap-2 px-4 py-20 lg:grid-cols-2 lg:px-6 lg:py-28">
+        {gallery.map((image, index) => (
+          <div class:list={["relative overflow-hidden", index === 0 && gallery.length % 2 === 1 ? "aspect-[16/9] lg:col-span-2" : "aspect-[4/3]"]}>
+            <Media src={image} alt="" placeholderTone={index % 2 === 0 ? "blue" : "yellow"} />
+          </div>
+        ))}
+      </section>
+    )}
+
+    <section class="mx-4 my-20 grid overflow-hidden bg-red text-black lg:mx-6 lg:my-28 lg:grid-cols-[1.4fr_0.6fr]">
+      <div class="px-5 py-12 lg:px-10 lg:py-16">
+        <p class="text-detail uppercase">Stay at {page.locationName}</p>
+        <h2 class="mt-3 max-w-[780px] font-display text-[2.75rem] leading-[1] lg:text-[4.75rem]">Make this room part of your next chapter.</h2>
+      </div>
+      <div class="flex flex-col justify-end gap-2 border-t border-black/15 p-5 lg:border-t-0 lg:border-l lg:p-8">
+        <Button href={bookingHref} rel="external">Check availability</Button>
+        <Button href={routes.cityRooms(page.locationId)} variant="secondary">View all rooms</Button>
+        {page.floorPlan && <Button href={page.floorPlan} target="_blank" rel="noreferrer" variant="simple">View floor plan</Button>}
+      </div>
+    </section>
+  </main>
+
+  <Newsletter newsletter={settings.newsletter} copy={settings.interfaceCopy} class="mt-12" />
+</SiteLayout>
