@@ -21,6 +21,7 @@ const { eyebrow, title, items } = Astro.props;
           <Media
             src={item.image}
             alt=""
+            sizes="(min-width: 1024px) 540px, calc(100vw - 3rem)"
             placeholderTone={index % 2 === 0 ? "yellow" : "blue"}
             imageClass="transition-transform duration-700 group-hover:scale-105"
           />

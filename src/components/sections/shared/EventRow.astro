@@ -2,6 +2,7 @@
 import { IconArrowNarrowRight } from "@tabler/icons-react";
 import type { EventSummary } from "@/domain/content";
 import { routes } from "@/config/navigation";
+import { wixImageUrl } from "@/lib/wix-image";
 
 type Props = { event: EventSummary };
 const { event } = Astro.props;
@@ -13,7 +14,7 @@ const href = event.href ?? routes.event(event.slug);
   Figma mobile: a stacked card — thumbnail, title, subtitle, date. The whole card links when `href` exists.
 -->
 <article class="relative min-w-0 bg-surface p-6 lg:flex lg:min-h-[188px] lg:items-center lg:gap-6">
-  {event.image && <img src={event.image} alt="" loading="lazy" class="size-[135px] shrink-0 object-cover" />}
+  {event.image && <img src={wixImageUrl(event.image, 270)} alt="" loading="lazy" decoding="async" class="size-[135px] shrink-0 object-cover" />}
   <div class:list={["min-w-0 lg:flex-1", event.image ? "mt-10 lg:mt-0" : ""]}>
     <h2 class="break-words font-display text-[2.125rem] leading-[1.2]">
       <a href={href} class="after:absolute after:inset-0 hover:underline">{event.title}</a>

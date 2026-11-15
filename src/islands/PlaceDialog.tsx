@@ -2,6 +2,7 @@ import { IconHome, IconMapPin, IconShield, IconStarFilled, IconX } from "@tabler
 import { useEffect, useRef } from "react";
 import type { Link, PlaceDetails, SpaceAmenity } from "@/domain/content";
 import { USE_MEDIA_PLACEHOLDERS } from "@/config/media";
+import { wixImageUrl } from "@/lib/wix-image";
 
 export type Place = {
   title: string;
@@ -55,7 +56,7 @@ export function PlaceDialog({ place, onClose, defaultCta }: { place: Place | nul
               {USE_MEDIA_PLACEHOLDERS || !place.image ? (
                 <span aria-hidden className="absolute inset-0 bg-yellow" />
               ) : (
-                <img src={place.image} alt="" className="size-full object-cover" />
+                <img src={wixImageUrl(place.image, 880)} alt="" decoding="async" className="size-full object-cover" />
               )}
               {place.access && <span className="absolute top-5 left-5 rounded bg-black/60 px-4 py-1 text-detail text-white">{place.access}</span>}
               <button type="button" onClick={onClose} aria-label="Close" className="absolute top-5 right-5 flex size-9 items-center justify-center rounded-full bg-black/45 text-white backdrop-blur">
@@ -107,7 +108,7 @@ export function PlaceDialog({ place, onClose, defaultCta }: { place: Place | nul
                 USE_MEDIA_PLACEHOLDERS ? (
                   <div aria-hidden className="mt-5 h-[125px] w-full rounded-lg bg-[#3158d8]" />
                 ) : (
-                  <img src={details.mapImage} alt={`Map of ${place.title}`} loading="lazy" className="mt-5 h-[125px] w-full rounded-lg object-cover" />
+                  <img src={wixImageUrl(details.mapImage, 880)} alt={`Map of ${place.title}`} loading="lazy" decoding="async" className="mt-5 h-[125px] w-full rounded-lg object-cover" />
                 )
               )}
 

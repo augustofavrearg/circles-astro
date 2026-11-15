@@ -1,5 +1,6 @@
 import { RicosViewer, quickStartViewerPlugins } from "@wix/ricos";
 import "@wix/ricos/css/all-plugins-viewer.css";
+import { optimizeRicosImages } from "@/lib/ricos-images";
 
 const plugins = quickStartViewerPlugins();
 
@@ -9,12 +10,12 @@ type Props = {
 };
 
 export function WixRichContent({ content, baseUrl }: Props) {
+  const optimizedContent = optimizeRicosImages(content);
+
   return (
     <RicosViewer
-      content={content as Parameters<typeof RicosViewer>[0]["content"]}
+      content={optimizedContent as Parameters<typeof RicosViewer>[0]["content"]}
       plugins={plugins}
-      seoSettings
-      jsdomMode
       baseUrl={baseUrl}
       environment="liveSite"
       theme={{

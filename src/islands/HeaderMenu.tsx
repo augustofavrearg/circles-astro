@@ -3,6 +3,7 @@ import { useEffect, useId, useRef, useState } from "react";
 import type { HeaderNavigation, NavigationItem, NavigationLink } from "@/domain/navigation";
 import { isNavigationLink, isPathCurrent, isVisibleNavigationItem } from "@/domain/navigation";
 import { routes } from "@/config/navigation";
+import { wixImageUrl } from "@/lib/wix-image";
 
 type Props = {
   navigation: HeaderNavigation;
@@ -58,7 +59,7 @@ function LocationMenuItem({ item, currentPath, onNavigate }: { item: NavigationI
     <>
       {item.image && (
         <span className="size-20 shrink-0 overflow-hidden">
-          <img src={item.image} alt="" width="80" height="80" className="size-20 object-cover" />
+          <img src={wixImageUrl(item.image, 160)} alt="" width="80" height="80" loading="lazy" decoding="async" className="size-20 object-cover" />
         </span>
       )}
       <span className="font-display text-lg leading-none">

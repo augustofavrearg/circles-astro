@@ -2,6 +2,7 @@ import { IconArrowNarrowLeft, IconArrowNarrowRight } from "@tabler/icons-react";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import type { HomePage, Link, Space } from "@/domain/content";
 import { alternatingMediaPlaceholder, mediaPlaceholderClass, USE_MEDIA_PLACEHOLDERS } from "@/config/media";
+import { wixImageSrcSet, wixImageUrl } from "@/lib/wix-image";
 import { PlaceDialog, type Place } from "./PlaceDialog";
 
 type SizedSpace = HomePage["network"]["spaces"][number];
@@ -61,7 +62,15 @@ export function SpacesCarousel({ spaces, defaultCta, children }: { spaces: Sized
                 {showPlaceholder ? (
                   <span aria-hidden className={`absolute inset-0 ${mediaPlaceholderClass(alternatingMediaPlaceholder(index))}`} />
                 ) : (
-                  <img src={space.image} alt="" loading="lazy" className="absolute inset-0 size-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                  <img
+                    src={wixImageUrl(space.image, space.size === "large" ? 960 : 640)}
+                    srcSet={wixImageSrcSet(space.image)}
+                    sizes={space.size === "large" ? "540px" : "316px"}
+                    alt=""
+                    loading="lazy"
+                    decoding="async"
+                    className="absolute inset-0 size-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  />
                 )}
                 <span className="absolute inset-0 bg-linear-to-b from-black/0 from-55% to-black/40" />
                 <span className="absolute inset-x-0 bottom-0 p-4 font-display text-h4">{space.title}</span>

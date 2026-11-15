@@ -10,6 +10,7 @@ import {
 import { useState } from "react";
 import type { CoworkingAmenity, CoworkingPage } from "@/domain/content";
 import { alternatingMediaPlaceholder, mediaPlaceholderClass, USE_MEDIA_PLACEHOLDERS } from "@/config/media";
+import { wixImageSrcSet, wixImageUrl } from "@/lib/wix-image";
 
 const ICONS: Record<CoworkingAmenity, typeof IconWifi> = {
   wifi: IconWifi,
@@ -84,7 +85,15 @@ export function CoworkingSpaces({ eyebrow, items, amenities, cta }: CoworkingPag
         {showPlaceholder ? (
           <div aria-hidden className={`size-full ${mediaPlaceholderClass(alternatingMediaPlaceholder(selected))}`} />
         ) : (
-          <img src={images[photo]} alt={space?.title ?? ""} loading="lazy" className="size-full object-cover" />
+          <img
+            src={wixImageUrl(images[photo], 960)}
+            srcSet={wixImageSrcSet(images[photo])}
+            sizes="(min-width: 1024px) 536px, 100vw"
+            alt={space?.title ?? ""}
+            loading="lazy"
+            decoding="async"
+            className="size-full object-cover"
+          />
         )}
         {!USE_MEDIA_PLACEHOLDERS && images.length > 1 && (
           <div className="absolute bottom-4 left-4 flex gap-2" role="group" aria-label={`${space?.title} photos`}>
@@ -97,7 +106,7 @@ export function CoworkingSpaces({ eyebrow, items, amenities, cta }: CoworkingPag
                 aria-pressed={index === photo}
                 className={`size-12 overflow-hidden ${index === photo ? "outline-2 outline-offset-2 outline-white" : ""}`}
               >
-                <img src={src} alt="" className="size-full object-cover" />
+                <img src={wixImageUrl(src, 96)} alt="" loading="lazy" decoding="async" className="size-full object-cover" />
               </button>
             ))}
           </div>

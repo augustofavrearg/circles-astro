@@ -1,6 +1,7 @@
 import { IconArrowNarrowLeft, IconArrowNarrowRight } from "@tabler/icons-react";
 import { useState } from "react";
 import { mediaPlaceholderClass, USE_MEDIA_PLACEHOLDERS, type MediaPlaceholderTone } from "@/config/media";
+import { wixImageSrcSet, wixImageUrl } from "@/lib/wix-image";
 
 /** Figma "Manifesto" image with previous / next arrows; the arrows only render when there is more than one photo. */
 export function ManifestoGallery({ images, label, placeholderTone = "yellow" }: { images: string[]; label: string; placeholderTone?: MediaPlaceholderTone }) {
@@ -13,16 +14,16 @@ export function ManifestoGallery({ images, label, placeholderTone = "yellow" }: 
 
   return (
     <div role="region" aria-roledescription="carousel" aria-label={label} className="relative size-full overflow-hidden">
-      {images.map((src, index) => (
-        <img
-          key={src}
-          src={src}
-          alt=""
-          aria-hidden={index !== current}
-          loading="lazy"
-          className={`absolute inset-0 size-full object-cover transition-opacity duration-500 ${index === current ? "opacity-100" : "opacity-0"}`}
-        />
-      ))}
+      <img
+        key={images[current]}
+        src={wixImageUrl(images[current], 1280)}
+        srcSet={wixImageSrcSet(images[current])}
+        sizes="(min-width: 1024px) 50vw, 100vw"
+        alt=""
+        loading="lazy"
+        decoding="async"
+        className="absolute inset-0 size-full object-cover"
+      />
       {count > 1 && (
         <>
           <button

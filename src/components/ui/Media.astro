@@ -1,5 +1,6 @@
 ---
 import { cn } from "@/lib/cn";
+import { wixImageSrcSet, wixImageUrl } from "@/lib/wix-image";
 import {
   mediaPlaceholderClass,
   USE_MEDIA_PLACEHOLDERS,
@@ -15,6 +16,7 @@ type Props = {
   imageClass?: string;
   placeholderTone?: MediaPlaceholderTone;
   forceImage?: boolean;
+  sizes?: string;
 };
 
 const {
@@ -26,8 +28,11 @@ const {
   imageClass,
   placeholderTone = "yellow",
   forceImage = false,
+  sizes = "100vw",
 } = Astro.props;
 const showPlaceholder = !src || (USE_MEDIA_PLACEHOLDERS && !forceImage);
+const optimizedSrc = wixImageUrl(src, 1280);
+const srcset = wixImageSrcSet(src);
 ---
 
 <div class={cn("absolute inset-0 overflow-hidden bg-black/8", className)}>
@@ -35,9 +40,12 @@ const showPlaceholder = !src || (USE_MEDIA_PLACEHOLDERS && !forceImage);
     <div aria-hidden="true" class={cn("size-full", mediaPlaceholderClass(placeholderTone))}></div>
   ) : (
     <img
-      src={src}
+      src={optimizedSrc}
+      srcset={srcset}
+      sizes={srcset ? sizes : undefined}
       alt={alt}
       loading={eager ? "eager" : "lazy"}
+      fetchpriority={eager ? "high" : "auto"}
       decoding="async"
       class={cn("size-full object-cover", imageClass)}
     />

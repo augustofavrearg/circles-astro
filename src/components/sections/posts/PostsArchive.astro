@@ -37,6 +37,7 @@ const pageHref = (page: number) => page === 1 ? "/posts" : `/posts?page=${page}`
                 <Media
                   src={post.image}
                   alt={post.imageAlt ?? ""}
+                  sizes="(min-width: 1024px) 31vw, (min-width: 768px) 50vw, 100vw"
                   placeholderTone={index % 2 === 0 ? "yellow" : "blue"}
                   imageClass="transition-transform duration-700 group-hover:scale-[1.035]"
                 />

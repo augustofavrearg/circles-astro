@@ -59,7 +59,7 @@ if (!post) return new Response("Not found", { status: 404 });
 
     {post.image && (
       <div class="relative mx-auto mt-8 aspect-[16/9] max-h-[780px] max-w-[1500px] overflow-hidden bg-paper lg:mt-12">
-        <Media src={post.image} alt={post.imageAlt ?? ""} eager />
+        <Media src={post.image} alt={post.imageAlt ?? ""} sizes="(min-width: 1500px) 1500px, 100vw" eager />
       </div>
     )}
 
