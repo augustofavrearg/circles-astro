@@ -3,9 +3,9 @@ import SiteLayout from "@/layouts/SiteLayout.astro";
 import Media from "@/components/ui/Media.astro";
 import RichContentBlocks from "@/components/ui/RichContentBlocks.astro";
 import { WixRichContent } from "@/islands/WixRichContent";
+import { WixSeoTags } from "@/components/seo/WixSeoTags";
 import { getContentRepository } from "@/services/content/repository";
 import { WIX_APPS } from "@wix/essentials";
-import { SEO } from "@wix/seo/components";
 import { loadSEOTagsServiceConfig } from "@wix/seo/services";
 import { seoTags } from "@wix/seo";
 
@@ -43,7 +43,7 @@ if (!post) return new Response("Not found", { status: 404 });
   description={post.seo.description}
   useWixSeo={Boolean(seoTagsServiceConfig)}
 >
-  {seoTagsServiceConfig && <SEO.Tags seoTagsServiceConfig={seoTagsServiceConfig} slot="seo-tags" />}
+  {seoTagsServiceConfig && <WixSeoTags seoTagsServiceConfig={seoTagsServiceConfig} slot="seo-tags" />}
 
   <article class="pb-28">
     <header class="border-b border-black/15 px-4 pb-14 pt-20 lg:px-6 lg:pb-20 lg:pt-28">
