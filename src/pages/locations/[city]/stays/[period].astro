@@ -14,6 +14,7 @@ import { SpacesCarousel } from "@/islands/SpacesCarousel";
 import { bookStayLink } from "@/config/navigation";
 import { createCloudbedsProvider } from "@/services/booking/cloudbeds";
 import { getContentRepository } from "@/services/content/repository";
+import { whatsappLinks } from "@/lib/whatsapp";
 
 const repository = await getContentRepository();
 const campaign = await repository.getStayCampaign(Astro.params.city ?? "", Astro.params.period ?? "");
@@ -43,7 +44,7 @@ const roomTypes = rooms.map((room) => room.name);
       <p class="mx-auto mt-3 max-w-[600px] text-[0.9375rem] leading-[1.45] lg:max-w-[540px] lg:text-[0.8125rem]">{page.rooms.text}</p>
     </header>
     <div class="mt-24 grid gap-4 lg:mt-16 lg:grid-cols-2 lg:gap-3">
-      {rooms.map((room) => <RoomCard room={room} bookingHref={booking.getRedirect(room).toString()} />)}
+      {rooms.map((room) => <RoomCard room={room} bookingHref={booking.getRedirect(room).toString()} supportHref={whatsappLinks.flexibleStay} />)}
     </div>
   </section>
   <MemberDiscounts {...page.band} text={settings.promotion} compact class="mt-4 lg:mt-28" />

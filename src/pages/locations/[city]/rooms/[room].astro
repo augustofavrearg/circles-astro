@@ -4,6 +4,7 @@ import Button from "@/components/ui/Button.astro";
 import Media from "@/components/ui/Media.astro";
 import Newsletter from "@/components/sections/shared/Newsletter.astro";
 import { routes } from "@/config/navigation";
+import { whatsappLinks } from "@/lib/whatsapp";
 import { createCloudbedsProvider } from "@/services/booking/cloudbeds";
 import { getContentRepository } from "@/services/content/repository";
 
@@ -52,7 +53,10 @@ const occupancyLabel = page.occupancyType === "private"
                 <span class="mt-1 block font-display text-[1.65rem]">{page.price.value}</span>
               </p>
             )}
-            <Button href={bookingHref} rel="external" class="bg-white text-black">Check availability</Button>
+            <div class="flex flex-wrap gap-2">
+              <Button href={whatsappLinks.flexibleStay} target="_blank" rel="noreferrer" variant="secondary" class="border-white text-white">Contact</Button>
+              <Button href={bookingHref} rel="external" class="bg-white text-black">Choose dates</Button>
+            </div>
           </div>
         </div>
       </div>
@@ -123,7 +127,8 @@ const occupancyLabel = page.occupancyType === "private"
         <h2 class="mt-3 max-w-[780px] font-display text-[2.75rem] leading-[1] lg:text-[4.75rem]">Make this room part of your next chapter.</h2>
       </div>
       <div class="flex flex-col justify-end gap-2 border-t border-black/15 p-5 lg:border-t-0 lg:border-l lg:p-8">
-        <Button href={bookingHref} rel="external">Check availability</Button>
+        <Button href={whatsappLinks.flexibleStay} target="_blank" rel="noreferrer" variant="secondary">Contact</Button>
+        <Button href={bookingHref} rel="external">Choose dates</Button>
         <Button href={routes.cityRooms(page.locationId)} variant="secondary">View all rooms</Button>
         {page.floorPlan && <Button href={page.floorPlan} target="_blank" rel="noreferrer" variant="simple">View floor plan</Button>}
       </div>

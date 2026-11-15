@@ -416,6 +416,7 @@ export type MembershipsPage = {
     text: string;
     images: string[];
     stats: { icon: "globe" | "age" | "stay"; label: string }[];
+    cta?: Link;
   };
   pricing: {
     eyebrow: string;
@@ -482,7 +483,7 @@ export type CoworkingPage = {
   /** City slug, e.g. "barcelona". */
   city: string;
   seo: { title: string; description: string };
-  hero: { eyebrow: string; title: string; subtitle: string; image?: string };
+  hero: { eyebrow: string; title: string; subtitle: string; image?: string; cta?: Link };
   spaces: {
     eyebrow: string;
     items: { title: string; text: string; images: string[] }[];

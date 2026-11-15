@@ -25,6 +25,7 @@ import type {
   WhatIsCirclesPage,
 } from "@/domain/content";
 import type { Room } from "@/domain/booking";
+import { whatsappLinks } from "../../lib/whatsapp";
 
 export const siteSettingsFixture: SiteSettings = {
   promotion: "Members save 15 % on trips of 7+ nights, 30% on 30+ nights trips and 35% on 60+ night trips.",
@@ -43,6 +44,7 @@ export const siteSettingsFixture: SiteSettings = {
     copyright: `© ${new Date().getFullYear()} circles.house - All rights reserved`,
   },
   socials: [
+    { network: "whatsapp", label: "WhatsApp", href: whatsappLinks.general },
     { network: "instagram", label: "Instagram", href: "https://instagram.com" },
     { network: "linkedin", label: "LinkedIn", href: "https://linkedin.com" },
     { network: "youtube", label: "YouTube", href: "https://youtube.com" },
@@ -187,7 +189,7 @@ export const homePageFixture: HomePage = {
     eyebrow: "Join us",
     title: "Become a Member",
     description: "Our digital community is where ambitious entrepreneurs come together with seamless opportunities to engage, share ideas, spark connections, and turn visions into reality.",
-    cta: { label: "Apply", href: "/api/auth/login" },
+    cta: { label: "Join on WhatsApp", href: whatsappLinks.community },
     highlights: ["Instant Community", "Focused Channels", "Collaboration"],
     image: "/images/home/membership/rooftop-community.png",
     thumbnail: "/images/home/membership/house-exterior.png",
@@ -276,7 +278,7 @@ export const roomsPageFixture: RoomsPage = {
   band: {
     title: "Stay longer and save more",
     secondaryCta: { label: "Explore Barcelona", href: "/locations/barcelona" },
-    primaryCta: { label: "Become a member", href: "/memberships" },
+    primaryCta: { label: "Join on WhatsApp", href: whatsappLinks.community },
   },
   empty: {
     title: "No rooms are published for this location yet.",
@@ -350,7 +352,7 @@ export const dealsFixture: Deal[] = [
     description:
       "Love your experience at Circles? Share it with your friends! When you refer someone to Circles House, both you and your friend receive 10% discount on your monthly stay.\n\nIt’s simple: spread the word, help grow our community, and enjoy great savings together.",
     terms: "*This promotion cannot be combined with other promotions and only applies for the first month.",
-    cta: { label: "Book Now", href: "/rooms" },
+    cta: { label: "Receive code", href: whatsappLinks.referral },
   },
 ];
 
@@ -414,8 +416,7 @@ export const partnershipsPageFixture: PartnershipsPage = {
   },
   membership: {
     title: "Become a member and get discounts for all our partners",
-    // Same destination as "Apply" in the home Memberships section; "Book a Call" is pending.
-    primaryCta: { label: "Join us", href: "/api/auth/login" },
+    primaryCta: { label: "Join on WhatsApp", href: whatsappLinks.community },
   },
   faq: sharedFaq,
 };
@@ -492,8 +493,7 @@ export const teamPageFixture: TeamPage = {
     note: "We create a culturally diverse international community through digital conscious nomadism.",
   },
   members: { eyebrow: "Meet the founders", title: "Our Values that we Share" },
-  // Same destination as "Join us" on Partnerships.
-  band: { title: "Stay longer and Save more", primaryCta: { label: "Join us", href: "/api/auth/login" } },
+  band: { title: "Stay longer and Save more", primaryCta: { label: "Join on WhatsApp", href: whatsappLinks.community } },
   faq: sharedFaq,
 };
 
@@ -573,8 +573,7 @@ export const membershipsPageFixture: MembershipsPage = {
     eyebrow: "Memberships",
     title: "Become a Member",
     body: "Join Circles Membership for exclusive access to locations, deals, events, and the Member Hub.\nIt’s where everything begins.",
-    // Same destination as "Apply" in the home Memberships section; "Book a Call" is pending.
-    cta: { label: "Apply", href: "/api/auth/login" },
+    cta: { label: "Join on WhatsApp", href: whatsappLinks.community },
   },
   benefits: {
     eyebrow: "Why join",
@@ -604,6 +603,7 @@ export const membershipsPageFixture: MembershipsPage = {
       { icon: "age", label: "36 years average age" },
       { icon: "stay", label: "2 weeks of average stay" },
     ],
+    cta: { label: "Join on WhatsApp", href: whatsappLinks.community },
   },
   pricing: {
     eyebrow: "Pricing",
@@ -632,7 +632,7 @@ export const membershipsPageFixture: MembershipsPage = {
       },
     ],
   },
-  band: { title: "Stay longer and Save more", primaryCta: { label: "Join us", href: "/api/auth/login" } },
+  band: { title: "Stay longer and Save more", primaryCta: { label: "Join on WhatsApp", href: whatsappLinks.community } },
   faq: sharedFaq,
 };
 
@@ -671,7 +671,7 @@ export const stayCampaignTemplateFixture: MonthPage = {
     title: "A room for your needs",
     text: "Our house offers a range of thoughtfully designed rooms to suit various lifestyles, combining luxury and functionality. Whether you’re looking for a monthly stay or a flexible option, we’ve got you covered.",
   },
-  band: { title: "Stay longer and Save more", primaryCta: { label: "Join us", href: "/api/auth/login" } },
+  band: { title: "Stay longer and Save more", primaryCta: { label: "Join on WhatsApp", href: whatsappLinks.community } },
   events: { eyebrow: "Why join", title: "What you will say Yes to" },
   faq: sharedFaq,
 };
@@ -715,6 +715,7 @@ export const coworkingPagesFixture: CoworkingPage[] = [
       eyebrow: "Coworking @ Circles Barcelona",
       title: "Work Surrounded by Nature",
       subtitle: "See What Makes our Inspiring Coworking Spaces Perfect for Entrepreneurs and Innovators",
+      cta: { label: "Book a tour", href: whatsappLinks.coworkingTour },
     },
     spaces: barcelonaCoworkingSpaces,
     pricing: {
@@ -723,16 +724,16 @@ export const coworkingPagesFixture: CoworkingPage[] = [
       includesLabel: "Includes access to:",
       // "Contact" and "Apply Now" appear once they have destinations.
       plans: [
-        { title: "Day pass", subtitle: "Use it in a period of 30 days", includes: coworkingIncludes, price: "15€ +VAT" },
-        { title: "10 days pass", subtitle: "Use it in a period of 30 days", includes: coworkingIncludes, price: "120€ +VAT" },
-        { title: "Monthly pass", subtitle: "30 days access", includes: coworkingIncludes, price: "150€ +VAT", highlighted: true },
-        { title: "Monthly pass", subtitle: "+ FIXED DESK", includes: coworkingIncludes, price: "180€ +VAT" },
+        { title: "Day pass", subtitle: "Use it in a period of 30 days", includes: coworkingIncludes, price: "15€ +VAT", cta: { label: "Contact us", href: whatsappLinks.coworkingPass } },
+        { title: "10 days pass", subtitle: "Use it in a period of 30 days", includes: coworkingIncludes, price: "120€ +VAT", cta: { label: "Contact us", href: whatsappLinks.coworkingPass } },
+        { title: "Monthly pass", subtitle: "30 days access", includes: coworkingIncludes, price: "150€ +VAT", highlighted: true, cta: { label: "Contact us", href: whatsappLinks.coworkingPass } },
+        { title: "Monthly pass", subtitle: "+ FIXED DESK", includes: coworkingIncludes, price: "180€ +VAT", cta: { label: "Contact us", href: whatsappLinks.coworkingPass } },
       ],
     },
     band: {
       title: "Stay longer and Save more",
       secondaryCta: { label: "Book a Stay", href: "/rooms" },
-      primaryCta: { label: "Join us", href: "/memberships" },
+      primaryCta: { label: "Join on WhatsApp", href: whatsappLinks.community },
     },
     faq: sharedFaq,
   },
@@ -759,7 +760,7 @@ export const lifePageFixture: LifePage = {
   band: {
     title: "Become a Member",
     secondaryCta: { label: "Book a Stay", href: "/rooms" },
-    primaryCta: { label: "Become a member", href: "/memberships" },
+    primaryCta: { label: "Join on WhatsApp", href: whatsappLinks.community },
   },
   faq: sharedFaq,
 };
@@ -814,7 +815,7 @@ export const locationPagesFixture: LocationPage[] = [
       text: "Our house offers a range of thoughtfully designed rooms to suit various lifestyles, combining luxury and functionality. Whether you’re looking for a monthly stay or a flexible option, we’ve got you covered.",
       source: { mode: "automatic", key: "location.rooms" },
     },
-    band: { title: "Stay longer and Save more", primaryCta: { label: "Join us", href: "/memberships" } },
+    band: { title: "Stay longer and Save more", primaryCta: { label: "Join on WhatsApp", href: whatsappLinks.community } },
     experiences: {
       eyebrow: "Experience",
       title: "Travel slowly in Barcelona",

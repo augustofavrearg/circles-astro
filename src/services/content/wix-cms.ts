@@ -56,6 +56,7 @@ import { routes, siteNavigation, withDealsNavigation, withPostsNavigation } from
 import type { NavigationItem, SiteNavigation } from "@/domain/navigation";
 import { getBlogPost, getBlogPostsPage, getFeaturedBlogPosts } from "./wix-blog";
 import { parseEditorialEntityReference, parseSectionSource } from "@/domain/editorial";
+import { normalizeMembershipCta } from "./membership-cta";
 
 export const COLLECTIONS = {
   siteSettings: "CHSiteSettings",
@@ -293,8 +294,8 @@ function splitParagraphs(value: string): string[] {
 function composeSection(section: WixRecord, sectionItems: WixRecord[]): Record<string, unknown> {
   const source = parseSectionSource(section);
   const componentKey = asText(section.componentKey);
-  const primaryCta = mapCmsLink(section, "primary");
-  const secondaryCta = mapCmsLink(section, "secondary");
+  const primaryCta = normalizeMembershipCta(mapCmsLink(section, "primary"), componentKey);
+  const secondaryCta = normalizeMembershipCta(mapCmsLink(section, "secondary"));
   const body = asText(section.body);
   const image = wixUrl(section.image);
   const gallery = wixGallery(section.gallery);
@@ -432,6 +433,7 @@ function composeSection(section: WixRecord, sectionItems: WixRecord[]): Record<s
       text: body,
       images: gallery,
       stats: stats.map((item) => ({ icon: asText(item.iconKey), label: asText(item.label) })),
+      cta: primaryCta,
     };
   }
 

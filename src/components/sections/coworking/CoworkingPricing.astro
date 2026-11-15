@@ -29,7 +29,7 @@ const { eyebrow, title, includesLabel, plans } = Astro.props;
         {(plan.secondaryCta || plan.cta) && (
           <div class="mt-4 grid gap-2">
             {plan.secondaryCta && <Button href={plan.secondaryCta.href} variant="secondary" class="w-full">{plan.secondaryCta.label}</Button>}
-            {plan.cta && <Button href={plan.cta.href} class="w-full">{plan.cta.label}</Button>}
+            {plan.cta && <Button href={plan.cta.href} target="_blank" rel="noreferrer" class="w-full">{plan.cta.label}</Button>}
           </div>
         )}
       </li>

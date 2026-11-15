@@ -4,6 +4,7 @@ import type { RoomsPage, SearchLocation } from "@/domain/content";
 import Button from "@/components/ui/Button.astro";
 import RoomCard from "@/components/sections/shared/RoomCard.astro";
 import { routes } from "@/config/navigation";
+import { whatsappLinks } from "@/lib/whatsapp";
 
 type Props = {
   rooms: { room: Room; bookingHref: string }[];
@@ -51,7 +52,7 @@ const { rooms, locationLabel, locations, selectedLocation, empty } = Astro.props
         <RoomCard
           {room}
           {bookingHref}
-          buttonLabel="Check availability"
+          supportHref={whatsappLinks.flexibleStay}
           placeholderTone={index % 2 === 0 ? "yellow" : "blue"}
         />
       ))}

@@ -4,8 +4,8 @@ import type { MediaPlaceholderTone } from "@/config/media";
 import Button from "@/components/ui/Button.astro";
 import { ManifestoGallery } from "@/islands/ManifestoGallery";
 
-type Props = { room: Room; bookingHref: string; placeholderTone?: MediaPlaceholderTone; buttonLabel?: string };
-const { room, bookingHref, placeholderTone = "yellow", buttonLabel = "Book a Stay" } = Astro.props;
+type Props = { room: Room; bookingHref: string; supportHref?: string; placeholderTone?: MediaPlaceholderTone; buttonLabel?: string };
+const { room, bookingHref, supportHref, placeholderTone = "yellow", buttonLabel = "Choose dates" } = Astro.props;
 const photos = room.gallery?.length ? room.gallery : room.image ? [room.image] : [];
 const occupancyLabel = room.occupancyType === "private" ? "Private" : room.occupancyType === "shared" ? "Shared" : undefined;
 ---
@@ -69,8 +69,8 @@ const occupancyLabel = room.occupancyType === "private" ? "Private" : room.occup
           {room.price.value}
         </p>
       )}
-      <div class="mt-3 flex gap-1 lg:mt-0">
-        {room.href && <Button href={room.href} variant="secondary">View room</Button>}
+      <div class="mt-3 flex flex-wrap gap-1 lg:mt-0">
+        {supportHref && <Button href={supportHref} target="_blank" rel="noreferrer" variant="secondary">Contact</Button>}
         <!-- Availability, dates and payment stay in Cloudbeds. -->
         <Button href={bookingHref} rel="external">{buttonLabel}</Button>
       </div>

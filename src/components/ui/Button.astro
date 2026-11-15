@@ -1,5 +1,6 @@
 ---
 import { cn } from "@/lib/cn";
+import { getWhatsAppLinkAttributes } from "@/lib/whatsapp";
 
 type Props = {
   href?: string;
@@ -10,6 +11,7 @@ type Props = {
 };
 
 const { href, variant = "primary", class: className, target, rel } = Astro.props;
+const linkAttributes = getWhatsAppLinkAttributes(href, target, rel);
 const variants = {
   primary: "h-10 min-w-37 rounded-full bg-black px-6 text-cta text-white",
   secondary: "h-10 min-w-37 rounded-full border border-black px-6 text-cta text-black",
@@ -24,7 +26,7 @@ const classes = cn(
 ---
 
 {href ? (
-  <a href={href} target={target} rel={rel} class={classes}><span class="group-hover:font-semibold"><slot /></span></a>
+  <a href={href} target={linkAttributes.target} rel={linkAttributes.rel} class={classes}><span class="group-hover:font-semibold"><slot /></span></a>
 ) : (
   <button type="button" class={classes}><span class="group-hover:font-semibold"><slot /></span></button>
 )}

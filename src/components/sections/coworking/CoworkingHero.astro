@@ -2,9 +2,10 @@
 import type { CoworkingPage } from "@/domain/content";
 import Eyebrow from "@/components/ui/Eyebrow.astro";
 import Media from "@/components/ui/Media.astro";
+import Button from "@/components/ui/Button.astro";
 
 type Props = CoworkingPage["hero"];
-const { eyebrow, title, subtitle, image } = Astro.props;
+const { eyebrow, title, subtitle, image, cta } = Astro.props;
 ---
 
 <section aria-labelledby="coworking-title">
@@ -14,6 +15,7 @@ const { eyebrow, title, subtitle, image } = Astro.props;
       {title}
     </h1>
     <p class="mt-4 max-w-[680px] text-[0.9375rem] leading-[1.4] lg:text-[0.8125rem]">{subtitle}</p>
+    {cta && <Button href={cta.href} target="_blank" rel="noreferrer" class="mt-7">{cta.label}</Button>}
   </header>
 
   <div class="relative h-[520px] overflow-hidden lg:h-[765px]">

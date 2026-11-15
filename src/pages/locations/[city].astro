@@ -20,6 +20,7 @@ import { SectionTabs } from "@/islands/SectionTabs";
 import { createCloudbedsProvider } from "@/services/booking/cloudbeds";
 import { getContentRepository } from "@/services/content/repository";
 import { resolveEditorialSource } from "@/services/content/editorial-sources";
+import { whatsappLinks } from "@/lib/whatsapp";
 
 const repository = await getContentRepository();
 const page = await repository.getLocationPage(Astro.params.city ?? "");
@@ -83,7 +84,7 @@ const tabs = [
       <BookingSearch client:visible fixedLocation={page.slug} className="mx-auto mt-8 max-w-[860px] text-left lg:mt-12" />
     </header>
     <div class="mt-16 grid gap-4 lg:mt-24 lg:grid-cols-2 lg:gap-3">
-      {rooms.map((room, index) => <RoomCard room={room} bookingHref={booking.getRedirect(room).toString()} placeholderTone={index % 2 === 0 ? "yellow" : "blue"} />)}
+      {rooms.map((room, index) => <RoomCard room={room} bookingHref={booking.getRedirect(room).toString()} supportHref={whatsappLinks.flexibleStay} placeholderTone={index % 2 === 0 ? "yellow" : "blue"} />)}
     </div>
   </section>
 
