@@ -829,7 +829,7 @@ export const locationPagesFixture: LocationPage[] = [
       eyebrow: "Location",
       title: "In the hills above Barcelona",
       text: "Located in a natural park and only a 5 minute walk from a metro station, our house in Vallvidrera is well-located and allows you to get anywhere quickly and easily. Whether you want to go to the heart of Placa Catalunya, Barceloneta beach, or the mountains, the proximity of our house to the metro means all of this is possible.",
-      // The map image is pending; the link opens the address in Google Maps.
+      address: "Camí de Vallvidrera al Tibidabo, 5, 08017 Barcelona, Spain",
       mapHref: "https://www.google.com/maps/search/?api=1&query=Cam%C3%AD%20de%20Vallvidrera%20al%20Tibidabo%2C%205%2C%2008017%20Barcelona",
     },
     manager: {

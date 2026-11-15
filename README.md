@@ -52,6 +52,20 @@ npm run dev:local -- --host
 `--host` exposes the development server to the local network; it does not
 publish or release the site in Wix.
 
+### Google Maps
+
+Location pages and place dialogs use Google Maps Embed API in `place` mode,
+using each approved `CHLocations.address`. Configure a dedicated browser key:
+
+```bash
+PUBLIC_GOOGLE_MAPS_EMBED_API_KEY=your_restricted_key
+```
+
+Enable only Maps Embed API for this key and restrict it to the approved website
+referrers. Without the key, the UI intentionally falls back to the address and
+an external Google Maps directions link instead of a static map image. Review
+the public cookie and privacy disclosures before production launch.
+
 ### Local development with Wix CMS
 
 Set `CONTENT_SOURCE=wix` in the uncommitted local environment file, then run:

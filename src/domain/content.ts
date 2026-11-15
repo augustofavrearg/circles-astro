@@ -38,7 +38,6 @@ export type PlaceDetails = {
   price?: { label: string; value: string };
   amenities?: SpaceAmenity[];
   directions?: string;
-  mapImage?: string;
   page?: Link;
   cta?: Link;
 };
@@ -531,7 +530,7 @@ export type LocationPage = {
   };
   band: CtaBand;
   experiences: { eyebrow: string; title: string; subtitle: string; items: Experience[] };
-  location: { eyebrow: string; title: string; text: string; mapImage?: string; mapHref?: string };
+  location: { eyebrow: string; title: string; text: string; address?: string; mapHref?: string };
   manager: { eyebrow: string; title: string; paragraphs: string[]; image?: string };
   faq: FaqSection;
 };

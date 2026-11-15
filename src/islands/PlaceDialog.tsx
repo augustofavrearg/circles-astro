@@ -1,8 +1,9 @@
-import { IconHome, IconMapPin, IconShield, IconStarFilled, IconX } from "@tabler/icons-react";
+import { IconHome, IconShield, IconStarFilled, IconX } from "@tabler/icons-react";
 import { useEffect, useRef } from "react";
 import type { Link, PlaceDetails, SpaceAmenity } from "@/domain/content";
 import { USE_MEDIA_PLACEHOLDERS } from "@/config/media";
 import { wixImageUrl } from "@/lib/wix-image";
+import { GoogleMapEmbed } from "@/components/ui/GoogleMapEmbed";
 
 export type Place = {
   title: string;
@@ -104,25 +105,13 @@ export function PlaceDialog({ place, onClose, defaultCta }: { place: Place | nul
                 </ul>
               )}
 
-              {details?.mapImage && (
-                USE_MEDIA_PLACEHOLDERS ? (
-                  <div aria-hidden className="mt-5 h-[125px] w-full rounded-lg bg-[#3158d8]" />
-                ) : (
-                  <img src={wixImageUrl(details.mapImage, 880)} alt={`Map of ${place.title}`} loading="lazy" decoding="async" className="mt-5 h-[125px] w-full rounded-lg object-cover" />
-                )
+              {place.address && (
+                <GoogleMapEmbed address={place.address} title={place.title} className="mt-5 h-[220px] rounded-lg" />
               )}
 
               {place.address && (
                 <div className="mt-4 text-[0.9375rem] leading-[1.45]">
-                  <a
-                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.address)}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex items-center gap-1.5 hover:underline"
-                  >
-                    {!details?.mapImage && <IconMapPin size={16} stroke={1.5} aria-hidden />}
-                    {place.address}
-                  </a>
+                  <p>{place.address}</p>
                   {details?.directions && <p className="text-black/50">{details.directions}</p>}
                 </div>
               )}

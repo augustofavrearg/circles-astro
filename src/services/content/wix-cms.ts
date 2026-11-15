@@ -1046,7 +1046,7 @@ export const wixCmsRepository: ContentRepository = {
       space: { ...composed.space!, amenities },
       location: {
         ...composed.location!,
-        mapImage: wixUrl(location.mapImage) || composed.location?.mapImage,
+        address: asText(location.address) || composed.location?.address,
         mapHref: wixUrl(location.mapUrl) || composed.location?.mapHref,
       },
       manager: manager
