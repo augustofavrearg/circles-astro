@@ -42,11 +42,11 @@ function collectReferences(value, references = []) {
 }
 
 describe("Wix staging seed manifest", () => {
-  it("covers every canonical collection with 190 uniquely keyed records", () => {
+  it("covers every canonical collection with 219 uniquely keyed records", () => {
     expect(seedCollections.map(({ collectionId }) => collectionId)).toEqual(
       expectedCollections,
     );
-    expect(seedCollections.flatMap(({ items }) => items)).toHaveLength(190);
+    expect(seedCollections.flatMap(({ items }) => items)).toHaveLength(219);
 
     for (const { collectionId, keyField, items } of seedCollections) {
       const keys = items.map(({ key }) => key);
@@ -57,6 +57,47 @@ describe("Wix staging seed manifest", () => {
         expect(item.data[keyField], `${collectionId}:${item.key}`).toBe(item.key);
       }
     }
+  });
+
+  it("composes the complete footer page contracts", () => {
+    const sections = seedCollections.find(({ collectionId }) => collectionId === "CHPageSections");
+    const items = seedCollections.find(({ collectionId }) => collectionId === "CHSectionItems");
+
+    expect(sections?.items.filter(({ key }) => key.startsWith("what-is-circles.")).map(({ key }) => key)).toEqual([
+      "what-is-circles.intro",
+      "what-is-circles.purpose",
+      "what-is-circles.values",
+      "what-is-circles.edge",
+      "what-is-circles.manifesto",
+      "what-is-circles.faq",
+    ]);
+    expect(sections?.items.filter(({ key }) => key.startsWith("life-at-circles.")).map(({ key }) => key)).toEqual([
+      "life-at-circles.intro",
+      "life-at-circles.highlights",
+      "life-at-circles.band",
+      "life-at-circles.faq",
+    ]);
+    expect(items?.items.filter(({ key }) => key.startsWith("what-is-circles.values."))).toHaveLength(4);
+    expect(items?.items.filter(({ key }) => key.startsWith("life-at-circles.highlights."))).toHaveLength(3);
+    expect(items?.items.filter(({ key }) => key.endsWith("faq.getting-there"))).toHaveLength(2);
+  });
+
+  it("composes Team with complete editorial content and published biographies", () => {
+    const sections = seedCollections.find(({ collectionId }) => collectionId === "CHPageSections");
+    const items = seedCollections.find(({ collectionId }) => collectionId === "CHSectionItems");
+    const people = seedCollections.find(({ collectionId }) => collectionId === "CHPeople");
+
+    expect(sections?.items.filter(({ key }) => key.startsWith("team.")).map(({ key }) => key)).toEqual([
+      "team.intro",
+      "team.members",
+      "team.band",
+      "team.faq",
+    ]);
+    expect(items?.items.filter(({ key }) => key.startsWith("team.faq."))).toHaveLength(3);
+    expect(people?.items.filter(({ data }) => data.personTypes?.includes("team") && data.published)).toHaveLength(6);
+    expect(people?.items
+      .filter(({ data }) => data.personTypes?.includes("team") && data.published)
+      .every(({ data }) => Boolean(data.bio && data.photo))).toBe(true);
   });
 
   it("only references records that are available earlier in the load order", () => {

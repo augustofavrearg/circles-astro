@@ -3,6 +3,7 @@ import { IconChevronDown } from "@tabler/icons-react";
 import type { StayForm } from "@/domain/content";
 import Eyebrow from "@/components/ui/Eyebrow.astro";
 import Media from "@/components/ui/Media.astro";
+import { InteractiveButton } from "@/components/ui/InteractiveButton";
 
 type Props = StayForm & { id: string; roomTypes: string[]; variant?: "light" | "red" };
 const { id, eyebrow, title, subtitle, image, roomTypes, variant = "light" } = Astro.props;
@@ -62,9 +63,9 @@ const control = "w-full bg-transparent text-black/45 placeholder:text-black/45 d
     </label>
     <div class="mt-2 flex items-center justify-between gap-4">
       <p class="text-detail">Fields marked with * are mandatory</p>
-      <button type="submit" disabled class="inline-flex h-10 min-w-47 items-center justify-center rounded-full bg-black px-6 text-cta text-white disabled:cursor-not-allowed">
+      <InteractiveButton type="submit" disabled className="inline-flex h-10 min-w-47 items-center justify-center rounded-full bg-black px-6 text-cta text-white">
         Submit
-      </button>
+      </InteractiveButton>
     </div>
     <p id={`${id}-note`} class="sr-only">Applications open once the form provider is connected.</p>
   </form>

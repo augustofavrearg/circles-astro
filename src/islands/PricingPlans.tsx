@@ -1,5 +1,6 @@
 import { useState } from "react";
 import type { MembershipPlan } from "@/domain/content";
+import { InteractiveButton } from "@/components/ui/InteractiveButton";
 
 /** Figma "Pricing" toggle (Yearly / Lifetime) and the selected price. With one plan it renders statically. */
 export function PricingPlans({ plans }: { plans: MembershipPlan[] }) {
@@ -12,16 +13,16 @@ export function PricingPlans({ plans }: { plans: MembershipPlan[] }) {
       {plans.length > 1 && (
         <div role="radiogroup" aria-label="Billing" className="inline-flex rounded-md bg-black/10 p-0.5">
           {plans.map((item, index) => (
-            <button
+            <InteractiveButton
+              motion="toggle"
               key={item.label}
-              type="button"
               role="radio"
               aria-checked={index === selected}
               onClick={() => setSelected(index)}
-              className={`h-6.5 min-w-19 rounded-sm px-4 text-detail transition-colors ${index === selected ? "bg-black text-white" : "text-black/55 hover:text-black"}`}
+              className={`h-6.5 min-w-19 rounded-sm px-4 text-detail ${index === selected ? "bg-black text-white" : "text-black/55 hover:text-black"}`}
             >
               {item.label}
-            </button>
+            </InteractiveButton>
           ))}
         </div>
       )}

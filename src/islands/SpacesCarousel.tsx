@@ -4,6 +4,7 @@ import type { HomePage, Link, Space } from "@/domain/content";
 import { alternatingMediaPlaceholder, mediaPlaceholderClass, USE_MEDIA_PLACEHOLDERS } from "@/config/media";
 import { wixImageSrcSet, wixImageUrl } from "@/lib/wix-image";
 import { PlaceDialog, type Place } from "./PlaceDialog";
+import { InteractiveButton } from "@/components/ui/InteractiveButton";
 
 type SizedSpace = HomePage["network"]["spaces"][number];
 
@@ -40,12 +41,12 @@ export function SpacesCarousel({ spaces, defaultCta, children }: { spaces: Sized
       <div className="flex flex-col items-center gap-10 lg:flex-row lg:items-end lg:gap-4 lg:pr-6">
         <div className="w-full min-w-0 lg:flex-1">{children}</div>
         <div className="flex shrink-0 gap-4 lg:pb-2">
-          <button type="button" onClick={() => move(-1)} aria-label="Previous spaces" className="flex h-8.5 w-12 items-center justify-center rounded-full bg-black text-white">
+          <InteractiveButton onClick={() => move(-1)} aria-label="Previous spaces" className="flex h-8.5 w-12 items-center justify-center rounded-full bg-black text-white">
             <IconArrowNarrowLeft size={17} />
-          </button>
-          <button type="button" onClick={() => move(1)} aria-label="Next spaces" className="flex h-8.5 w-12 items-center justify-center rounded-full bg-black text-white">
+          </InteractiveButton>
+          <InteractiveButton onClick={() => move(1)} aria-label="Next spaces" className="flex h-8.5 w-12 items-center justify-center rounded-full bg-black text-white">
             <IconArrowNarrowRight size={17} />
-          </button>
+          </InteractiveButton>
         </div>
       </div>
       <div ref={trackRef} className="scrollbar-none mt-28 flex snap-x scroll-px-4 items-center gap-12 overflow-x-auto px-4 pb-4 lg:mt-20 lg:snap-none lg:px-6">
@@ -58,7 +59,7 @@ export function SpacesCarousel({ spaces, defaultCta, children }: { spaces: Sized
                 {space.category}
                 {space.comingSoon && <span className="text-red">Coming soon</span>}
               </p>
-              <button type="button" onClick={() => open(space)} aria-haspopup="dialog" className={`relative block w-full overflow-hidden text-left text-white ${size.image}`}>
+              <InteractiveButton motion="card" onClick={() => open(space)} aria-haspopup="dialog" className={`relative block w-full overflow-hidden text-left text-white ${size.image}`}>
                 {showPlaceholder ? (
                   <span aria-hidden className={`absolute inset-0 ${mediaPlaceholderClass(alternatingMediaPlaceholder(index))}`} />
                 ) : (
@@ -74,7 +75,7 @@ export function SpacesCarousel({ spaces, defaultCta, children }: { spaces: Sized
                 )}
                 <span className="absolute inset-0 bg-linear-to-b from-black/0 from-55% to-black/40" />
                 <span className="absolute inset-x-0 bottom-0 p-4 font-display text-h4">{space.title}</span>
-              </button>
+              </InteractiveButton>
             </article>
           );
         })}

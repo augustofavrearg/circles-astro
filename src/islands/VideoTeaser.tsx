@@ -1,6 +1,7 @@
 import { IconPlayerPlayFilled, IconX } from "@tabler/icons-react";
 import { useRef } from "react";
 import { USE_MEDIA_PLACEHOLDERS } from "@/config/media";
+import { InteractiveButton } from "@/components/ui/InteractiveButton";
 
 export function VideoTeaser({ label, poster, src }: { label: string; poster?: string; src?: string }) {
   const dialogRef = useRef<HTMLDialogElement>(null);
@@ -13,7 +14,7 @@ export function VideoTeaser({ label, poster, src }: { label: string; poster?: st
 
   return (
     <>
-      <button type="button" onClick={() => dialogRef.current?.showModal()} className="group flex w-full flex-col gap-2 text-left">
+      <InteractiveButton motion="card" onClick={() => dialogRef.current?.showModal()} className="group flex w-full flex-col gap-2 text-left">
         <span className="relative block aspect-[317/188] w-full overflow-hidden bg-black/8">
           {USE_MEDIA_PLACEHOLDERS || !poster ? (
             <span aria-hidden className="absolute inset-0 bg-[#3158d8]" />
@@ -37,7 +38,7 @@ export function VideoTeaser({ label, poster, src }: { label: string; poster?: st
           {label}
           <IconPlayerPlayFilled aria-hidden size={14} />
         </span>
-      </button>
+      </InteractiveButton>
 
       <dialog
         ref={dialogRef}
@@ -54,9 +55,9 @@ export function VideoTeaser({ label, poster, src }: { label: string; poster?: st
           ) : poster ? (
             <img src={poster} alt="" className="size-full object-cover" />
           ) : null}
-          <button type="button" onClick={close} aria-label="Close video" className="absolute top-4 right-4 flex size-10 items-center justify-center rounded-full bg-white">
+          <InteractiveButton onClick={close} aria-label="Close video" className="absolute top-4 right-4 flex size-10 items-center justify-center rounded-full bg-white">
             <IconX size={18} />
-          </button>
+          </InteractiveButton>
         </div>
       </dialog>
     </>

@@ -490,22 +490,22 @@ export const teamPageFixture: TeamPage = {
     eyebrow: "Our team",
     title: "BEHIND CIRCLES",
     lead: "Countless personal adventures.",
-    body: "Whether you’re a remote-first company or hybrid team, Business Memberships make it easy for your employees to stay comfortable and productive while traveling and working remotely.",
-    note: "We create a culturally diverse international community through digital conscious nomadism.",
+    body: "Circles was shaped by people who have lived, built companies, and created homes across different cities and cultures. Together, they combine entrepreneurship, design, community building, and coliving expertise to create places where ambitious people can connect and grow.",
+    note: "Different paths, one shared belief: meaningful homes begin with the people and relationships inside them.",
+    image: "https://static.wixstatic.com/media/db3e41_ff2237626df248c28dfce9c730348046~mv2.png",
   },
-  members: { eyebrow: "Meet the founders", title: "Our Values that we Share" },
+  members: { eyebrow: "Meet the team", title: "The people behind Circles" },
   band: { title: "Stay longer and Save more", primaryCta: { label: "Join on WhatsApp", href: whatsappLinks.community } },
   faq: sharedFaq,
 };
 
-// Photos and "Learn more" links are pending.
 export const teamMembersFixture: TeamMember[] = [
-  { slug: "natalia-juncosa", name: "Natalia Juncosa", role: "Co-founder & design director" },
-  { slug: "enric-sole", name: "Enric Sole", role: "Co-founder & CEO" },
-  { slug: "loic-malsch", name: "Loic Malsch", role: "Co-founder" },
-  { slug: "karen-prats", name: "Karen Prats", role: "Co-founder" },
-  { slug: "vanina-arballo", name: "Vanina Arballo", role: "Creative" },
-  { slug: "gui-perdrix", name: "Gui Perdrix", role: "Co-founder" },
+  { slug: "natalia-juncosa", name: "Natalia Juncosa", role: "Co-founder & design director", bio: "With a background in marketing and interior design, Natalia shapes every visual detail of Circles—from its identity to the spaces that turn houses into homes.", photo: "https://static.wixstatic.com/media/db3e41_888061da883948beae56e7ff3494f8fe~mv2.png" },
+  { slug: "enric-sole", name: "Enric Sole", role: "Co-founder & CEO", bio: "A serial entrepreneur, angel investor, and experienced digital nomad, Enric brings a global perspective to Circles and leads its community-driven vision.", photo: "https://static.wixstatic.com/media/db3e41_54d023b586014156943912c38603f1b5~mv2.png" },
+  { slug: "loic-malsch", name: "Loic Malsch", role: "Co-founder", bio: "An entrepreneur with international experience launching and growing technology businesses, Loic brings expertise in teams, sales, marketing, and new markets.", photo: "https://static.wixstatic.com/media/db3e41_966add92a17f4795b2f41527e0f918bb~mv2.png" },
+  { slug: "karen-prats", name: "Karen Prats", role: "Co-founder", bio: "An entrepreneur and marketing specialist, Karen co-founded Go—PopUp and brings deep experience in building marketplaces and growing ambitious ideas.", photo: "https://static.wixstatic.com/media/db3e41_66be91e161de4b2bb197afb2dbf184be~mv2.png" },
+  { slug: "vanina-arballo", name: "Vanina Arballo", role: "Creative", bio: "An artist and creative collaborator, Vanina helps shape the atmosphere and aesthetic details that make each Circles house distinctive and welcoming.", photo: "https://static.wixstatic.com/media/db3e41_3fa011412f774d3f9f169ea35c068474~mv2.png" },
+  { slug: "gui-perdrix", name: "Gui Perdrix", role: "Co-founder", bio: "A coliving expert and author of The Art of Coliving, Gui has studied more than 100 coliving spaces and brings an international perspective on community-led living.", photo: "https://static.wixstatic.com/media/db3e41_507bab66df1a485f9d0da7eb1ca99926~mv2.png" },
 ];
 
 export const whatIsCirclesPageFixture: WhatIsCirclesPage = {

@@ -116,6 +116,62 @@
   }
 }
 
+@layer components {
+  .interactive-button {
+    transform-origin: center;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .interactive-button[data-motion="press"] {
+      transition:
+        scale 240ms cubic-bezier(0.2, 0.9, 0.2, 1.08),
+        opacity 160ms ease-out;
+    }
+
+    .interactive-button[data-motion="press"]:not(:disabled):active {
+      scale: 0.965;
+      transition-duration: 80ms;
+      transition-timing-function: ease-out;
+    }
+
+    .interactive-button[data-motion="toggle"] {
+      transition:
+        scale 220ms cubic-bezier(0.2, 0.8, 0.2, 1),
+        color 160ms ease-out,
+        background-color 160ms ease-out,
+        border-color 160ms ease-out,
+        opacity 160ms ease-out;
+    }
+
+    .interactive-button[data-motion="toggle"]:not(:disabled):active {
+      scale: 0.975;
+      transition-duration: 90ms;
+    }
+
+    .interactive-button[data-motion="card"] {
+      transition:
+        scale 280ms cubic-bezier(0.2, 0.8, 0.2, 1),
+        opacity 180ms ease-out;
+    }
+
+    .interactive-button[data-motion="card"]:not(:disabled):active {
+      scale: 0.992;
+      opacity: 0.96;
+      transition-duration: 100ms;
+    }
+
+    @media (hover: hover) {
+      .interactive-button[data-motion="press"]:not(:disabled):hover {
+        scale: 1.012;
+      }
+
+      .interactive-button[data-motion="toggle"]:not(:disabled):hover {
+        scale: 1.01;
+      }
+    }
+  }
+}
+
 @utility scrollbar-none {
   scrollbar-width: none;
   &::-webkit-scrollbar {

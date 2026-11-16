@@ -125,6 +125,7 @@ for (const collection of collections) {
   const encodedId = encodeURIComponent(collectionId);
   const includeHealthItems = process.env.CMS_AUDIT_HEALTH === "1" && [
     "CHPages",
+    "CHPeople",
     "CHStayCampaigns",
     "CHSpaces",
     "CHPageSections",
@@ -319,6 +320,21 @@ if (process.env.CMS_AUDIT_HEALTH === "1") {
       issues.push({ collectionId: "CHPageSections", itemKey: sectionKey, issue: "required-template-section-missing" });
     }
   }
+  const requiredFooterPageSections = {
+    team: ["intro", "members", "band", "faq"],
+    "what-is-circles": ["intro", "purpose", "values", "edge", "manifesto", "faq"],
+    "life-at-circles": ["intro", "highlights", "band", "faq"],
+  };
+  for (const [pageKey, sectionNames] of Object.entries(requiredFooterPageSections)) {
+    const page = pages.find((item) => item.pageKey === pageKey);
+    for (const sectionName of sectionNames) {
+      const sectionKey = `${pageKey}.${sectionName}`;
+      const section = pageSections.find((item) => item.sectionKey === sectionKey);
+      if (!page || page.published !== true || !section || section.page !== page._id || section.enabled !== true) {
+        issues.push({ collectionId: "CHPageSections", itemKey: sectionKey, issue: "required-footer-page-section-missing" });
+      }
+    }
+  }
   if (pageSections.some((item) => String(item.sectionKey ?? "").startsWith("june."))) {
     issues.push({ collectionId: "CHPageSections", issue: "legacy-month-sections-present" });
   }
@@ -362,6 +378,20 @@ if (process.env.CMS_AUDIT_HEALTH === "1") {
   if (sectionItems.some((item) => String(item.itemKey ?? "").startsWith("june."))) {
     issues.push({ collectionId: "CHSectionItems", issue: "legacy-month-items-present" });
   }
+  const requiredFooterItems = {
+    "team.faq.": 3,
+    "what-is-circles.values.": 4,
+    "life-at-circles.highlights.": 3,
+    "what-is-circles.faq.": 1,
+    "life-at-circles.faq.": 1,
+  };
+  for (const [prefix, minimum] of Object.entries(requiredFooterItems)) {
+    const publishedCount = sectionItems.filter((item) =>
+      String(item.itemKey ?? "").startsWith(prefix) && item.published === true).length;
+    if (publishedCount < minimum) {
+      issues.push({ collectionId: "CHSectionItems", itemKey: prefix, issue: "required-footer-page-items-missing", expectedMinimum: minimum, actual: publishedCount });
+    }
+  }
   for (const item of sectionItems) {
     const entityType = String(item.entityType ?? "").trim();
     const entityKey = String(item.entityKey ?? "").trim();
@@ -371,6 +401,17 @@ if (process.env.CMS_AUDIT_HEALTH === "1") {
     if (entityType && !editorialEntityTypes.includes(entityType)) {
       issues.push({ collectionId: "CHSectionItems", itemKey: item.itemKey, issue: "invalid-entity-type", actual: entityType });
     }
+  }
+
+  const publishedTeam = (byId.get("CHPeople")?.items ?? []).filter((item) =>
+    item.published === true && Array.isArray(item.personTypes) && item.personTypes.includes("team"));
+  if (publishedTeam.length < 6 || publishedTeam.some((item) => !item.name || !item.role || !item.bio || !item.photo)) {
+    issues.push({
+      collectionId: "CHPeople",
+      issue: "published-team-profile-incomplete",
+      expectedMinimum: 6,
+      actual: publishedTeam.length,
+    });
   }
 
   const discoverableRooms = (byId.get("CHRooms")?.items ?? []).filter((item) => item.discoverable === true);

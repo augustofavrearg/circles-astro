@@ -382,6 +382,7 @@ export type TeamMember = {
   slug: string;
   name: string;
   role: string;
+  bio?: string;
   photo?: string;
   /** "Learn more" destination; the link is hidden without one. */
   href?: string;

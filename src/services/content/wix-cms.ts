@@ -300,7 +300,7 @@ function splitParagraphs(value: string): string[] {
   return value.split(/\n\s*\n/).map((paragraph) => paragraph.trim()).filter(Boolean);
 }
 
-function composeSection(section: WixRecord, sectionItems: WixRecord[]): Record<string, unknown> {
+function composeSection(section: WixRecord, sectionItems: WixRecord[]): unknown {
   const source = parseSectionSource(section);
   const componentKey = asText(section.componentKey);
   const primaryCta = normalizeMembershipCta(mapCmsLink(section, "primary"), componentKey);
@@ -461,6 +461,39 @@ function composeSection(section: WixRecord, sectionItems: WixRecord[]): Record<s
 
   if (componentKey === "memberships.members") {
     return { eyebrow: asText(section.eyebrow), title: asText(section.title), items: [] };
+  }
+
+  if (componentKey === "life.highlights") {
+    return sectionItems.map((item) => ({
+      stat: {
+        value: asText(item.value),
+        label: asText(item.label),
+        illustration: wixGallery(item.gallery)[0] || undefined,
+      },
+      photo: {
+        title: asText(item.title),
+        image: wixUrl(item.image) || undefined,
+      },
+    }));
+  }
+
+  if (componentKey === "what.edge") {
+    return {
+      title: asText(section.title),
+      text: body,
+      footnote: asText(section.note) || undefined,
+      image: image || undefined,
+    };
+  }
+
+  if (componentKey === "what.manifesto") {
+    return {
+      eyebrow: asText(section.eyebrow),
+      title: asText(section.title),
+      lead: asText(section.lead),
+      paragraphs: splitParagraphs(body),
+      images: gallery,
+    };
   }
 
   if (componentKey === "location.hero") {
@@ -836,6 +869,45 @@ function requireCompleteMembershipsPage(page: Partial<MembershipsPage>): Members
   return page as MembershipsPage;
 }
 
+function requireCompleteTeamPage(page: Partial<TeamPage>): TeamPage {
+  const requiredSections = ["seo", "intro", "members", "band", "faq"] as const;
+  for (const key of requiredSections) {
+    if (!page[key] || typeof page[key] !== "object") {
+      throw new Error(`CHPages item "team" is missing the required "team.${key}" content.`);
+    }
+  }
+  if (!page.band?.primaryCta) throw new Error('CHPageSections item "team.band" requires a primary CTA.');
+  if (!page.faq?.items.length) throw new Error('CHPages item "team" requires at least one related FAQ.');
+  return page as TeamPage;
+}
+
+function requireCompleteWhatIsCirclesPage(page: Partial<WhatIsCirclesPage>): WhatIsCirclesPage {
+  const requiredSections = ["seo", "intro", "purpose", "values", "edge", "manifesto", "faq"] as const;
+  for (const key of requiredSections) {
+    if (!page[key] || typeof page[key] !== "object") {
+      throw new Error(`CHPages item "what-is-circles" is missing the required "what-is-circles.${key}" content.`);
+    }
+  }
+  if (!page.values?.items.length) throw new Error('CHPageSections item "what-is-circles.values" requires published values.');
+  if (!page.manifesto?.paragraphs.length) throw new Error('CHPageSections item "what-is-circles.manifesto" requires manifesto copy.');
+  if (!page.faq?.items.length) throw new Error('CHPages item "what-is-circles" requires at least one related FAQ.');
+  return page as WhatIsCirclesPage;
+}
+
+function requireCompleteLifePage(page: Partial<LifePage>): LifePage {
+  const requiredSections = ["seo", "intro", "highlights", "spaces", "band", "faq"] as const;
+  for (const key of requiredSections) {
+    if (!page[key] || typeof page[key] !== "object") {
+      throw new Error(`CHPages item "life-at-circles" is missing the required "life-at-circles.${key}" content.`);
+    }
+  }
+  if (!page.highlights?.length) throw new Error('CHPageSections item "life-at-circles.highlights" requires published highlights.');
+  if (!page.spaces?.items.length) throw new Error('CHPages item "life-at-circles" requires published Barcelona coworking spaces.');
+  if (!page.band?.primaryCta) throw new Error('CHPageSections item "life-at-circles.band" requires a primary CTA.');
+  if (!page.faq?.items.length) throw new Error('CHPages item "life-at-circles" requires at least one related FAQ.');
+  return page as LifePage;
+}
+
 function requireCompleteLocationPage(page: Partial<LocationPage>, slug: string): LocationPage {
   const requiredSections = ["seo", "hero", "space", "rooms", "band", "experiences", "location", "manager", "faq"] as const;
   for (const key of requiredSections) {
@@ -980,14 +1052,27 @@ export const wixCmsRepository: ContentRepository = {
     } as PartnershipsPage;
   },
   getForInvestorsPage: () => requirePage<ForInvestorsPage>({ pageKey: "for-investors" }),
-  getTeamPage: () => requirePage<TeamPage>({ pageKey: "team" }),
-  getWhatIsCirclesPage: () => requirePage<WhatIsCirclesPage>({ pageKey: "what-is-circles" }),
+  async getTeamPage() {
+    return requireCompleteTeamPage(await requirePage<Partial<TeamPage>>({ pageKey: "team" }));
+  },
+  async getWhatIsCirclesPage() {
+    return requireCompleteWhatIsCirclesPage(
+      await requirePage<Partial<WhatIsCirclesPage>>({ pageKey: "what-is-circles" }),
+    );
+  },
   async getMembershipsPage() {
     return requireCompleteMembershipsPage(
       await requirePage<Partial<MembershipsPage>>({ pageKey: "memberships" }),
     );
   },
-  getLifePage: () => requirePage<LifePage>({ pageKey: "life-at-circles" }),
+  async getLifePage() {
+    const [page, coworking] = await Promise.all([
+      requirePage<Partial<LifePage>>({ pageKey: "life-at-circles" }),
+      wixCmsRepository.getCoworkingPage("barcelona"),
+    ]);
+    if (!coworking) throw new Error('CHPages does not contain the published page "coworking:barcelona" required by "life-at-circles".');
+    return requireCompleteLifePage({ ...page, spaces: coworking.spaces });
+  },
   async getCoworkingPage(city) {
     const composed = await composePage<Partial<CoworkingPage>>({ routeKey: "coworking", routeParam: city }, true);
     if (!composed) return undefined;

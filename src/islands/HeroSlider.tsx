@@ -4,6 +4,7 @@ import type { Link, Location } from "@/domain/content";
 import { alternatingMediaPlaceholder, mediaPlaceholderClass, USE_MEDIA_PLACEHOLDERS } from "@/config/media";
 import { PlaceDialog, type Place } from "./PlaceDialog";
 import { wixImageSrcSet, wixImageUrl } from "@/lib/wix-image";
+import { InteractiveButton } from "@/components/ui/InteractiveButton";
 
 const CARD_CLASS =
   "group absolute inset-x-4 bottom-23 flex min-h-[237px] flex-col justify-between bg-white p-6 lg:inset-x-auto lg:top-1/2 lg:right-6 lg:bottom-auto lg:w-[429px] lg:-translate-y-1/2";
@@ -60,9 +61,9 @@ export function HeroSlider({ slides, id, defaultCta }: { slides: Location[]; id?
         )}
 
       {slide.details ? (
-        <button type="button" aria-haspopup="dialog" onClick={() => setSelected({ title: slide.name, image: slide.image, access: slide.access, address: slide.address, details: slide.details })} className={`${CARD_CLASS} text-left`}>
+        <InteractiveButton motion="card" aria-haspopup="dialog" onClick={() => setSelected({ title: slide.name, image: slide.image, access: slide.access, address: slide.address, details: slide.details })} className={`${CARD_CLASS} text-left`}>
           <CardBody slide={slide} />
-        </button>
+        </InteractiveButton>
       ) : (
         <a href={slide.href} className={CARD_CLASS}>
           <CardBody slide={slide} />
@@ -72,25 +73,25 @@ export function HeroSlider({ slides, id, defaultCta }: { slides: Location[]; id?
       <div className="absolute inset-x-4 bottom-3 flex h-10 items-center lg:inset-x-auto lg:right-6 lg:bottom-6 lg:w-[429px]">
         <div className="-ml-2 flex" role="group" aria-label={`Slide ${current + 1} of ${count}`}>
           {slides.map((item, index) => (
-            <button
+            <InteractiveButton
+              motion="toggle"
               key={item.href}
-              type="button"
               onClick={() => setCurrent(index)}
               aria-label={`Show ${item.name}`}
               aria-current={index === current}
               className="flex size-6 items-center justify-center"
             >
               <span className={`size-2 rounded-full border border-white transition-colors ${index === current ? "bg-white" : "bg-transparent"}`} />
-            </button>
+            </InteractiveButton>
           ))}
         </div>
         <div className="ml-auto flex gap-4">
-          <button type="button" onClick={() => go(-1)} aria-label="Previous location" className="flex size-10 items-center justify-center rounded-full bg-black/25 text-white backdrop-blur">
+          <InteractiveButton onClick={() => go(-1)} aria-label="Previous location" className="flex size-10 items-center justify-center rounded-full bg-black/25 text-white backdrop-blur">
             <IconArrowNarrowLeft size={18} />
-          </button>
-          <button type="button" onClick={() => go(1)} aria-label="Next location" className="flex size-10 items-center justify-center rounded-full bg-black/25 text-white backdrop-blur">
+          </InteractiveButton>
+          <InteractiveButton onClick={() => go(1)} aria-label="Next location" className="flex size-10 items-center justify-center rounded-full bg-black/25 text-white backdrop-blur">
             <IconArrowNarrowRight size={18} />
-          </button>
+          </InteractiveButton>
         </div>
       </div>
       <PlaceDialog place={selected} onClose={() => setSelected(null)} defaultCta={defaultCta} />

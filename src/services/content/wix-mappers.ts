@@ -155,7 +155,7 @@ export function resolveCmsHref(routeKey: unknown, routeParam?: unknown, anchor?:
       case "partnerships": href = routes.partnerships; break;
       case "ambassadors": href = routes.ambassadors; break;
       case "events": href = parameter ? routes.cityEvents(parameter) : routes.events; break;
-      case "news": href = routes.postCategory("news"); break;
+      case "news": href = routes.posts; break;
       case "posts": href = routes.posts; break;
       case "location": href = routes.location(requireRouteParam(key, parameter)); break;
       case "coworking": href = routes.coworking(requireRouteParam(key, parameter)); break;
@@ -380,6 +380,7 @@ export function mapTeamMember(item: WixRecord): TeamMember {
     slug,
     name,
     role: asText(item.role),
+    bio: asText(item.bio) || undefined,
     photo: wixUrl(item.photo) || undefined,
     href: wixUrl(item.profileUrl) || undefined,
   };

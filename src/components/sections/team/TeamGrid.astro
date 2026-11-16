@@ -6,8 +6,8 @@ type Props = { eyebrow?: string; title?: string; members: TeamMember[] };
 const { eyebrow, title, members } = Astro.props;
 ---
 
-<!-- Figma "Meet the founders": centered heading, then centered cards (three columns on desktop, one on mobile). -->
-<section class="pt-34 lg:pt-28">
+<!-- Editorial team portrait grid: generous portraits, concise bios and three columns on desktop. -->
+<section class="pt-28 lg:pt-30">
   {(eyebrow || title) && (
     <header class="px-4 text-center lg:px-6">
       {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}
@@ -17,19 +17,20 @@ const { eyebrow, title, members } = Astro.props;
   <ul
     aria-label={eyebrow || title || "Circles House team"}
     class:list={[
-      "grid gap-y-14 px-4 lg:grid-cols-3 lg:gap-y-12 lg:px-6",
-      eyebrow || title ? "mt-26 lg:mt-22" : "lg:mt-0",
+      "grid gap-x-8 gap-y-16 px-4 lg:grid-cols-3 lg:gap-y-20 lg:px-10",
+      eyebrow || title ? "mt-18 lg:mt-20" : "lg:mt-0",
     ]}
   >
     {members.map((member) => (
       <li class="flex flex-col items-center text-center">
-        <div class="size-[134px] bg-black/8 lg:size-[117px]">
-          {member.photo && <img src={member.photo} alt={member.name} loading="lazy" class="size-full object-cover grayscale" />}
+        <div class="h-[190px] w-[168px] overflow-hidden bg-black/8 lg:h-[220px] lg:w-[196px]">
+          {member.photo && <img src={member.photo} alt={member.name} loading="lazy" class="size-full object-cover grayscale transition duration-500 ease-out hover:scale-[1.025] hover:grayscale-0" />}
         </div>
-        <h3 class="mt-2 font-display text-[2.25rem] leading-[1.2] lg:mt-1 lg:text-[2rem]">{member.name}</h3>
+        <h3 class="mt-4 font-display text-[2.25rem] leading-[1.2] lg:text-[2rem]">{member.name}</h3>
         <p class="mt-1 text-[0.9375rem] text-red lg:text-[0.875rem]">{member.role}</p>
+        {member.bio && <p class="mt-4 max-w-[310px] text-[0.9375rem] leading-[1.5] text-black/72 lg:text-[0.875rem]">{member.bio}</p>}
         {member.href && (
-          <a href={member.href} class="mt-5 text-[0.9375rem] hover:underline lg:mt-4 lg:text-[0.875rem]">
+          <a href={member.href} class="mt-5 text-[0.9375rem] underline-offset-4 hover:underline lg:text-[0.875rem]">
             Learn more<span class="sr-only"> about {member.name}</span>
           </a>
         )}

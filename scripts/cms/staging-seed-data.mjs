@@ -137,6 +137,78 @@ const pageSectionOverrides = {
   "memberships.faq": {
     eyebrow: "FAQ",
   },
+  "team.intro": {
+    eyebrow: "Our team",
+    title: "BEHIND CIRCLES",
+    lead: "Countless personal adventures.",
+    body:
+      "Circles was shaped by people who have lived, built companies, and created homes across different cities and cultures. Together, they combine entrepreneurship, design, community building, and coliving expertise to create places where ambitious people can connect and grow.",
+    note:
+      "Different paths, one shared belief: meaningful homes begin with the people and relationships inside them.",
+    image: "wix:image://v1/db3e41_ff2237626df248c28dfce9c730348046~mv2.png/circles-home--images--home--membership--rooftop-community--4c356de8f838.png#originWidth=1707&originHeight=960",
+  },
+  "team.members": {
+    eyebrow: "Meet the team",
+  },
+  "team.band": {
+    primaryCtaLabel: "Join on WhatsApp",
+    primaryExternalUrl: whatsappLinks.community,
+  },
+  "team.faq": {
+    eyebrow: "FAQ",
+  },
+  "what-is-circles.intro": {
+    eyebrow: "What is Circles",
+    title: "ONE COMMUNITY, ONE HOME WORLDWIDE",
+    lead: "A multitude of life journeys.",
+    body:
+      "Our mission is to build a global and decentralized modern boutique coliving chain for self-starters, entrepreneurs, and creators focused on creating meaningful relationships.\nWe strive to inspire humans to embrace digital nomadism and live a fulfilling life by exploring the world and working remotely.",
+    note: "We create a culturally diverse international community through digital conscious nomadism.",
+    image: "wix:image://v1/db3e41_40b4e090bf5f4dd891f21a59580c75ea~mv2.png/circles-home--images--home--introduction--circles-house-aerial--0f380d597fcd.png#originWidth=1024&originHeight=683",
+  },
+  "what-is-circles.purpose": {
+    eyebrow: "Why join",
+    body:
+      "Here at Circles, our primary purpose is to create a culturally diverse international community through digital conscious nomadism.",
+  },
+  "what-is-circles.values": {
+    eyebrow: "Why join",
+  },
+  "what-is-circles.edge": {
+    body:
+      "Sometimes pushing yourself to do things that make you uncomfortable is the best way to grow as a person. Explore every ambitious aspect outside of your comfort zone to live a brave and enriching life.",
+    note: "Diamonds are made from pressure and so are we as humans.",
+    image: "wix:image://v1/db3e41_deffe48b4eef49b6a9f2e7de20e97c0b~mv2.png/circles-home--images--home--introduction--balcony-view--5d685d54f4ad.png#originWidth=280&originHeight=370",
+  },
+  "what-is-circles.manifesto": {
+    eyebrow: "Manifesto",
+    lead: "To the curious, the courageous, the creatives, the doers—\nYou are welcome here.",
+    body:
+      "At Circles House, we believe in a new way of living and working—one that challenges isolation, fuels purpose, and cultivates connection. We are the intersection of human relationships, meaningful work, and personal wellbeing. Here, life isn’t compartmentalized—living and working converge into a richer, more intentional existence.\n\nWe exist to reinvent what it means to be home and what it means to build.\nIn a world fragmented by endless screens and solo pursuits, we choose community, collaboration, and consciousness.\nWe empower individuals to be creators of impact, not just consumers of space.",
+    gallery: [
+      "wix:image://v1/db3e41_ff2237626df248c28dfce9c730348046~mv2.png/circles-home--images--home--membership--rooftop-community--4c356de8f838.png#originWidth=1707&originHeight=960",
+      "wix:image://v1/db3e41_40b4e090bf5f4dd891f21a59580c75ea~mv2.png/circles-home--images--home--introduction--circles-house-aerial--0f380d597fcd.png#originWidth=1024&originHeight=683",
+      "wix:image://v1/db3e41_ab8ef1fd662d4c1f8e3b2cfd0280a420~mv2.png/circles-home--images--news--community-dinners--f75ddb36ba5d.png#originWidth=740&originHeight=493",
+    ],
+  },
+  "what-is-circles.faq": {
+    eyebrow: "FAQ",
+  },
+  "life-at-circles.intro": {
+    eyebrow: "Life @ Circles",
+    title: "A community where people grow, connect, and feel at home.",
+    body:
+      "Our digital community is where ambitious entrepreneurs come together with seamless opportunities to engage, share ideas, spark connections, and turn visions into reality.",
+  },
+  "life-at-circles.band": {
+    primaryCtaLabel: "Join on WhatsApp",
+    primaryExternalUrl: whatsappLinks.community,
+    secondaryCtaLabel: "Book a Stay",
+    secondaryRouteKey: "rooms",
+  },
+  "life-at-circles.faq": {
+    eyebrow: "FAQ",
+  },
   "partnerships.partners": {
     eyebrow: "Why join",
     subtitle: "Partner of the month",
@@ -621,6 +693,60 @@ export const seedCollections = [
     collectionId: "CHPeople",
     keyField: "slug",
     items: [
+      ...[
+        {
+          slug: "natalia-juncosa",
+          name: "Natalia Juncosa",
+          role: "Co-founder & Design Director",
+          bio: "With a background in marketing and interior design, Natalia shapes every visual detail of Circles—from its identity to the spaces that turn houses into homes.",
+          photo: "wix:image://v1/db3e41_888061da883948beae56e7ff3494f8fe~mv2.png/natalia-juncosa.png#originWidth=491&originHeight=594",
+        },
+        {
+          slug: "enric-sole",
+          name: "Enric Sole",
+          role: "Co-founder & CEO",
+          bio: "A serial entrepreneur, angel investor, and experienced digital nomad, Enric brings a global perspective to Circles and leads its community-driven vision.",
+          photo: "wix:image://v1/db3e41_54d023b586014156943912c38603f1b5~mv2.png/enric-sole.png#originWidth=491&originHeight=491",
+        },
+        {
+          slug: "loic-malsch",
+          name: "Loic Malsch",
+          role: "Co-founder",
+          bio: "An entrepreneur with international experience launching and growing technology businesses, Loic brings expertise in teams, sales, marketing, and new markets.",
+          photo: "wix:image://v1/db3e41_966add92a17f4795b2f41527e0f918bb~mv2.png/loic-malsch.png#originWidth=491&originHeight=518",
+        },
+        {
+          slug: "karen-prats",
+          name: "Karen Prats",
+          role: "Co-founder",
+          bio: "An entrepreneur and marketing specialist, Karen co-founded Go—PopUp and brings deep experience in building marketplaces and growing ambitious ideas.",
+          photo: "wix:image://v1/db3e41_66be91e161de4b2bb197afb2dbf184be~mv2.png/karen-prats.png#originWidth=491&originHeight=405",
+        },
+        {
+          slug: "vanina-arballo",
+          name: "Vanina Arballo",
+          role: "Creative",
+          bio: "An artist and creative collaborator, Vanina helps shape the atmosphere and aesthetic details that make each Circles house distinctive and welcoming.",
+          photo: "wix:image://v1/db3e41_3fa011412f774d3f9f169ea35c068474~mv2.png/vanina-arballo.png#originWidth=491&originHeight=455",
+        },
+        {
+          slug: "gui-perdrix",
+          name: "Gui Perdrix",
+          role: "Co-founder",
+          bio: "A coliving expert and author of The Art of Coliving, Gui has studied more than 100 coliving spaces and brings an international perspective on community-led living.",
+          photo: "wix:image://v1/db3e41_507bab66df1a485f9d0da7eb1ca99926~mv2.png/gui-perdrix.png#originWidth=491&originHeight=518",
+        },
+      ].map((person, index) => ({
+        key: person.slug,
+        editorialStatus: "official-team-copy-refined",
+        data: {
+          ...person,
+          personTypes: ["team"],
+          location: reference("CHLocations", "barcelona"),
+          published: true,
+          sortOrder: (index + 1) * 10,
+        },
+      })),
       {
         key: "sandbox-house-manager",
         data: {
@@ -630,7 +756,7 @@ export const seedCollections = [
           role: "House Manager",
           bio: "Sandbox profile used to validate people and location references.",
           location: reference("CHLocations", "barcelona"),
-          published: true,
+          published: false,
           sortOrder: 1,
         },
       },
@@ -643,7 +769,7 @@ export const seedCollections = [
           role: "Community Lead",
           bio: "Sandbox author and team member.",
           location: reference("CHLocations", "barcelona"),
-          published: true,
+          published: false,
           sortOrder: 2,
         },
       },
@@ -745,7 +871,10 @@ export const seedCollections = [
       ["rooms.band", "rooms", "rooms.band", "Stay longer and save more"],
       ["rooms.empty", "rooms", "rooms.empty", "No rooms are published for this location yet."],
       ["events.intro", "events", "events.intro", "Happening now"],
-      ["team.intro", "team", "team.intro", "Meet the community team"],
+      ["team.intro", "team", "team.intro", "BEHIND CIRCLES"],
+      ["team.members", "team", "team.members", "The people behind Circles"],
+      ["team.band", "team", "team.band", "Stay longer and Save more"],
+      ["team.faq", "team", "team.faq", "What you need to know"],
       ["memberships.intro", "memberships", "memberships.intro", "Become a Member"],
       ["memberships.benefits", "memberships", "memberships.benefits", "Membership Benefits"],
       ["memberships.hub", "memberships", "memberships.hub", "Circles Member Hub"],
@@ -753,8 +882,16 @@ export const seedCollections = [
       ["memberships.members", "memberships", "memberships.members", "Meet our Members"],
       ["memberships.band", "memberships", "memberships.band", "Stay longer and Save more"],
       ["memberships.faq", "memberships", "memberships.faq", "What you need to know"],
-      ["what-is-circles.intro", "what-is-circles", "what-is-circles.intro", "A more meaningful way to live"],
-      ["life-at-circles.intro", "life-at-circles", "life-at-circles.intro", "Life at Circles"],
+      ["what-is-circles.intro", "what-is-circles", "what.intro", "ONE COMMUNITY, ONE HOME WORLDWIDE"],
+      ["what-is-circles.purpose", "what-is-circles", "what.purpose", "Purpose"],
+      ["what-is-circles.values", "what-is-circles", "what.values", "Our Values that we Share"],
+      ["what-is-circles.edge", "what-is-circles", "what.edge", "Beyond the edge"],
+      ["what-is-circles.manifesto", "what-is-circles", "what.manifesto", "Our Invitation"],
+      ["what-is-circles.faq", "what-is-circles", "what.faq", "What you need to know"],
+      ["life-at-circles.intro", "life-at-circles", "life.intro", "A community where people grow, connect, and feel at home."],
+      ["life-at-circles.highlights", "life-at-circles", "life.highlights", "Community highlights"],
+      ["life-at-circles.band", "life-at-circles", "life.band", "Become a Member"],
+      ["life-at-circles.faq", "life-at-circles", "life.faq", "What you need to know"],
       ["partnerships.intro", "partnerships", "partnerships.intro", "Partner with Circles"],
       ["partnerships.partners", "partnerships", "partnerships.partners", "Why partner with Circles?"],
       ["deals.list", "deals", "deals.list", "Stay longer, experience more."],
@@ -841,6 +978,101 @@ export const seedCollections = [
           sortOrder: 1,
         },
       },
+      ...[
+        [
+          "human-centric",
+          "Human centric",
+          "We bring humans to the center of every decision. Kindness, love, respect, genuinity and the desire to see your peers grow is key to creating personal and professional relationships that will last a lifetime.",
+        ],
+        [
+          "creativity",
+          "Creativity",
+          "Innovation, design, and passion are fundamental elements of Circles. Every detail says something, we innovate to make a difference, and our passion for design makes us unique.",
+        ],
+        [
+          "wellbeing",
+          "Wellbeing",
+          "When you co—live at Circles, life is about enjoying the ride and having experiences that focus on wellbeing and personal growth. Find your purpose and thrive!",
+        ],
+        [
+          "accountability",
+          "Inner sense of accountability",
+          "We believe in doing things that matter and being worldly conscious individuals. We strive to do more with less and we are always thinking about how to create a positive impact for ourselves, others, and our planet as a collective.",
+        ],
+      ].map(([key, title, text], index) => ({
+        key: `what-is-circles.values.${key}`,
+        editorialStatus: "figma",
+        data: {
+          itemKey: `what-is-circles.values.${key}`,
+          section: reference("CHPageSections", "what-is-circles.values"),
+          title,
+          text,
+          published: true,
+          sortOrder: index + 1,
+        },
+      })),
+      ...[
+        ["average-stay", "Instant Community", "7.3", "Weeks Average Stay Duration", "wix:image://v1/db3e41_ff2237626df248c28dfce9c730348046~mv2.png/circles-home--images--home--membership--rooftop-community--4c356de8f838.png#originWidth=1707&originHeight=960"],
+        ["projects", "Focused Channels", "312+", "Collaborative Projects Initiated", "wix:image://v1/db3e41_deffe48b4eef49b6a9f2e7de20e97c0b~mv2.png/circles-home--images--home--introduction--balcony-view--5d685d54f4ad.png#originWidth=280&originHeight=370"],
+        ["wellness", "Collaboration", "68%", "Members Engaged in Wellness Activities", "wix:image://v1/db3e41_40b4e090bf5f4dd891f21a59580c75ea~mv2.png/circles-home--images--home--introduction--circles-house-aerial--0f380d597fcd.png#originWidth=1024&originHeight=683"],
+      ].map(([key, title, value, label, image], index) => ({
+        key: `life-at-circles.highlights.${key}`,
+        editorialStatus: "figma-media-pending",
+        data: {
+          itemKey: `life-at-circles.highlights.${key}`,
+          section: reference("CHPageSections", "life-at-circles.highlights"),
+          title,
+          value,
+          label,
+          image,
+          published: true,
+          sortOrder: index + 1,
+        },
+      })),
+      ...[
+        ["what-is-circles", "How do I get to Circles house?"],
+        ["life-at-circles", "How do I get to Circles house?"],
+      ].map(([pageKey, title]) => ({
+        key: `${pageKey}.faq.getting-there`,
+        editorialStatus: "figma-copy-refined",
+        data: {
+          itemKey: `${pageKey}.faq.getting-there`,
+          section: reference("CHPageSections", `${pageKey}.faq`),
+          title,
+          text:
+            "We’re located in a natural park with peaceful views, a short trip from Barcelona city centre. Take the S1 or S2 train to Peu del Funicular, then continue to Vallvidrera Superior.",
+          published: true,
+          sortOrder: 1,
+        },
+      })),
+      ...[
+        [
+          "building",
+          "What is the team building?",
+          "A growing network of thoughtfully designed homes where entrepreneurs, creators, and remote professionals can live, work, and form meaningful relationships.",
+        ],
+        [
+          "experience",
+          "How does the team shape the Circles experience?",
+          "The team brings together entrepreneurship, interior design, community building, and coliving expertise. Those perspectives guide everything from the spaces themselves to the connections and experiences created inside them.",
+        ],
+        [
+          "collaborate",
+          "How can I collaborate with Circles?",
+          "Circles works with members, partners, ambassadors, investors, and creative collaborators who share its belief in community-led living. Visit the Partnerships page to explore the current ways to get involved.",
+        ],
+      ].map(([key, title, text], index) => ({
+        key: `team.faq.${key}`,
+        editorialStatus: "official-team-copy-refined",
+        data: {
+          itemKey: `team.faq.${key}`,
+          section: reference("CHPageSections", "team.faq"),
+          title,
+          text,
+          published: true,
+          sortOrder: index + 1,
+        },
+      })),
       {
         key: "home.memberships.focus",
         editorialStatus: "figma",

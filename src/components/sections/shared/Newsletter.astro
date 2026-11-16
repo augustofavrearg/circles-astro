@@ -2,6 +2,7 @@
 import { IconArrowNarrowRight } from "@tabler/icons-react";
 import { cn } from "@/lib/cn";
 import type { SiteSettings } from "@/domain/content";
+import { InteractiveButton } from "@/components/ui/InteractiveButton";
 
 type Props = { newsletter: SiteSettings["newsletter"]; copy?: Record<string, string>; class?: string };
 const { newsletter, copy = {}, class: className } = Astro.props;
@@ -28,9 +29,9 @@ const note = copy["newsletter.disabled"] ?? consentText;
           class="min-w-0 flex-1 bg-transparent text-[0.9375rem] text-white placeholder:text-white disabled:cursor-not-allowed"
         />
         <!-- Figma desktop shows a submit arrow; it stays disabled until the provider is connected. -->
-        <button type="submit" disabled aria-label="Subscribe" class="hidden h-7 w-12 shrink-0 items-center justify-center rounded-full bg-white text-black disabled:cursor-not-allowed lg:flex">
+        <InteractiveButton type="submit" disabled aria-label="Subscribe" className="hidden h-7 w-12 shrink-0 items-center justify-center rounded-full bg-white text-black lg:flex">
           <IconArrowNarrowRight size={16} stroke={1.5} />
-        </button>
+        </InteractiveButton>
       </div>
       <p id="newsletter-note" class="sr-only">{note}</p>
     </form>

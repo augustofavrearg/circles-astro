@@ -11,6 +11,7 @@ import { useState } from "react";
 import type { CoworkingAmenity, CoworkingPage } from "@/domain/content";
 import { alternatingMediaPlaceholder, mediaPlaceholderClass, USE_MEDIA_PLACEHOLDERS } from "@/config/media";
 import { wixImageSrcSet, wixImageUrl } from "@/lib/wix-image";
+import { InteractiveButton } from "@/components/ui/InteractiveButton";
 
 const ICONS: Record<CoworkingAmenity, typeof IconWifi> = {
   wifi: IconWifi,
@@ -48,14 +49,14 @@ export function CoworkingSpaces({ eyebrow, items, amenities, cta }: CoworkingPag
             const active = index === selected;
             return (
               <li key={item.title} className={active ? "border-b border-black/60 pb-4" : ""}>
-                <button
-                  type="button"
+                <InteractiveButton
+                  motion="toggle"
                   onClick={() => choose(index)}
                   aria-expanded={active}
-                  className={`w-full py-2 text-left font-display text-[2.25rem] lg:text-[1.75rem] leading-[1.3] transition-opacity ${active ? "" : "hover:opacity-60"}`}
+                  className={`w-full py-2 text-left font-display text-[2.25rem] lg:text-[1.75rem] leading-[1.3] ${active ? "" : "hover:opacity-60"}`}
                 >
                   {item.title}
-                </button>
+                </InteractiveButton>
                 {active && item.text && <p className="text-[0.8125rem] leading-[1.45]">{item.text}</p>}
               </li>
             );
@@ -98,16 +99,16 @@ export function CoworkingSpaces({ eyebrow, items, amenities, cta }: CoworkingPag
         {!USE_MEDIA_PLACEHOLDERS && images.length > 1 && (
           <div className="absolute bottom-4 left-4 flex gap-2" role="group" aria-label={`${space?.title} photos`}>
             {images.map((src, index) => (
-              <button
+              <InteractiveButton
+                motion="toggle"
                 key={src}
-                type="button"
                 onClick={() => setPhoto(index)}
                 aria-label={`Show photo ${index + 1}`}
                 aria-pressed={index === photo}
                 className={`size-12 overflow-hidden ${index === photo ? "outline-2 outline-offset-2 outline-white" : ""}`}
               >
                 <img src={wixImageUrl(src, 96)} alt="" loading="lazy" decoding="async" className="size-full object-cover" />
-              </button>
+              </InteractiveButton>
             ))}
           </div>
         )}

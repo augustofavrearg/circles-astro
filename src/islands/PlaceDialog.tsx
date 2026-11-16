@@ -4,6 +4,7 @@ import type { Link, PlaceDetails, SpaceAmenity } from "@/domain/content";
 import { USE_MEDIA_PLACEHOLDERS } from "@/config/media";
 import { wixImageUrl } from "@/lib/wix-image";
 import { GoogleMapEmbed } from "@/components/ui/GoogleMapEmbed";
+import { InteractiveButton } from "@/components/ui/InteractiveButton";
 
 export type Place = {
   title: string;
@@ -60,9 +61,9 @@ export function PlaceDialog({ place, onClose, defaultCta }: { place: Place | nul
                 <img src={wixImageUrl(place.image, 880)} alt="" decoding="async" className="size-full object-cover" />
               )}
               {place.access && <span className="absolute top-5 left-5 rounded bg-black/60 px-4 py-1 text-detail text-white">{place.access}</span>}
-              <button type="button" onClick={onClose} aria-label="Close" className="absolute top-5 right-5 flex size-9 items-center justify-center rounded-full bg-black/45 text-white backdrop-blur">
+              <InteractiveButton onClick={onClose} aria-label="Close" className="absolute top-5 right-5 flex size-9 items-center justify-center rounded-full bg-black/45 text-white backdrop-blur">
                 <IconX size={16} stroke={1.75} />
-              </button>
+              </InteractiveButton>
             </div>
 
             <div className="px-5 pt-5 pb-6">

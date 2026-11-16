@@ -278,7 +278,7 @@ describe("Wix CMS canonical mappers", () => {
     expect(mapNavigationItem({ label: "News", status: "link", routeKey: "news" })).toEqual({
       status: "link",
       label: "News",
-      href: "/posts?category=news",
+      href: "/posts",
       image: undefined,
       menuLabel: undefined,
       children: undefined,

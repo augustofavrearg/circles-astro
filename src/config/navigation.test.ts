@@ -42,7 +42,7 @@ describe("site navigation", () => {
     expect(siteNavigation.footer.extras.find((item) => item.label === "News")).toEqual({
       status: "link",
       label: "News",
-      href: "/posts?category=news",
+      href: "/posts",
     });
     expect(siteNavigation.footer.extras.some((item) => item.label.toLowerCase().includes("co-owner"))).toBe(false);
     expect(siteNavigation.footer.legal.every((item) => item.status === "link")).toBe(true);

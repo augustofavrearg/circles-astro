@@ -1,4 +1,5 @@
 import { IconChevronDown, IconMenu2, IconX } from "@tabler/icons-react";
+import { InteractiveButton } from "@/components/ui/InteractiveButton";
 import { useEffect, useId, useRef, useState } from "react";
 import type { HeaderNavigation, NavigationItem, NavigationLink } from "@/domain/navigation";
 import { isNavigationLink, isPathCurrent, isVisibleNavigationItem } from "@/domain/navigation";
@@ -221,9 +222,9 @@ export function HeaderMenu({ navigation, currentPath }: Props) {
   return (
     <header ref={headerRef} className="sticky top-0 z-50 border-b border-black/12 bg-background">
       <div className="flex h-18 min-w-0 items-center gap-3 px-4 sm:gap-4 lg:px-6">
-        <button
+        <InteractiveButton
+          motion="toggle"
           ref={mobileButtonRef}
-          type="button"
           aria-label={mobileOpen ? "Close menu" : "Open menu"}
           aria-expanded={mobileOpen}
           aria-controls="mobile-menu"
@@ -231,12 +232,12 @@ export function HeaderMenu({ navigation, currentPath }: Props) {
           className="inline-flex size-10 shrink-0 items-center justify-center rounded-full bg-black/8 xl:hidden"
         >
           {mobileOpen ? <IconX size={18} stroke={1.5} /> : <IconMenu2 size={18} stroke={1.5} />}
-        </button>
+        </InteractiveButton>
 
         <div className="relative hidden xl:block" onMouseLeave={() => desktopOpen === "locations" && closeDesktop()}>
-          <button
+          <InteractiveButton
+            motion="toggle"
             ref={(element) => { desktopTriggerRefs.current.locations = element; }}
-            type="button"
             aria-label="Explore Circles House locations"
             aria-expanded={desktopOpen === "locations"}
             aria-controls={`${idPrefix}-locations`}
@@ -251,7 +252,7 @@ export function HeaderMenu({ navigation, currentPath }: Props) {
             className="inline-flex size-8 shrink-0 items-center justify-center rounded-full bg-black/8"
           >
             <IconChevronDown size={16} stroke={1.5} className={`transition-transform duration-200 ${desktopOpen === "locations" ? "rotate-180" : ""}`} />
-          </button>
+          </InteractiveButton>
           {desktopOpen === "locations" && (
             <DesktopDropdown
               item={{ status: "link", label: "Circles House locations", href: routes.home, menuLabel: "Circles House locations", children: locations }}
@@ -289,9 +290,9 @@ export function HeaderMenu({ navigation, currentPath }: Props) {
                 onMouseEnter={() => setDesktopOpen(item.label)}
                 onMouseLeave={() => isOpen && closeDesktop()}
               >
-                <button
+                <InteractiveButton
+                  motion="toggle"
                   ref={(element) => { desktopTriggerRefs.current[item.label] = element; }}
-                  type="button"
                   aria-expanded={isOpen}
                   aria-controls={panelId}
                   aria-haspopup="true"
@@ -306,7 +307,7 @@ export function HeaderMenu({ navigation, currentPath }: Props) {
                   className={`text-sm transition-opacity hover:opacity-50 ${isActive ? "underline underline-offset-4" : ""}`}
                 >
                   {item.label}
-                </button>
+                </InteractiveButton>
                 {isOpen && <DesktopDropdown item={item} panelId={panelId} currentPath={currentPath} onNavigate={closeDesktop} />}
               </div>
             );
@@ -335,8 +336,8 @@ export function HeaderMenu({ navigation, currentPath }: Props) {
             return (
               <div key={item.label} className="reveal-copy" style={{ animationDelay: `${index * 45}ms` }}>
                 {children.length > 0 ? (
-                  <button
-                    type="button"
+                  <InteractiveButton
+                    motion="toggle"
                     aria-expanded={isExpanded}
                     aria-controls={sectionId}
                     onClick={() => setMobileSection((value) => value === item.label ? null : item.label)}
@@ -344,7 +345,7 @@ export function HeaderMenu({ navigation, currentPath }: Props) {
                   >
                     <span>{item.label}</span>
                     <IconChevronDown size={22} stroke={1.25} className={`shrink-0 transition-transform duration-200 ${isExpanded ? "rotate-180" : ""}`} />
-                  </button>
+                  </InteractiveButton>
                 ) : (
                   <a
                     href={item.href}

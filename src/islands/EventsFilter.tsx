@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import type { CircleEvent } from "@/domain/content";
 import { alternatingMediaPlaceholder, mediaPlaceholderClass, USE_MEDIA_PLACEHOLDERS } from "@/config/media";
 import { wixImageSrcSet, wixImageUrl } from "@/lib/wix-image";
+import { InteractiveButton } from "@/components/ui/InteractiveButton";
 
 /** `initialCity`: the city selected on load (the location pages start on their own city). */
 export function EventsFilter({ events, cities, initialCity = "all" }: { events: CircleEvent[]; cities: string[]; initialCity?: string }) {
@@ -13,15 +14,15 @@ export function EventsFilter({ events, cities, initialCity = "all" }: { events: 
       <div className="flex justify-center px-4 lg:justify-start lg:px-6">
         <div className="inline-flex rounded-lg bg-black/8 p-0.5" role="group" aria-label="Filter events by city">
           {["all", ...cities].map((option) => (
-            <button
+            <InteractiveButton
+              motion="toggle"
               key={option}
-              type="button"
               onClick={() => setCity(option)}
               aria-pressed={city === option}
-              className={`h-6.5 min-w-22 rounded-md px-4 text-detail transition-colors ${city === option ? "bg-black text-white" : "text-black/45 hover:text-black"}`}
+              className={`h-6.5 min-w-22 rounded-md px-4 text-detail ${city === option ? "bg-black text-white" : "text-black/45 hover:text-black"}`}
             >
               {option === "all" ? "All" : option}
-            </button>
+            </InteractiveButton>
           ))}
         </div>
       </div>

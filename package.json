@@ -33,6 +33,8 @@
     "cms:migrate:room-details": "node scripts/cms/migrate-room-detail-pages.mjs",
     "cms:migrate:embedded-sources": "node scripts/cms/migrate-embedded-page-sources.mjs",
     "cms:migrate:stay-campaign-template": "node scripts/cms/migrate-stay-campaign-template.mjs",
+    "cms:migrate:footer-pages": "node scripts/cms/migrate-footer-page-contracts.mjs",
+    "cms:migrate:team-page": "node scripts/cms/migrate-team-page.mjs",
     "pretest": "node scripts/check-node-version.mjs",
     "test": "vitest run",
     "astro": "astro",

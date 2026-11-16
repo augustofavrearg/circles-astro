@@ -129,7 +129,7 @@ export const siteNavigation: SiteNavigation = {
   footer: {
     main: [...primary, bookStayLink],
     extras: [
-      { status: "link", label: "News", href: routes.postCategory("news") },
+      { status: "link", label: "News", href: routes.posts },
       { status: "link", label: "Coworking Barcelona", href: routes.coworking("barcelona") },
       { status: "comingSoon", label: "Coworking Andorra", badge: "Coming soon" },
       { status: "comingSoon", label: "Spa Andorra", badge: "Coming soon" },

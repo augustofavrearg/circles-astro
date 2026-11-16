@@ -2,6 +2,7 @@ import { IconChevronDown, IconSearch } from "@tabler/icons-react";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import type { SearchLocation } from "@/domain/content";
 import { routes } from "@/config/navigation";
+import { InteractiveButton } from "@/components/ui/InteractiveButton";
 
 const GUEST_OPTIONS = [1, 2, 3, 4];
 
@@ -87,15 +88,15 @@ export function BookingSearch({
     <>
       {!expanded && !fixedLocation && (
         <div className="flex items-center gap-0.5 lg:hidden">
-          <button
-            type="button"
+          <InteractiveButton
+            motion="toggle"
             onClick={() => setExpanded(true)}
             aria-expanded={false}
             aria-controls="booking-search"
             className="flex h-14.5 min-w-0 flex-1 items-center rounded-lg bg-black/12 px-4 text-left text-[0.9375rem] text-black/45"
           >
             Start your search
-          </button>
+          </InteractiveButton>
           <a href="/rooms" aria-label="See all rooms" className="inline-flex size-14.5 shrink-0 items-center justify-center rounded-full bg-black text-white">
             <IconSearch size={16} stroke={2} />
           </a>
@@ -149,9 +150,9 @@ export function BookingSearch({
           ))}
         </select>
       </Segment>
-      <button type="submit" aria-label="Search rooms" className="inline-flex size-14.5 shrink-0 items-center justify-center justify-self-end rounded-full bg-black text-white xl:ml-px">
+      <InteractiveButton type="submit" aria-label="Search rooms" className="inline-flex size-14.5 shrink-0 items-center justify-center justify-self-end rounded-full bg-black text-white xl:ml-px">
         <IconSearch size={16} stroke={2} />
-      </button>
+      </InteractiveButton>
     </form>
     </>
   );

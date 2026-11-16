@@ -1,4 +1,5 @@
 import { IconArrowNarrowLeft, IconArrowNarrowRight } from "@tabler/icons-react";
+import { InteractiveButton } from "@/components/ui/InteractiveButton";
 
 /** Previous / next pills that scroll a static (non-hydrated) track rendered by Astro. */
 export function ScrollButtons({ targetId, label, className = "" }: { targetId: string; label: string; className?: string }) {
@@ -9,12 +10,12 @@ export function ScrollButtons({ targetId, label, className = "" }: { targetId: s
 
   return (
     <div className={`flex gap-4 ${className}`}>
-      <button type="button" onClick={() => move(-1)} aria-controls={targetId} aria-label={`Previous ${label}`} className="flex h-8.5 w-12 items-center justify-center rounded-full bg-black text-white">
+      <InteractiveButton onClick={() => move(-1)} aria-controls={targetId} aria-label={`Previous ${label}`} className="flex h-8.5 w-12 items-center justify-center rounded-full bg-black text-white">
         <IconArrowNarrowLeft size={17} />
-      </button>
-      <button type="button" onClick={() => move(1)} aria-controls={targetId} aria-label={`Next ${label}`} className="flex h-8.5 w-12 items-center justify-center rounded-full bg-black text-white">
+      </InteractiveButton>
+      <InteractiveButton onClick={() => move(1)} aria-controls={targetId} aria-label={`Next ${label}`} className="flex h-8.5 w-12 items-center justify-center rounded-full bg-black text-white">
         <IconArrowNarrowRight size={17} />
-      </button>
+      </InteractiveButton>
     </div>
   );
 }
