@@ -3,13 +3,16 @@ import SiteLayout from "@/layouts/SiteLayout.astro";
 import EventsListing from "@/components/sections/events/EventsListing.astro";
 import EventExplorerFilters from "@/components/sections/events/EventExplorerFilters.astro";
 import Newsletter from "@/components/sections/shared/Newsletter.astro";
+import Eyebrow from "@/components/ui/Eyebrow.astro";
 import { getContentRepository } from "@/services/content/repository";
 
 const repository = await getContentRepository();
 const month = Astro.url.searchParams.get("month") ?? undefined;
+const location = Astro.url.searchParams.get("location")?.trim();
+const program = Astro.url.searchParams.get("program")?.trim();
 const filters = {
-  locations: Astro.url.searchParams.getAll("location").filter(Boolean),
-  programs: Astro.url.searchParams.getAll("program").filter(Boolean),
+  locations: location ? [location] : undefined,
+  programs: program ? [program] : undefined,
   month: month && /^\d{4}-(0[1-9]|1[0-2])$/.test(month) ? month : undefined,
 };
 const [settings, page, events, programs] = await Promise.all([
@@ -18,10 +21,32 @@ const [settings, page, events, programs] = await Promise.all([
   repository.getEvents(filters),
   repository.getPrograms(),
 ]);
+const selectedProgram = filters.programs?.length === 1
+  ? programs.find((program) => program.slug === filters.programs?.[0])
+  : undefined;
+const selectedLocation = filters.locations?.length === 1
+  ? page.cities.find((location) => location.slug === filters.locations?.[0])
+  : undefined;
+const heading = selectedProgram
+  ? page.listingHeadings.programs[selectedProgram.slug] ?? {
+      eyebrow: "Program",
+      title: selectedProgram.name,
+    }
+  : selectedLocation
+    ? page.listingHeadings.locations[selectedLocation.slug] ?? {
+        eyebrow: page.eyebrows[selectedLocation.slug],
+        title: `${page.title} at ${selectedLocation.name}`,
+        subtitle: page.subtitle,
+      }
+    : page.listingHeadings.all;
 ---
 
 <SiteLayout settings={settings} title="Events · Circles House" description={page.subtitle}>
+  <header class="px-4 pt-16 pb-12 lg:px-6 lg:pt-24 lg:pb-16">
+    <Eyebrow>Events</Eyebrow>
+    <h1 class="mt-3 font-display text-h1 leading-[1.05]">{page.eyebrows.all}</h1>
+  </header>
   <EventExplorerFilters locations={page.cities} {programs} {filters} />
-  <EventsListing {page} {events} />
+  <EventsListing {heading} {events} />
   <Newsletter newsletter={settings.newsletter} copy={settings.interfaceCopy} class="mt-12 lg:mt-10" />
 </SiteLayout>

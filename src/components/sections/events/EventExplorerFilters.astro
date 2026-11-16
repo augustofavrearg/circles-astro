@@ -8,48 +8,95 @@ type Props = {
 };
 
 const { locations, programs, filters } = Astro.props;
-const activeCount = (filters.locations?.length ?? 0) + (filters.programs?.length ?? 0) + (filters.month ? 1 : 0);
+const selectedLocation = filters.locations?.[0];
+const selectedProgram = filters.programs?.[0];
+const activeCount = Number(Boolean(selectedLocation)) + Number(Boolean(selectedProgram)) + Number(Boolean(filters.month));
+
+const currentParams = new URLSearchParams();
+if (filters.month) currentParams.set("month", filters.month);
+if (selectedLocation) currentParams.set("location", selectedLocation);
+if (selectedProgram) currentParams.set("program", selectedProgram);
+
+function filterHref(key: "location" | "program" | "month", value?: string): string {
+  const params = new URLSearchParams(currentParams);
+  if (value) params.set(key, value);
+  else params.delete(key);
+  const query = params.toString();
+  return query ? `/events?${query}` : "/events";
+}
+
+const chipClass = "inline-flex min-h-10 items-center justify-center rounded-full border px-4 py-2 text-center text-[0.875rem] leading-tight transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black";
 ---
 
-<section aria-labelledby="event-filters-title" class="border-b border-black/15 bg-white px-4 py-6 lg:px-6 lg:py-8">
-  <div class="flex min-w-0 flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+<section aria-labelledby="event-filters-title" class="max-w-full overflow-hidden border-y border-black/15 bg-white px-4 py-8 lg:px-6 lg:py-10">
+  <div class="grid min-w-0 gap-5 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
     <div class="min-w-0">
       <p class="text-detail uppercase tracking-[0.08em] text-black/50">Explore events</p>
-      <h2 id="event-filters-title" class="mt-2 break-words font-display text-[1.75rem] leading-[1.05] sm:text-[2rem]">Choose when, where and why</h2>
+      <h2 id="event-filters-title" class="mt-2 max-w-[680px] text-balance font-display text-[1.75rem] leading-[1.08] sm:text-[2rem]">
+        Choose when, where and why
+      </h2>
     </div>
-    {activeCount > 0 && <a href="/events" class="text-[0.875rem] underline underline-offset-4">Clear {activeCount} filter{activeCount === 1 ? "" : "s"}</a>}
+    {activeCount > 0 && (
+      <a href="/events" class="w-fit text-[0.875rem] underline decoration-1 underline-offset-4 transition-opacity hover:opacity-55">
+        Clear filters
+      </a>
+    )}
   </div>
 
-  <form action="/events" method="get" class="mt-7 grid min-w-0 gap-6 border-t border-black/12 pt-6 lg:grid-cols-[minmax(180px,0.7fr)_1fr_1fr_auto] lg:items-end">
-    <label class="flex min-w-0 flex-col gap-2 text-[0.75rem] uppercase tracking-[0.08em] text-black/55">
-      Month
-      <input type="month" name="month" value={filters.month} class="h-11 min-w-0 w-full border border-black/25 bg-transparent px-3 text-[0.9375rem] normal-case tracking-normal text-black" />
-    </label>
+  <div class="mt-8 grid min-w-0 gap-x-8 gap-y-7 border-t border-black/12 pt-7 lg:grid-cols-[minmax(180px,0.65fr)_minmax(0,1fr)_minmax(0,1.2fr)]">
+    <div class="min-w-0">
+      <div class="flex min-h-5 items-center justify-between gap-3">
+        <p id="month-filter-label" class="text-[0.75rem] uppercase tracking-[0.08em] text-black/55">Month</p>
+        {filters.month && <a href={filterHref("month")} class="text-[0.75rem] underline underline-offset-4">Any month</a>}
+      </div>
+      <form action="/events" method="get" class="mt-3 min-w-0">
+        {selectedLocation && <input type="hidden" name="location" value={selectedLocation} />}
+        {selectedProgram && <input type="hidden" name="program" value={selectedProgram} />}
+        <input
+          aria-labelledby="month-filter-label"
+          type="month"
+          name="month"
+          value={filters.month}
+          onchange="this.form.requestSubmit()"
+          class="h-11 w-full min-w-0 border border-black/25 bg-transparent px-3 text-[0.9375rem] text-black transition-colors hover:border-black focus:border-black focus:outline-none"
+        />
+      </form>
+    </div>
 
-    <fieldset class="min-w-0 border-0 p-0">
-      <legend class="text-[0.75rem] uppercase tracking-[0.08em] text-black/55">Locations</legend>
-      <div class="mt-2 flex flex-wrap gap-2">
+    <nav aria-labelledby="location-filter-label" class="min-w-0">
+      <p id="location-filter-label" class="text-[0.75rem] uppercase tracking-[0.08em] text-black/55">Location</p>
+      <div class="mt-3 flex min-w-0 flex-wrap gap-2">
+        <a
+          href={filterHref("location")}
+          aria-current={!selectedLocation ? "true" : undefined}
+          class:list={[chipClass, !selectedLocation ? "border-black bg-black text-white" : "border-black/25 hover:border-black"]}
+        >All</a>
         {locations.map((location) => (
-          <label class:list={["cursor-pointer rounded-full border px-4 py-2 text-[0.875rem] transition-colors", filters.locations?.includes(location.slug) ? "border-black bg-black text-white" : "border-black/25 hover:border-black"]}>
-            <input class="sr-only" type="checkbox" name="location" value={location.slug} checked={filters.locations?.includes(location.slug)} />
-            {location.name}
-          </label>
+          <a
+            href={filterHref("location", location.slug)}
+            aria-current={selectedLocation === location.slug ? "true" : undefined}
+            class:list={[chipClass, selectedLocation === location.slug ? "border-black bg-black text-white" : "border-black/25 hover:border-black"]}
+          >{location.name}</a>
         ))}
       </div>
-    </fieldset>
+    </nav>
 
-    <fieldset class="min-w-0 border-0 p-0">
-      <legend class="text-[0.75rem] uppercase tracking-[0.08em] text-black/55">Programs</legend>
-      <div class="mt-2 flex flex-wrap gap-2">
+    <nav aria-labelledby="program-filter-label" class="min-w-0">
+      <p id="program-filter-label" class="text-[0.75rem] uppercase tracking-[0.08em] text-black/55">Program</p>
+      <div class="mt-3 flex min-w-0 flex-wrap gap-2">
+        <a
+          href={filterHref("program")}
+          aria-current={!selectedProgram ? "true" : undefined}
+          class:list={[chipClass, !selectedProgram ? "border-black bg-black text-white" : "border-black/25 hover:border-black"]}
+        >All</a>
         {programs.map((program) => (
-          <label class:list={["cursor-pointer rounded-full border px-4 py-2 text-[0.875rem] transition-colors", filters.programs?.includes(program.slug) ? "border-black bg-black text-white" : "border-black/25 hover:border-black"]}>
-            <input class="sr-only" type="checkbox" name="program" value={program.slug} checked={filters.programs?.includes(program.slug)} />
-            {program.name}
-          </label>
+          <a
+            href={filterHref("program", program.slug)}
+            aria-current={selectedProgram === program.slug ? "true" : undefined}
+            class:list={[chipClass, selectedProgram === program.slug ? "border-black bg-black text-white" : "border-black/25 hover:border-black"]}
+          >{program.name}</a>
         ))}
       </div>
-    </fieldset>
-
-    <button type="submit" class="h-11 rounded-full bg-red px-7 text-[0.875rem] transition-opacity hover:opacity-75">Show events</button>
-  </form>
+    </nav>
+  </div>
 </section>
