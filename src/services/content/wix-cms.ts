@@ -56,6 +56,7 @@ import type { NavigationItem, SiteNavigation } from "@/domain/navigation";
 import { getBlogPost, getBlogPostsPage, getFeaturedBlogPosts } from "./wix-blog";
 import { parseEditorialEntityReference, parseSectionSource } from "@/domain/editorial";
 import { normalizeMembershipCta } from "./membership-cta";
+import { sectionDocumentKey } from "./wix-composition";
 
 export const COLLECTIONS = {
   siteSettings: "CHSiteSettings",
@@ -268,8 +269,7 @@ function programLocationRecords(program: WixRecord, locations: WixRecord[]): Wix
 
 function sectionName(section: WixRecord): string {
   const componentKey = asText(section.componentKey);
-  if (componentKey) return componentKey.split(".").at(-1) || componentKey;
-  return asText(section.sectionKey).split(".").at(-1) || "section";
+  return sectionDocumentKey(componentKey, asText(section.sectionKey));
 }
 
 function contentFields(record: WixRecord) {
