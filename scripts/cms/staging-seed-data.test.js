@@ -42,11 +42,11 @@ function collectReferences(value, references = []) {
 }
 
 describe("Wix staging seed manifest", () => {
-  it("covers every canonical collection with 188 uniquely keyed records", () => {
+  it("covers every canonical collection with 190 uniquely keyed records", () => {
     expect(seedCollections.map(({ collectionId }) => collectionId)).toEqual(
       expectedCollections,
     );
-    expect(seedCollections.flatMap(({ items }) => items)).toHaveLength(188);
+    expect(seedCollections.flatMap(({ items }) => items)).toHaveLength(190);
 
     for (const { collectionId, keyField, items } of seedCollections) {
       const keys = items.map(({ key }) => key);
@@ -99,7 +99,9 @@ describe("Wix staging seed manifest", () => {
     const sections = seedCollections.find(({ collectionId }) => collectionId === "CHPageSections");
 
     expect(socialLinks?.items.find(({ key }) => key === "whatsapp")?.data.url).toContain("wa.me/34623328787");
-    expect(sections?.items.find(({ key }) => key === "memberships.hub")?.data.primaryExternalUrl).toContain("chat.whatsapp.com/");
+    expect(sections?.items.find(({ key }) => key === "memberships.intro")?.data.primaryExternalUrl).toContain("chat.whatsapp.com/");
+    expect(sections?.items.find(({ key }) => key === "memberships.band")?.data.primaryExternalUrl).toContain("chat.whatsapp.com/");
+    expect(sections?.items.find(({ key }) => key === "memberships.hub")?.data.primaryExternalUrl).toBeUndefined();
   });
 
   it("keeps the events intro aligned with the approved design copy", () => {
@@ -113,6 +115,14 @@ describe("Wix staging seed manifest", () => {
         "See What Makes our Inspiring Coworking Spaces Perfect for Entrepreneurs and Innovators",
     });
     expect(intro?.body).toBeUndefined();
+  });
+
+  it("keeps the approved deals published with their Wix images", () => {
+    const deals = seedCollections.find(({ collectionId }) => collectionId === "CHDeals");
+    const approved = deals?.items.filter(({ key }) => ["book-3-get-1", "give-10-get-10"].includes(key));
+
+    expect(approved).toHaveLength(2);
+    expect(approved?.every(({ data }) => data.published === true && data.image?.startsWith("wix:image://"))).toBe(true);
   });
 
   it("composes the complete Barcelona location page contract", () => {

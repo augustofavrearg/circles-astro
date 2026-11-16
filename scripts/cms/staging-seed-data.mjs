@@ -106,9 +106,11 @@ const pageSectionOverrides = {
       "Join Circles Membership for exclusive access to locations, deals, events, and the Member Hub.\nIt’s where everything begins.",
     primaryCtaLabel: "Join on WhatsApp",
     primaryExternalUrl: whatsappLinks.community,
+    image: "wix:image://v1/db3e41_ab8ef1fd662d4c1f8e3b2cfd0280a420~mv2.png/circles-home--images--news--community-dinners--f75ddb36ba5d.png#originWidth=740&originHeight=493",
   },
   "memberships.benefits": {
     eyebrow: "Why join",
+    image: "wix:image://v1/db3e41_2ad0bfec76db45ac9691194416187cbd~mv2.png/circles-home--images--locations--andorra--spa-pool--32dedc82ee57.png#originWidth=750&originHeight=750",
   },
   "memberships.hub": {
     eyebrow: "What is the hub",
@@ -116,8 +118,11 @@ const pageSectionOverrides = {
       "Circles Member Hub is a place for Members to connect, share networking opportunities, and view community events",
     body:
       "Explore the vibrant surroundings, immerse yourself in local culture, and discover hidden gems that await you at every turn. Whether you’re seeking relaxation or adventure, Circles Spaces has something for everyone.",
-    primaryCtaLabel: "Join on WhatsApp",
-    primaryExternalUrl: whatsappLinks.community,
+    gallery: [
+      "wix:image://v1/db3e41_40b4e090bf5f4dd891f21a59580c75ea~mv2.png/circles-home--images--home--introduction--circles-house-aerial--0f380d597fcd.png#originWidth=1024&originHeight=683",
+      "wix:image://v1/db3e41_ff2237626df248c28dfce9c730348046~mv2.png/circles-home--images--home--membership--rooftop-community--4c356de8f838.png#originWidth=1707&originHeight=960",
+      "wix:image://v1/db3e41_deffe48b4eef49b6a9f2e7de20e97c0b~mv2.png/circles-home--images--home--introduction--balcony-view--5d685d54f4ad.png#originWidth=280&originHeight=370",
+    ],
   },
   "memberships.pricing": {
     eyebrow: "Pricing",
@@ -368,7 +373,7 @@ export const seedCollections = [
           defaultSeoDescription:
             "Live, work and connect with entrepreneurs and innovators at Circles House.",
           promotionText:
-            "Members save 15% on stays of 7+ nights, 30% on stays of 30+ nights and 35% on stays of 60+ nights.",
+            "Members save 15% on trips of 7+ nights, 30% on 30+ night trips and 35% on 60+ night trips.",
           contactAbout:
             "Circles House is a community designed for entrepreneurs and innovators seeking a more meaningful way to live, work, and connect.",
           contactPhone: "+34 619 43 24 69",
@@ -394,7 +399,7 @@ export const seedCollections = [
         key: "newsletter.emailPlaceholder",
         data: {
           copyKey: "newsletter.emailPlaceholder",
-          value: "Email address",
+          value: "Enter your email",
           group: "newsletter",
           context: "Sandbox newsletter form placeholder",
         },
@@ -933,8 +938,10 @@ export const seedCollections = [
           itemKey: "events.intro.barcelona",
           section: reference("CHPageSections", "events.intro"),
           label: "Barcelona",
-          title: "Sandbox events",
-          text: "Events loaded from Wix CMS staging.",
+          title: "Live Surrounded by Nature at Barcelona",
+          text: "See What Makes our Inspiring Coworking Spaces Perfect for Entrepreneurs and Innovators",
+          entityType: "location",
+          entityKey: "barcelona",
           routeKey: "events",
           routeParam: "barcelona",
           linkLabel: "View events",
@@ -1467,6 +1474,38 @@ export const seedCollections = [
     collectionId: "CHDeals",
     keyField: "slug",
     items: [
+      {
+        key: "book-3-get-1",
+        data: {
+          slug: "book-3-get-1",
+          eyebrow: "New deal",
+          title: "Book 3 weeks, get 1 extra week for free",
+          description: "Spend your winter mornings in the sun, work with focus, and share evenings that feel like home.",
+          terms: "Valid for continuous stays between December 1, 2025, and January 31, 2026. Cannot be combined with other promotions. Terms and conditions here.",
+          ctaLabel: "Book Now",
+          externalUrl: whatsappUrl("Hey! I'm interested in the offer: Book 3 weeks, get 1 extra week for free"),
+          image: "wix:image://v1/db3e41_45a89a8fddbd42d1b85dcfefd6e36840~mv2.png/circles-deal--book-3-get-1--ae79436e3aaf.png#originWidth=2545&originHeight=679",
+          published: true,
+          sortOrder: 1,
+        },
+        editorialStatus: "published-with-expired-terms-review",
+      },
+      {
+        key: "give-10-get-10",
+        data: {
+          slug: "give-10-get-10",
+          eyebrow: "New deal",
+          title: "Give 10%, Get 10% – Invite Your Friends!",
+          description: "Love your experience at Circles? Share it with your friends! When you refer someone to Circles House, both you and your friend receive 10% discount on your monthly stay.\n\nIt’s simple: spread the word, help grow our community, and enjoy great savings together.",
+          terms: "*This promotion cannot be combined with other promotions and only applies for the first month.",
+          ctaLabel: "Book Now",
+          externalUrl: whatsappUrl("Hey! I'm interested in the offer: Give 10%, Get 10% – Invite Your Friends!"),
+          image: "wix:image://v1/db3e41_9fc5a2db7002441e8baab70d36ab5924~mv2.png/circles-deal--give-10-get-10--b51be4a73f8d.png#originWidth=537&originHeight=245",
+          published: true,
+          sortOrder: 2,
+        },
+        editorialStatus: "published-without-cta-destination",
+      },
       {
         key: "sandbox-extended-stay",
         data: {

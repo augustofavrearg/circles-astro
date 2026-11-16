@@ -35,7 +35,6 @@ import {
   mapFaq,
   isActiveDeal,
   mapLegalPage,
-  mapMembershipPlan,
   mapCoworkingLocationNavigationItem,
   mapLocationNavigationItem,
   mapNavigationItem,
@@ -85,7 +84,17 @@ export const COLLECTIONS = {
 
 type PageIdentity = { pageKey?: string; routeKey?: string; routeParam?: string };
 type EventsPageDocument = Partial<EventsPage> & {
-  intro?: { title?: string; subtitle?: string };
+  intro?: {
+    eyebrow?: string;
+    title?: string;
+    subtitle?: string;
+    items?: Array<{
+      title?: string;
+      text?: string;
+      label?: string;
+      entity?: { type: string; key: string };
+    }>;
+  };
 };
 type LocationSpacePageDocument = Partial<LocationSpacePage> & {
   hero?: { eyebrow?: string; title?: string; body?: string; image?: string };
@@ -322,7 +331,7 @@ function composeSection(section: WixRecord, sectionItems: WixRecord[]): Record<s
   };
 
   if (componentKey === "home.hero") {
-    const videoSrc = wixUrl(section.primaryExternalUrl);
+    const videoSrc = wixUrl(section.video) || wixUrl(section.primaryExternalUrl);
     return {
       title: asText(section.title),
       description: body || asText(section.lead),
@@ -361,6 +370,7 @@ function composeSection(section: WixRecord, sectionItems: WixRecord[]): Record<s
       highlights: sectionItems.map((item) => asText(item.title) || asText(item.label)).filter(Boolean),
       image: image || undefined,
       thumbnail: gallery[0] || undefined,
+      video: wixUrl(section.video) || undefined,
     };
   }
 
@@ -814,15 +824,14 @@ function requireCompleteCoworkingPage(page: Partial<CoworkingPage>, city: string
 }
 
 function requireCompleteMembershipsPage(page: Partial<MembershipsPage>): MembershipsPage {
-  const requiredSections = ["seo", "intro", "benefits", "hub", "pricing", "members", "band", "faq"] as const;
+  const requiredSections = ["seo", "intro", "benefits", "hub", "band", "faq"] as const;
   for (const key of requiredSections) {
     if (!page[key] || typeof page[key] !== "object") {
       throw new Error(`CHPages item "memberships" is missing the required "memberships.${key}" content.`);
     }
   }
   if (!page.intro?.cta) throw new Error('CHPageSections item "memberships.intro" requires a primary CTA.');
-  if (!page.pricing?.plans.length) throw new Error("CHMembershipPlans requires at least one published plan.");
-  if (!page.members?.items.length) throw new Error('CHPeople requires at least one published person with personTypes including "member".');
+  if (!page.band?.primaryCta) throw new Error('CHPageSections item "memberships.band" requires a primary CTA.');
   if (!page.faq?.items.length) throw new Error('CHPages item "memberships" requires at least one related FAQ.');
   return page as MembershipsPage;
 }
@@ -974,23 +983,9 @@ export const wixCmsRepository: ContentRepository = {
   getTeamPage: () => requirePage<TeamPage>({ pageKey: "team" }),
   getWhatIsCirclesPage: () => requirePage<WhatIsCirclesPage>({ pageKey: "what-is-circles" }),
   async getMembershipsPage() {
-    const [page, plans, people] = await Promise.all([
-      requirePage<Partial<MembershipsPage>>({ pageKey: "memberships" }),
-      queryPublished(COLLECTIONS.membershipPlans),
-      queryPublished(COLLECTIONS.people),
-    ]);
-    return requireCompleteMembershipsPage({
-      ...page,
-      pricing: { ...page.pricing!, plans: plans.map(mapMembershipPlan) },
-      members: {
-        ...page.members!,
-        items: people.filter((person) => hasPersonType(person, "member")).map((person) => ({
-          name: asText(person.name),
-          bio: asText(person.bio),
-          photo: wixUrl(person.photo) || undefined,
-        })),
-      },
-    });
+    return requireCompleteMembershipsPage(
+      await requirePage<Partial<MembershipsPage>>({ pageKey: "memberships" }),
+    );
   },
   getLifePage: () => requirePage<LifePage>({ pageKey: "life-at-circles" }),
   async getCoworkingPage(city) {
@@ -1211,13 +1206,30 @@ export const wixCmsRepository: ContentRepository = {
     const cities = locations.map((location) => ({ slug: asText(location.slug), name: asText(location.shortName) || asText(location.city) }));
     const title = asText(document.intro?.title) || asText(document.title);
     if (!title) throw new Error('CHPageSections item "events.intro" requires a title.');
+    const subtitle = asText(document.intro?.subtitle) || asText(document.subtitle);
+    const headingItems = document.intro?.items ?? [];
+    const headingsFor = (type: "location" | "program") => Object.fromEntries(
+      headingItems.flatMap((item) => {
+        if (item.entity?.type !== type || !item.entity.key || !asText(item.title)) return [];
+        return [[item.entity.key, {
+          eyebrow: asText(item.label) || undefined,
+          title: asText(item.title),
+          subtitle: asText(item.text) || undefined,
+        }]];
+      }),
+    );
     return {
       title,
-      subtitle: asText(document.intro?.subtitle) || asText(document.subtitle),
+      subtitle,
       cities,
       eyebrows:
         document.eyebrows ??
         Object.fromEntries([["all", "Happening now"], ...cities.map((city) => [city.slug, `Happening now in ${city.name}`])]),
+      listingHeadings: {
+        all: { title, subtitle: subtitle || undefined },
+        locations: headingsFor("location"),
+        programs: headingsFor("program"),
+      },
     };
   },
   async getEvents(filters = {}) {

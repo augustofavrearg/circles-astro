@@ -195,6 +195,7 @@ export type HomePage = {
     highlights: string[];
     image?: string;
     thumbnail?: string;
+    video?: string;
   };
   introduction: {
     title: string;
@@ -316,9 +317,9 @@ export type EventSummary = {
 };
 
 export type EventFilters = {
-  /** Location slugs. Values inside this dimension use OR semantics. */
+  /** At most one location slug is accepted by the events route. */
   locations?: string[];
-  /** Program slugs. Values inside this dimension use OR semantics. */
+  /** At most one program slug is accepted by the events route. */
   programs?: string[];
   /** Calendar month at each event's location, formatted as YYYY-MM. */
   month?: string;
@@ -331,12 +332,23 @@ export type ProgramSummary = {
   locationScope: "selected" | "all";
 };
 
+export type EventListingHeading = {
+  eyebrow?: string;
+  title: string;
+  subtitle?: string;
+};
+
 export type EventsPage = {
   title: string;
   subtitle: string;
   /** Eyebrow per city slug, plus `all` for the unfiltered listing. */
   eyebrows: Record<string, string>;
   cities: { slug: string; name: string }[];
+  listingHeadings: {
+    all: EventListingHeading;
+    locations: Record<string, EventListingHeading>;
+    programs: Record<string, EventListingHeading>;
+  };
 };
 
 /** A reusable event series exposed independently from calendar month pages. */
@@ -405,7 +417,7 @@ export type Member = { name: string; bio: string; photo?: string };
 
 export type MembershipsPage = {
   seo: { title: string; description: string };
-  intro: { eyebrow: string; title: string; body: string; cta?: Link; secondaryCta?: Link; image?: string };
+  intro: { eyebrow: string; title: string; body: string; cta: Link; image?: string };
   benefits: { eyebrow: string; title: string; image?: string; items: { title: string; text: string }[] };
   hub: {
     eyebrow: string;
@@ -416,19 +428,7 @@ export type MembershipsPage = {
     text: string;
     images: string[];
     stats: { icon: "globe" | "age" | "stay"; label: string }[];
-    cta?: Link;
   };
-  pricing: {
-    eyebrow: string;
-    title: string;
-    features: string[];
-    /** The Yearly / Lifetime toggle only appears with more than one plan. */
-    plans: MembershipPlan[];
-    cta?: Link;
-    secondaryCta?: Link;
-    images: string[];
-  };
-  members: { eyebrow: string; title: string; items: Member[] };
   band: CtaBand;
   faq: FaqSection;
 };

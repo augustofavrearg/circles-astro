@@ -19,6 +19,10 @@ export function createWhatsAppUrl(message: string, phone = WHATSAPP_PHONE): stri
   return url.toString();
 }
 
+export function createDealWhatsAppUrl(title: string): string {
+  return createWhatsAppUrl(`Hey! I'm interested in the offer: ${title}`);
+}
+
 export function isWhatsAppUrl(href: string): boolean {
   try {
     const { hostname } = new URL(href);

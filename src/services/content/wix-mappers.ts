@@ -101,12 +101,14 @@ export function referenceId(value: unknown): string {
   return asText((value as WixRecord)._id) || asText((value as WixRecord).id);
 }
 
-/** Normalizes Wix Image, Media Gallery, Document, Link and URL field payloads. */
+/** Normalizes Wix Image, Video, Media Gallery, Document, Link and URL field payloads. */
 export function wixUrl(value: unknown): string {
   if (typeof value === "string") {
     const source = value.trim();
     const imageMatch = source.match(/^wix:image:\/\/v1\/([^/]+)/);
     if (imageMatch) return `https://static.wixstatic.com/media/${imageMatch[1]}`;
+    const videoMatch = source.match(/^wix:video:\/\/v1\/([^/]+)/);
+    if (videoMatch) return `https://video.wixstatic.com/video/${videoMatch[1]}/file`;
     const documentMatch = source.match(/^wix:document:\/\/v1\/([^/]+)/);
     if (documentMatch) return `https://static.wixstatic.com/ugd/${documentMatch[1]}`;
     return source;

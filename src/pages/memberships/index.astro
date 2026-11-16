@@ -3,8 +3,6 @@ import SiteLayout from "@/layouts/SiteLayout.astro";
 import MembershipIntro from "@/components/sections/memberships/MembershipIntro.astro";
 import MembershipBenefits from "@/components/sections/memberships/MembershipBenefits.astro";
 import MemberHub from "@/components/sections/memberships/MemberHub.astro";
-import MembershipPricing from "@/components/sections/memberships/MembershipPricing.astro";
-import MembersCarousel from "@/components/sections/memberships/MembersCarousel.astro";
 import MemberDiscounts from "@/components/sections/shared/MemberDiscounts.astro";
 import Faq from "@/components/sections/shared/Faq.astro";
 import Newsletter from "@/components/sections/shared/Newsletter.astro";
@@ -18,8 +16,6 @@ const [settings, page] = await Promise.all([repository.getSiteSettings(), reposi
   <MembershipIntro {...page.intro} />
   <MembershipBenefits {...page.benefits} />
   <MemberHub {...page.hub} />
-  <MembershipPricing {...page.pricing} />
-  <MembersCarousel {...page.members} />
   <MemberDiscounts {...page.band} text={settings.promotion} compact class="lg:mt-28" />
   <Faq {...page.faq} centered uppercase={false} />
   <Newsletter newsletter={settings.newsletter} copy={settings.interfaceCopy} class="mt-12" />

@@ -2,11 +2,10 @@
 import { IconClockHour4, IconUserCircle, IconWorld } from "@tabler/icons-react";
 import type { MembershipsPage } from "@/domain/content";
 import Eyebrow from "@/components/ui/Eyebrow.astro";
-import Button from "@/components/ui/Button.astro";
 import { mediaPlaceholderClass, USE_MEDIA_PLACEHOLDERS } from "@/config/media";
 
 type Props = MembershipsPage["hub"];
-const { eyebrow, title, subtitle, topics, text, images, stats, cta } = Astro.props;
+const { eyebrow, title, subtitle, topics, text, images, stats } = Astro.props;
 const icons = { globe: IconWorld, age: IconUserCircle, stay: IconClockHour4 };
 const [large, wide, small] = images;
 
@@ -22,7 +21,6 @@ const slot = "object-cover";
     <Eyebrow>{eyebrow}</Eyebrow>
     <h2 class="mt-3 font-display text-[2rem] leading-[1.2] lg:text-h1 lg:leading-(--text-h1--line-height)">{title}</h2>
     <p class="mx-auto mt-2 max-w-[360px] text-[0.9375rem] leading-[1.4] lg:max-w-none lg:text-[0.875rem]">{subtitle}</p>
-    {cta && <Button href={cta.href} target="_blank" rel="noreferrer" class="mt-6">{cta.label}</Button>}
   </header>
 
   <div class="mt-12 grid lg:mt-32 lg:grid-cols-[318px_minmax(0,1fr)_318px] lg:grid-rows-[auto_auto_auto] lg:gap-x-6">

@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  createDealWhatsAppUrl,
   createWhatsAppUrl,
   getWhatsAppLinkAttributes,
   isWhatsAppUrl,
@@ -26,6 +27,13 @@ describe("WhatsApp links", () => {
 
   it("rejects an empty phone number", () => {
     expect(() => createWhatsAppUrl("Hello", "---")).toThrow("A WhatsApp phone number is required.");
+  });
+
+  it("includes the complete offer title in deal conversations", () => {
+    const title = "Book 3 weeks, get 1 extra week for free";
+    const url = new URL(createDealWhatsAppUrl(title));
+
+    expect(url.searchParams.get("text")).toBe(`Hey! I'm interested in the offer: ${title}`);
   });
 
   it("recognizes direct chats and community invitations", () => {

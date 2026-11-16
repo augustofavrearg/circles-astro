@@ -25,10 +25,10 @@ import type {
   WhatIsCirclesPage,
 } from "@/domain/content";
 import type { Room } from "@/domain/booking";
-import { whatsappLinks } from "../../lib/whatsapp";
+import { createDealWhatsAppUrl, whatsappLinks } from "../../lib/whatsapp";
 
 export const siteSettingsFixture: SiteSettings = {
-  promotion: "Members save 15 % on trips of 7+ nights, 30% on 30+ nights trips and 35% on 60+ night trips.",
+  promotion: "Members save 15% on trips of 7+ nights, 30% on 30+ night trips and 35% on 60+ night trips.",
   newsletter: {
     title: "Join our Newsletter",
     description: "Join our newsletter to connect with a vibrant community of entrepreneurs and innovators at Circles House. Stay updated and be part of our unique ecosystem!",
@@ -193,6 +193,7 @@ export const homePageFixture: HomePage = {
     highlights: ["Instant Community", "Focused Channels", "Collaboration"],
     image: "/images/home/membership/rooftop-community.png",
     thumbnail: "/images/home/membership/house-exterior.png",
+    video: "/images/home/hero/circles-house.mp4",
   },
   introduction: {
     title: "ONE COMMUNITY, ONE HOME WORLDWIDE",
@@ -343,7 +344,7 @@ export const dealsFixture: Deal[] = [
     title: "Book 3 weeks, get 1 extra week for free",
     description: "Spend your winter mornings in the sun, work with focus, and share evenings that feel like home.",
     terms: "Valid for continuous stays between December 1, 2025, and January 31, 2026. Cannot be combined with other promotions. Terms and conditions here.",
-    cta: { label: "Book Now", href: "/rooms" },
+    cta: { label: "Book Now", href: createDealWhatsAppUrl("Book 3 weeks, get 1 extra week for free") },
   },
   {
     slug: "give-10-get-10",
@@ -352,7 +353,7 @@ export const dealsFixture: Deal[] = [
     description:
       "Love your experience at Circles? Share it with your friends! When you refer someone to Circles House, both you and your friend receive 10% discount on your monthly stay.\n\nIt’s simple: spread the word, help grow our community, and enjoy great savings together.",
     terms: "*This promotion cannot be combined with other promotions and only applies for the first month.",
-    cta: { label: "Receive code", href: whatsappLinks.referral },
+    cta: { label: "Book Now", href: createDealWhatsAppUrl("Give 10%, Get 10% – Invite Your Friends!") },
   },
 ];
 
@@ -574,10 +575,12 @@ export const membershipsPageFixture: MembershipsPage = {
     title: "Become a Member",
     body: "Join Circles Membership for exclusive access to locations, deals, events, and the Member Hub.\nIt’s where everything begins.",
     cta: { label: "Join on WhatsApp", href: whatsappLinks.community },
+    image: "/images/news/community-dinners.png",
   },
   benefits: {
     eyebrow: "Why join",
     title: "Membership Benefits",
+    image: "/images/locations/andorra/spa-pool.png",
     items: [
       { title: "Discounted price for every booking", text: "Unlock exclusive booking access to over 30 Members Only locations." },
       {
@@ -596,40 +599,15 @@ export const membershipsPageFixture: MembershipsPage = {
     subtitle: "Circles Member Hub is a place for Members to connect, share networking opportunities, and view community events",
     topics: ["Plan your next trip to Circles Spaces", "Expand your nomadic network", "Ask Questions and Share Knowledge"],
     text: "Explore the vibrant surroundings, immerse yourself in local culture, and discover hidden gems that await you at every turn. Whether you’re seeking relaxation or adventure, Circles Spaces has something for everyone.",
-    // Four photos in Figma (two large, two small); pending.
-    images: [],
+    images: [
+      "/images/home/introduction/circles-house-aerial.png",
+      "/images/home/membership/rooftop-community.png",
+      "/images/home/introduction/balcony-view.png",
+    ],
     stats: [
       { icon: "globe", label: "+40 Nationalities represented" },
       { icon: "age", label: "36 years average age" },
       { icon: "stay", label: "2 weeks of average stay" },
-    ],
-    cta: { label: "Join on WhatsApp", href: whatsappLinks.community },
-  },
-  pricing: {
-    eyebrow: "Pricing",
-    title: "A membership designed around how you live and work.",
-    features: [
-      "Members-only booking rates",
-      "Access to the Circles Member Hub",
-      "Priority booking opportunities",
-      "Invitations to community events",
-      "Partner perks and member offers",
-      "Early access to new locations",
-    ],
-    // The current Figma shows this yearly price. It remains provisional until the membership offer is approved.
-    plans: [{ label: "Yearly", price: "€2,350/Year", note: "Cancel anytime" }],
-    // "Contact" and "Subscribe" appear once they have destinations.
-    images: [],
-  },
-  members: {
-    eyebrow: "Members",
-    title: "Meet our Members",
-    items: [
-      {
-        name: "Kimberly Defors",
-        // Truncated in Figma after "branding and ma…"; the ending needs confirming.
-        bio: "Kimberly Defors, a digital nomad specializing in branding and marketing and wellness projects.",
-      },
     ],
   },
   band: { title: "Stay longer and Save more", primaryCta: { label: "Join on WhatsApp", href: whatsappLinks.community } },
@@ -903,6 +881,20 @@ export const eventsPageFixture: EventsPage = {
     { slug: "barcelona", name: "Barcelona" },
     { slug: "andorra", name: "Andorra" },
   ],
+  listingHeadings: {
+    all: {
+      title: "Live Surrounded by Nature",
+      subtitle: "See What Makes our Inspiring Coworking Spaces Perfect for Entrepreneurs and Innovators",
+    },
+    locations: {
+      barcelona: {
+        eyebrow: "Coliving @ Circles Barcelona",
+        title: "Live Surrounded by Nature at Barcelona",
+        subtitle: "See What Makes our Inspiring Coworking Spaces Perfect for Entrepreneurs and Innovators",
+      },
+    },
+    programs: {},
+  },
 };
 
 const augustEvening = {

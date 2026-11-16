@@ -93,8 +93,9 @@ describe("Wix CMS canonical mappers", () => {
     expect(asDateOnly("not-a-date")).toBeUndefined();
   });
 
-  it("normalizes Wix image fields", () => {
+  it("normalizes Wix media fields", () => {
     expect(wixUrl("wix:image://v1/abc123/photo.jpg#originWidth=1200")).toBe("https://static.wixstatic.com/media/abc123");
+    expect(wixUrl("wix:video://v1/video123/clip.mp4#posterUri=poster.jpg")).toBe("https://video.wixstatic.com/video/video123/file");
     expect(wixUrl({ image: { url: "https://static.wixstatic.com/media/example" } })).toBe("https://static.wixstatic.com/media/example");
   });
 

@@ -1,11 +1,11 @@
 ---
-import type { MembershipsPage } from "@/domain/content";
+import type { Member } from "@/domain/content";
 import Eyebrow from "@/components/ui/Eyebrow.astro";
 import Media from "@/components/ui/Media.astro";
 import { ScrollButtons } from "@/islands/ScrollButtons";
 import { alternatingMediaPlaceholder } from "@/config/media";
 
-type Props = MembershipsPage["members"];
+type Props = { eyebrow: string; title: string; items: Member[] };
 const { eyebrow, title, items } = Astro.props;
 ---
 
