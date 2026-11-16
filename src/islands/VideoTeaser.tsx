@@ -17,6 +17,18 @@ export function VideoTeaser({ label, poster, src }: { label: string; poster?: st
         <span className="relative block aspect-[317/188] w-full overflow-hidden bg-black/8">
           {USE_MEDIA_PLACEHOLDERS || !poster ? (
             <span aria-hidden className="absolute inset-0 bg-[#3158d8]" />
+          ) : src ? (
+            <video
+              src={src}
+              poster={poster}
+              autoPlay
+              muted
+              loop
+              playsInline
+              preload="metadata"
+              aria-hidden
+              className="size-full object-cover transition-transform duration-500 group-hover:scale-105"
+            />
           ) : (
             <img src={poster} alt="" className="size-full object-cover transition-transform duration-500 group-hover:scale-105" />
           )}

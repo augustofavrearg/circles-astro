@@ -5,7 +5,7 @@ import Eyebrow from "@/components/ui/Eyebrow.astro";
 import Media from "@/components/ui/Media.astro";
 
 type Props = HomePage["memberships"];
-const { eyebrow, title, description, cta, highlights, image, thumbnail } = Astro.props;
+const { eyebrow, title, description, cta, highlights, image, thumbnail, video } = Astro.props;
 ---
 
 <section id="membership" class="relative isolate flex min-h-[960px] flex-col gap-4 p-4 lg:min-h-[768px] lg:flex-row lg:items-end lg:p-6">
@@ -15,7 +15,13 @@ const { eyebrow, title, description, cta, highlights, image, thumbnail } = Astro
     <Eyebrow>{eyebrow}</Eyebrow>
     <h2 class="mt-12 font-display text-[2.5rem] leading-[1.15]">{title}</h2>
     <div class="relative my-12 size-[134px] shrink-0 overflow-hidden lg:my-auto">
-      <Media src={thumbnail} alt="Members gathering at Circles House" placeholderTone="yellow" />
+      {
+        video ? (
+          <video src={video} poster={thumbnail} autoplay muted loop playsinline preload="metadata" aria-hidden="true" class="size-full object-cover" />
+        ) : (
+          <Media src={thumbnail} alt="Members gathering at Circles House" placeholderTone="yellow" />
+        )
+      }
     </div>
     <p class="max-w-[480px] text-[0.9375rem] leading-[1.35]">{description}</p>
     <Button href={cta.href} class="mt-12">{cta.label}</Button>
