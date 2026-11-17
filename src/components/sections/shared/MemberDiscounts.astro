@@ -15,9 +15,9 @@ const { title, primaryCta, secondaryCta, text, compact = false, class: className
     <div class="mt-12 lg:mt-auto lg:flex lg:items-end lg:justify-between lg:gap-8">
       {text && <p class="font-display text-[1.125rem] leading-[1.2] lg:text-[1rem]">{text}</p>}
       {(primaryCta || secondaryCta) && (
-        <div class="mt-6 flex gap-3 lg:mt-0 lg:shrink-0 lg:gap-2">
-          {secondaryCta && <Button href={secondaryCta.href} variant="secondary">{secondaryCta.label}</Button>}
-          {primaryCta && <Button href={primaryCta.href}>{primaryCta.label}</Button>}
+        <div class="mt-6 flex flex-col gap-3 min-[360px]:flex-row lg:mt-0 lg:shrink-0 lg:gap-2">
+          {secondaryCta && <Button href={secondaryCta.href} variant="secondary" class="max-[359px]:w-full">{secondaryCta.label}</Button>}
+          {primaryCta && <Button href={primaryCta.href} class="max-[359px]:w-full">{primaryCta.label}</Button>}
         </div>
       )}
     </div>
