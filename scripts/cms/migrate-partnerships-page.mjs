@@ -85,6 +85,8 @@ const initial = await readState();
 const page = initial.pages.find((item) => item.data?.pageKey === "partnerships");
 if (!page?.id) throw new Error('Migration blocked: CHPages item "partnerships" does not exist.');
 const sandboxPartner = initial.partners.find((item) => item.data?.slug === "sandbox-community-partner");
+const incorrectlyFeaturedPartners = initial.partners.filter((item) =>
+  item.data?.featured === true && item.data?.slug !== desiredPartner.key);
 
 console.log(JSON.stringify({
   mode: apply ? "apply" : "dry-run",
@@ -99,6 +101,7 @@ console.log(JSON.stringify({
   })),
   partners: [
     { key: desiredPartner.key, action: initial.partners.some((item) => item.data?.slug === desiredPartner.key) ? "update" : "create" },
+    ...incorrectlyFeaturedPartners.map((item) => ({ key: item.data?.slug, action: "unfeature" })),
     ...(sandboxPartner?.data?.published ? [{ key: "sandbox-community-partner", action: "unpublish" }] : []),
   ],
 }, null, 2));
@@ -130,6 +133,12 @@ await saveItem("CHPartners", existingDesiredPartner, {
   ...withoutSystemFields(existingDesiredPartner?.data),
   ...desiredPartner.data,
 });
+for (const partner of incorrectlyFeaturedPartners) {
+  await saveItem("CHPartners", partner, {
+    ...withoutSystemFields(partner.data),
+    featured: false,
+  });
+}
 if (sandboxPartner?.data?.published) {
   await saveItem("CHPartners", sandboxPartner, {
     ...withoutSystemFields(sandboxPartner.data),
@@ -148,7 +157,10 @@ const itemsPassed = desiredItems.every(({ key, data }) => {
   return item?.data?.section === sectionIds.get(data.section.$seedReference.key) && item.data?.published === true;
 });
 const partner = verified.partners.find((item) => item.data?.slug === desiredPartner.key);
-const partnerPassed = partner?.data?.published === true && partner.data?.featured === true;
+const featuredPublishedPartners = verified.partners.filter((item) =>
+  item.data?.published === true && item.data?.featured === true);
+const partnerPassed = partner?.data?.published === true && partner.data?.featured === true &&
+  featuredPublishedPartners.length === 1;
 const sandboxPassed = !verified.partners.some((item) =>
   item.data?.slug === "sandbox-community-partner" && item.data?.published === true);
 const passed = sectionsPassed && itemsPassed && partnerPassed && sandboxPassed;

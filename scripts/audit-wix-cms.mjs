@@ -398,11 +398,14 @@ if (process.env.CMS_AUDIT_HEALTH === "1") {
 
   const partners = byId.get("CHPartners")?.items ?? [];
   const featuredPartnership = partners.find((item) => item.slug === "barcelona-tech-city");
-  if (!featuredPartnership || featuredPartnership.published !== true || featuredPartnership.featured !== true) {
+  const featuredPublishedPartners = partners.filter((item) => item.published === true && item.featured === true);
+  if (!featuredPartnership || featuredPartnership.published !== true || featuredPartnership.featured !== true ||
+    featuredPublishedPartners.length !== 1) {
     issues.push({
       collectionId: "CHPartners",
       itemKey: "barcelona-tech-city",
-      issue: "required-featured-partner-missing",
+      issue: "required-unique-featured-partner-missing",
+      actualFeaturedPartners: featuredPublishedPartners.map((item) => item.slug),
     });
   }
   for (const partner of partners.filter((item) => item.published === true && String(item.slug ?? "").startsWith("sandbox-"))) {

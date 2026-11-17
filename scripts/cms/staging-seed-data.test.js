@@ -100,6 +100,9 @@ describe("Wix staging seed manifest", () => {
       featured: true,
       published: true,
     });
+    expect(partners?.items.filter(({ data }) => data.published && data.featured).map(({ key }) => key)).toEqual([
+      "barcelona-tech-city",
+    ]);
   });
 
   it("composes Team with complete editorial content and published biographies", () => {
