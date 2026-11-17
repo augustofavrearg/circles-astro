@@ -5,6 +5,7 @@ import type {
   CoworkingPage,
   DealsPage,
   EventsPage,
+  FaqBlock,
   ForInvestorsPage,
   HomePage,
   LifePage,
@@ -57,6 +58,7 @@ import { getBlogPost, getBlogPostsPage, getFeaturedBlogPosts } from "./wix-blog"
 import { parseEditorialEntityReference, parseSectionSource } from "@/domain/editorial";
 import { normalizeMembershipCta } from "./membership-cta";
 import { sectionDocumentKey } from "./wix-composition";
+import { requireCompletePartnershipsPage } from "./partnerships-contract";
 
 export const COLLECTIONS = {
   siteSettings: "CHSiteSettings",
@@ -298,6 +300,15 @@ function contentFields(record: WixRecord) {
 
 function splitParagraphs(value: string): string[] {
   return value.split(/\n\s*\n/).map((paragraph) => paragraph.trim()).filter(Boolean);
+}
+
+function faqBlocks(value: string): FaqBlock[] {
+  return splitParagraphs(value).map((text) => {
+    const lines = text.split("\n").map((line) => line.trim()).filter(Boolean);
+    return lines.every((line) => /^[-•]\s+/.test(line))
+      ? { type: "list" as const, items: lines.map((line) => line.replace(/^[-•]\s+/, "")) }
+      : { type: "paragraph" as const, text };
+  });
 }
 
 function composeSection(section: WixRecord, sectionItems: WixRecord[]): unknown {
@@ -577,7 +588,7 @@ function composeSection(section: WixRecord, sectionItems: WixRecord[]): unknown 
   if (name === "faq") {
     result.items = mappedItems.map((item) => ({
       question: item.title,
-      answer: splitParagraphs(item.text).map((text) => ({ type: "paragraph" as const, text })),
+      answer: faqBlocks(item.text),
     }));
   }
   if (name === "manifesto" || name === "manager") result.paragraphs = splitParagraphs(body);
@@ -1040,7 +1051,7 @@ export const wixCmsRepository: ContentRepository = {
   getAmbassadorsPage: () => requirePage<AmbassadorsPage>({ pageKey: "ambassadors" }),
   async getPartnershipsPage() {
     const page = await requirePage<Partial<PartnershipsPage>>({ pageKey: "partnerships" });
-    return {
+    return requireCompletePartnershipsPage({
       ...page,
       partners: {
         eyebrow: "Why join",
@@ -1049,7 +1060,7 @@ export const wixCmsRepository: ContentRepository = {
         items: [],
         ...page.partners,
       },
-    } as PartnershipsPage;
+    });
   },
   getForInvestorsPage: () => requirePage<ForInvestorsPage>({ pageKey: "for-investors" }),
   async getTeamPage() {

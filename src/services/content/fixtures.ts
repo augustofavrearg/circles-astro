@@ -382,20 +382,22 @@ export const partnershipsPageFixture: PartnershipsPage = {
     body: "Circles is a coliving brand and operator that designs and manages residential and commercial properties to appeal to the growing market of remote workers and\ndistributed teams. We deliver exceptional performance to our partners through smart design and tech-enabled operations.",
     // Desktop Figma (v1.14); mobile (v1.13) reads "We create a culturally diverse international community through digital conscious nomadism."
     note: "We deliver exceptional performance to our partners through smart design and tech-enabled operations.",
-    // "Become a Partner" appears once it has a destination.
+    cta: { label: "Become a Partner", href: whatsappLinks.general },
+    image: "/images/partnerships/barcelona-panorama.png",
   },
   partners: {
     eyebrow: "Why join",
     title: "Why partner with Circles?",
     featuredLabel: "Partner of the month",
     source: { mode: "automatic", key: "partners.published" },
-    // Logos and partner links are pending; the name stands in for the logo meanwhile.
+    // A partner name remains the accessible fallback whenever its logo is unavailable.
     items: [
       {
         slug: "barcelona-tech-city",
         name: "Barcelona Tech City",
         description:
           "Tech Barcelona is an independent private non-profit association that works to reinforce Barcelona as a model of the international digital and technological ecosystem.",
+        logo: "/images/partnerships/barcelona-tech-city.jpg",
         featured: true,
       },
       {
@@ -418,6 +420,7 @@ export const partnershipsPageFixture: PartnershipsPage = {
   membership: {
     title: "Become a member and get discounts for all our partners",
     primaryCta: { label: "Join on WhatsApp", href: whatsappLinks.community },
+    secondaryCta: { label: "Book a Call", href: whatsappLinks.general },
   },
   faq: sharedFaq,
 };

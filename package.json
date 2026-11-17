@@ -35,6 +35,7 @@
     "cms:migrate:stay-campaign-template": "node scripts/cms/migrate-stay-campaign-template.mjs",
     "cms:migrate:footer-pages": "node scripts/cms/migrate-footer-page-contracts.mjs",
     "cms:migrate:team-page": "node scripts/cms/migrate-team-page.mjs",
+    "cms:migrate:partnerships-page": "node scripts/cms/migrate-partnerships-page.mjs",
     "pretest": "node scripts/check-node-version.mjs",
     "test": "vitest run",
     "astro": "astro",

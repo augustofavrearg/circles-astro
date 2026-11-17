@@ -42,11 +42,11 @@ function collectReferences(value, references = []) {
 }
 
 describe("Wix staging seed manifest", () => {
-  it("covers every canonical collection with 219 uniquely keyed records", () => {
+  it("covers every canonical collection with 227 uniquely keyed records", () => {
     expect(seedCollections.map(({ collectionId }) => collectionId)).toEqual(
       expectedCollections,
     );
-    expect(seedCollections.flatMap(({ items }) => items)).toHaveLength(219);
+    expect(seedCollections.flatMap(({ items }) => items)).toHaveLength(227);
 
     for (const { collectionId, keyField, items } of seedCollections) {
       const keys = items.map(({ key }) => key);
@@ -79,7 +79,27 @@ describe("Wix staging seed manifest", () => {
     ]);
     expect(items?.items.filter(({ key }) => key.startsWith("what-is-circles.values."))).toHaveLength(4);
     expect(items?.items.filter(({ key }) => key.startsWith("life-at-circles.highlights."))).toHaveLength(3);
-    expect(items?.items.filter(({ key }) => key.endsWith("faq.getting-there"))).toHaveLength(2);
+    expect(items?.items.filter(({ key }) =>
+      key === "what-is-circles.faq.getting-there" || key === "life-at-circles.faq.getting-there"
+    )).toHaveLength(2);
+  });
+
+  it("composes Partnerships with the complete Figma-backed contract", () => {
+    const sections = seedCollections.find(({ collectionId }) => collectionId === "CHPageSections");
+    const items = seedCollections.find(({ collectionId }) => collectionId === "CHSectionItems");
+    const partners = seedCollections.find(({ collectionId }) => collectionId === "CHPartners");
+
+    expect(sections?.items.filter(({ key }) => key.startsWith("partnerships.")).map(({ key }) => key)).toEqual([
+      "partnerships.intro",
+      "partnerships.partners",
+      "partnerships.membership",
+      "partnerships.faq",
+    ]);
+    expect(items?.items.filter(({ key }) => key.startsWith("partnerships.faq."))).toHaveLength(5);
+    expect(partners?.items.find(({ key }) => key === "barcelona-tech-city")?.data).toMatchObject({
+      featured: true,
+      published: true,
+    });
   });
 
   it("composes Team with complete editorial content and published biographies", () => {

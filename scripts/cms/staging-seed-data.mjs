@@ -209,9 +209,28 @@ const pageSectionOverrides = {
   "life-at-circles.faq": {
     eyebrow: "FAQ",
   },
+  "partnerships.intro": {
+    eyebrow: "Partnerships",
+    title: "Increase your rental revenue by up to +50%",
+    lead: "Unlock new opportunities for your team.",
+    body:
+      "Circles is a coliving brand and operator that designs and manages residential and commercial properties to appeal to the growing market of remote workers and\ndistributed teams. We deliver exceptional performance to our partners through smart design and tech-enabled operations.",
+    note: "We deliver exceptional performance to our partners through smart design and tech-enabled operations.",
+    primaryCtaLabel: "Become a Partner",
+    primaryExternalUrl: whatsappLinks.general,
+  },
   "partnerships.partners": {
     eyebrow: "Why join",
     subtitle: "Partner of the month",
+  },
+  "partnerships.membership": {
+    primaryCtaLabel: "Join on WhatsApp",
+    primaryExternalUrl: whatsappLinks.community,
+    secondaryCtaLabel: "Book a Call",
+    secondaryExternalUrl: whatsappLinks.general,
+  },
+  "partnerships.faq": {
+    eyebrow: "FAQ",
   },
   "deals.list": {
     eyebrow: "Current offers",
@@ -894,6 +913,8 @@ export const seedCollections = [
       ["life-at-circles.faq", "life-at-circles", "life.faq", "What you need to know"],
       ["partnerships.intro", "partnerships", "partnerships.intro", "Partner with Circles"],
       ["partnerships.partners", "partnerships", "partnerships.partners", "Why partner with Circles?"],
+      ["partnerships.membership", "partnerships", "partnerships.membership", "Become a member and get discounts for all our partners"],
+      ["partnerships.faq", "partnerships", "partnerships.faq", "What you need to know"],
       ["deals.list", "deals", "deals.list", "Stay longer, experience more."],
       ["ambassadors.intro", "ambassadors", "ambassadors.intro", "Become an ambassador"],
       ["for-investors.intro", "for-investors", "for-investors.intro", "Invest in community-led living"],
@@ -978,6 +999,28 @@ export const seedCollections = [
           sortOrder: 1,
         },
       },
+      ...[
+        [
+          "getting-there",
+          "How do I get to Circles house?",
+          "We’re located in a fantastic area within a natural park, offering stunning views and a peaceful environment. Plus, it’s just a short trip to the city center when you want to explore!\nWe’re near Sarria, a charming local Catalan neighborhood, accessible by a single funicular. It’s a great spot to experience local life and the real essence of Barcelona. Other central areas like Gracia, Plaça Catalunya, and Diagonal are only 20–30 minutes away.\n\nHere’s how to get to us:\n\n- Take the S1/S2 metro to Peu de Funicular, then the Funicular to Vallvidrera Superior. From there, it’s a 7-minute walk or a ride on bus 111 to our location.\n- From the airport, take the Aerobús to Plaça Catalunya, then connect to the S1/S2 metro line. By taxi, we’re just 20 minutes from the airport.",
+        ],
+        ["minimum-stay", "What’s the minimum stay?", "Answer coming soon."],
+        ["groceries", "How do I do groceries or get essentials?", "Answer coming soon."],
+        ["covered", "What’s covered during my stay?", "Answer coming soon."],
+        ["community", "What’s the community like? How is it managed?", "Answer coming soon."],
+      ].map(([key, title, text], index) => ({
+        key: `partnerships.faq.${key}`,
+        editorialStatus: "figma",
+        data: {
+          itemKey: `partnerships.faq.${key}`,
+          section: reference("CHPageSections", "partnerships.faq"),
+          title,
+          text,
+          published: true,
+          sortOrder: index + 1,
+        },
+      })),
       ...[
         [
           "human-centric",
@@ -1815,14 +1858,28 @@ export const seedCollections = [
     keyField: "slug",
     items: [
       {
+        key: "barcelona-tech-city",
+        editorialStatus: "figma-local-logo",
+        data: {
+          slug: "barcelona-tech-city",
+          name: "Barcelona Tech City",
+          description:
+            "Tech Barcelona is an independent private non-profit association that works to reinforce Barcelona as a model of the international digital and technological ecosystem.",
+          url: "https://www.techbarcelona.com/en/",
+          featured: true,
+          published: true,
+          sortOrder: 1,
+        },
+      },
+      {
         key: "sandbox-community-partner",
         data: {
           slug: "sandbox-community-partner",
           name: "Sandbox Community Partner",
           description: "Representative partner record for staging.",
           url: "https://example.com/",
-          featured: true,
-          published: true,
+          featured: false,
+          published: false,
           sortOrder: 1,
         },
       },

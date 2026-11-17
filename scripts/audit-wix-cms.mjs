@@ -130,6 +130,7 @@ for (const collection of collections) {
     "CHSpaces",
     "CHPageSections",
     "CHSectionItems",
+    "CHPartners",
     "CHRooms",
   ].includes(collectionId);
   const [permissions, indexes, itemQuery] = await Promise.all([
@@ -324,6 +325,7 @@ if (process.env.CMS_AUDIT_HEALTH === "1") {
     team: ["intro", "members", "band", "faq"],
     "what-is-circles": ["intro", "purpose", "values", "edge", "manifesto", "faq"],
     "life-at-circles": ["intro", "highlights", "band", "faq"],
+    partnerships: ["intro", "partners", "membership", "faq"],
   };
   for (const [pageKey, sectionNames] of Object.entries(requiredFooterPageSections)) {
     const page = pages.find((item) => item.pageKey === pageKey);
@@ -384,6 +386,7 @@ if (process.env.CMS_AUDIT_HEALTH === "1") {
     "life-at-circles.highlights.": 3,
     "what-is-circles.faq.": 1,
     "life-at-circles.faq.": 1,
+    "partnerships.faq.": 5,
   };
   for (const [prefix, minimum] of Object.entries(requiredFooterItems)) {
     const publishedCount = sectionItems.filter((item) =>
@@ -391,6 +394,19 @@ if (process.env.CMS_AUDIT_HEALTH === "1") {
     if (publishedCount < minimum) {
       issues.push({ collectionId: "CHSectionItems", itemKey: prefix, issue: "required-footer-page-items-missing", expectedMinimum: minimum, actual: publishedCount });
     }
+  }
+
+  const partners = byId.get("CHPartners")?.items ?? [];
+  const featuredPartnership = partners.find((item) => item.slug === "barcelona-tech-city");
+  if (!featuredPartnership || featuredPartnership.published !== true || featuredPartnership.featured !== true) {
+    issues.push({
+      collectionId: "CHPartners",
+      itemKey: "barcelona-tech-city",
+      issue: "required-featured-partner-missing",
+    });
+  }
+  for (const partner of partners.filter((item) => item.published === true && String(item.slug ?? "").startsWith("sandbox-"))) {
+    issues.push({ collectionId: "CHPartners", itemKey: partner.slug, issue: "published-sandbox-partner" });
   }
   for (const item of sectionItems) {
     const entityType = String(item.entityType ?? "").trim();

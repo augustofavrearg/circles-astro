@@ -11,11 +11,19 @@ import { resolveEditorialSource } from "@/services/content/editorial-sources";
 const repository = await getContentRepository();
 const [settings, page] = await Promise.all([repository.getSiteSettings(), repository.getPartnershipsPage()]);
 const partnerSource = page.partners.source ?? { mode: "automatic", key: "partners.published" } as const;
-const partners = await resolveEditorialSource(repository, partnerSource, {}, "partners.published");
+const resolvedPartners = await resolveEditorialSource(repository, partnerSource, {}, "partners.published");
+const partners = resolvedPartners.map((partner) => partner.slug === "barcelona-tech-city"
+  ? { ...partner, logo: partner.logo ?? "/images/partnerships/barcelona-tech-city.jpg" }
+  : partner);
+const intro = {
+  ...page.intro,
+  // Keep the Figma-approved panorama available when Wix has not received its media copy yet.
+  image: page.intro.image ?? "/images/partnerships/barcelona-panorama.png",
+};
 ---
 
 <SiteLayout settings={settings} title={page.seo.title} description={page.seo.description}>
-  <PageIntro intro={page.intro} imageAlt="Barcelona seen from Circles House" bodyClass="lg:max-w-[580px]" />
+  <PageIntro {intro} imageAlt="Barcelona seen from Circles House" bodyClass="lg:max-w-[580px]" />
   {partners.length > 0 && <PartnerList {...page.partners} items={partners} />}
   {page.membership && <MemberDiscounts {...page.membership} text={settings.promotion} />}
   {page.faq && <Faq {...page.faq} centered />}
